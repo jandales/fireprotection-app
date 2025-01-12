@@ -1,5 +1,8 @@
-import '../css/app.css';
+import '../css/app.scss';
 import './bootstrap';
+
+import '@coreui/coreui/dist/css/coreui.min.css';
+import '@coreui/icons/css/all.min.css';
 
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';

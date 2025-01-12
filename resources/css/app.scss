@@ -1,0 +1,15 @@
+// If you want to override variables do it here
+@import "/resources/css/theme/variables";
+
+// Import styles
+@import "@coreui/coreui/scss/coreui";
+// @import "@coreui/chartjs/scss/coreui-chartjs";
+
+// Vendors
+@import "/resources/css/theme/vendors/simplebar.scss";
+
+// Custom styles for this theme
+@import "/resources/css/theme/theme";
+
+// If you want to add custom CSS you can put it here
+@import "/resources/css/theme/custom";

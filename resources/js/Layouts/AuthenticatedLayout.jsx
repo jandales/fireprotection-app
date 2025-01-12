@@ -30,6 +30,18 @@ export default function AuthenticatedLayout({ header, children }) {
                                 >
                                     Dashboard
                                 </NavLink>
+                                <NavLink
+                                    href={route('alerts')}
+                                    active={route().current('alerts')}
+                                >
+                                    Alerts
+                                </NavLink>
+                                <NavLink
+                                    href={route('admin')}
+                                    active={route().current('admin')}
+                                >
+                                    Admin
+                                </NavLink>
                             </div>
                         </div>
 
@@ -166,6 +178,7 @@ export default function AuthenticatedLayout({ header, children }) {
                 <header className="bg-white shadow">
                     <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
                         {header}
+                     
                     </div>
                 </header>
             )}
