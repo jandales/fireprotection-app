@@ -39,8 +39,8 @@ export const AppSidebarNav = ({ items }) => {
         </div>   
 
         <div className='nav-item'>
-          <Link  className='nav-link'>
-            <CIcon icon={cilUser} className='nav-icon' /> Clients    
+          <Link className='nav-link' href={route('residents')} active={route().current('residents')}>
+            <CIcon icon={cilUser} className='nav-icon'   /> Residents    
           </Link>
         </div> 
 
