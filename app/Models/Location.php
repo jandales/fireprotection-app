@@ -13,9 +13,21 @@ class Location extends Model
         'clients_id',      
     ];
 
+    protected $appends = [
+        // 'clientName'
+    ];
+
+    protected $hidden = [
+        'user'
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function getclientNameAttribute(){
+        return $this->user->name;
     }
     
 }

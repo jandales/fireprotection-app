@@ -59,34 +59,14 @@ const AppHeader = () => {
             <NavLink href={route('dashboard')} active={route().current('dashboard')}> 
                 Dashboard
             </NavLink>
-          </CNavItem>
-          <CNavItem>
-            <NavLink href={route('dashboard')} active={route().current('dashboard')}> 
-                Dashboard
-            </NavLink>
-          </CNavItem>
-          <CNavItem>
-          <NavLink href={route('dashboard')} active={route().current('dashboard')}> 
-                Settings
-            </NavLink>
-          </CNavItem>
+          </CNavItem>  
         </CHeaderNav>
         <CHeaderNav className="ms-auto">
-          <CNavItem>
+          {/* <CNavItem>
             <NavLink href={route('dashboard')} active={route().current('dashboard')}> 
                 Dashboard
-            </NavLink>
-          </CNavItem>
-          <CNavItem>
-             <NavLink href={route('dashboard')} active={route().current('dashboard')}> 
-                Dashboard
-            </NavLink>
-          </CNavItem>
-          <CNavItem>
-             <NavLink href={route('dashboard')} active={route().current('dashboard')}> 
-                Dashboard
-            </NavLink>
-          </CNavItem>
+            </NavLink>              
+          </CNavItem> */}
         </CHeaderNav>
         <CHeaderNav>
           <li className="nav-item py-1">

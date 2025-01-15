@@ -18,15 +18,19 @@ import {
  } from '@coreui/icons'; // Specific Icons
 export const AppSidebarNav = ({ items }) => {
   return (
-    <CSidebarNav as={SimpleBar}>      
-        <NavLink className='nav-item' href={route('dashboard')} mactive={route().current('dashboard')}>
-          <CIcon icon={cilSpeedometer} className='nav-icon' /> 
-          Dashboard   
-        </NavLink>
-        <NavLink href={route('alerts')} active={route().current('alerts')}>
-          <CIcon icon={cilBell} className='nav-icon' />              
-           Alerts
-        </NavLink>
+    <CSidebarNav as={SimpleBar}>
+
+        <div className='nav-item'>
+          <Link className='nav-link' href={route('dashboard')} active={route().current('dashboard')}>
+            <CIcon icon={cilSpeedometer} className='nav-icon'/> Dashboard   
+          </Link>
+        </div>
+
+        <div className='nav-item'>
+          <Link className='nav-link' href={route('alerts')} active={route().current('alerts')}>
+            <CIcon icon={cilBell} className='nav-icon'/> Alerts
+          </Link>
+        </div>
 
         <div className='nav-item'>
           <Link  className='nav-link'>
@@ -50,7 +54,13 @@ export const AppSidebarNav = ({ items }) => {
           <Link  className='nav-link'>
             <CIcon icon={cilCog} className='nav-icon' /> Settings   
           </Link>
-        </div>      
+        </div> 
+
+         <div className='nav-item'>
+          <Link className='nav-link' href={route('location')} active={route().current('location')}>
+            <CIcon icon={cilCog} className='nav-icon' /> Locations 
+          </Link>
+        </div>       
        
     </CSidebarNav>
   )

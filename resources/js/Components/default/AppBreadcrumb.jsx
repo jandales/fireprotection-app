@@ -1,17 +1,20 @@
 import React from 'react'
 import { useLocation } from 'react-router-dom'
-
+import { usePage } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
 import routes from '@/Includes/routes'
 
 import { CBreadcrumb, CBreadcrumbItem } from '@coreui/react'
 
+
 const AppBreadcrumb = () => {
-  const currentLocation = 'http://127.0.0.1:8000/'
+  const { url, props } = usePage();
 
   const getRouteName = (pathname, routes) => {
     const currentRoute = routes.find((route) => route.path === pathname)
     return currentRoute ? currentRoute.name : false
   }
+ 
 
   const getBreadcrumbs = (location) => {
     const breadcrumbs = []
@@ -29,19 +32,22 @@ const AppBreadcrumb = () => {
     return breadcrumbs
   }
 
-  const breadcrumbs = getBreadcrumbs(currentLocation)
+  const breadcrumbs = getBreadcrumbs(url)
 
   return (
     <CBreadcrumb className="my-0">
-      <CBreadcrumbItem href="/">Home</CBreadcrumbItem>
+      <li className='breadcrumb-item'>
+          <Link>
+            Home 
+          </Link>
+      </li>
       {breadcrumbs.map((breadcrumb, index) => {
         return (
-          <CBreadcrumbItem
-            {...(breadcrumb.active ? { active: true } : { href: breadcrumb.pathname })}
-            key={index}
-          >
-            {breadcrumb.name}
-          </CBreadcrumbItem>
+          <li className='breadcrumb-item'>
+             <Link>  
+               {breadcrumb.name}
+            </Link>
+            </li>
         )
       })}
     </CBreadcrumb>

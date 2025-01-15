@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Inertia\Response;
 use App\Models\Location;
 
 class LocationController extends Controller
@@ -15,9 +19,8 @@ class LocationController extends Controller
         $data = Location::all();
 
         // Return the data as a JSON response
-        return response()->json([
-            'success' => true,
-            'data' => $data
+        return Inertia::render('Locations', [
+            'locations' => $data,
         ]);
     }
 
