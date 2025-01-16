@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Resident extends Model
 {
@@ -19,6 +20,11 @@ class Resident extends Model
         'name',
         'fullAddress'
     ];
+
+    public function devices(): HasMany
+    {
+        return $this->hasMany(Device::class);
+    }
 
     public function getNameAttribute(){
         return $this->firstname . ' ' . $this->lastname;

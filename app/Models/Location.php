@@ -3,31 +3,26 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Device;
 
 class Location extends Model
 {   
 
     protected $fillable = [
-        'location',
-        'ipAddress',
-        'clients_id',      
+        'device_id',
+        'latitude',
+        'longitude',              
     ];
 
     protected $appends = [
         // 'clientName'
     ];
 
-    protected $hidden = [
-        'user'
-    ];
-
-    public function user()
+    public function device()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Device::class);
     }
 
-    public function getclientNameAttribute(){
-        return $this->user->name;
-    }
+    
     
 }
