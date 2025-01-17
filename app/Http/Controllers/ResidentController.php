@@ -21,16 +21,14 @@ class ResidentController extends Controller
     }
 
     public function create()
-    {
-    
-
+    {   
         // Return the data as a JSON response
         return Inertia::render('CreateResident');
     }
 
     public function edit($id)
     {
-        $data = Resident::find($id);
+        $data = Resident::with('devices.location')->find($id);
 
         // Return the data as a JSON response
         return Inertia::render('ResidentEdit', [

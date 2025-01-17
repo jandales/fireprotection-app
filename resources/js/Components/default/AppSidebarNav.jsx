@@ -60,7 +60,17 @@ export const AppSidebarNav = ({ items }) => {
           <Link className='nav-link' href={route('location')} active={route().current('location')}>
             <CIcon icon={cilCog} className='nav-icon' /> Locations 
           </Link>
-        </div>       
+        </div>  
+        <div className='nav-item'>
+          <Link 
+             className='nav-link'
+             href={route('logout')}
+             method="post"
+             as="button"            
+          >
+            <CIcon icon={cilCog} className='nav-icon' /> Logout
+          </Link>
+        </div>        
        
     </CSidebarNav>
   )
