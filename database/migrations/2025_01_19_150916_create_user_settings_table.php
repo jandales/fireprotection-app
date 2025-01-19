@@ -11,15 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('residents', function (Blueprint $table) {
+        Schema::create('user_settings', function (Blueprint $table) {
             $table->id();
-            $table->string('firstname');
-            $table->string('lastname');
-            $table->string('email')->nullable();
-            $table->string('phoneno')->nullable();
-            $table->string('avatar')->nullable();
-            $table->string('address', length: 225);
-            $table->softDeletes();
+            $table->integer('perpage')->default(10);
+            $table->boolean('ysnHomeLocationAsDefault')->default(0);
+            $table->unsignedBigInteger('user_id'); 
+            $table->foreign('user_id')->references('id')->on('users');
             $table->timestamps();            
         });
     }
@@ -29,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('residents');
+        Schema::dropIfExists('user_settings');
     }
 };

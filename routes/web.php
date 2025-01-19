@@ -3,8 +3,9 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\ResidentController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\User\DeviceController;
+use App\Http\Controllers\User\UserSettingController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -55,6 +56,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/user/devices', [DeviceController::class, 'index'])->name('user.devices');
     Route::post('/user/devices', [DeviceController::class, 'store'])->name('user.device.store');
     Route::patch('/user/devices', [DeviceController::class, 'update'])->name('user.device.update');
+    Route::delete('/user/devices/delete/{id}', [DeviceController::class, 'destroy'])->name('user.device.destroy');
+
+    Route::get('/user/settings', [UserSettingController::class, 'index'])->name('user.settings');
+    Route::patch('/user/settings', [UserSettingController::class, 'update'])->name('user.settings.update');
 
 });
 

@@ -1,8 +1,6 @@
 import DefaultLayout from '@/Layouts/DefaultLayout';
 import InputError from '@/Components/InputError';
-import { Transition } from '@headlessui/react';
 
-import { Link} from '@inertiajs/react';
 import { useForm } from '@inertiajs/react';
 import React, { useState } from 'react'
 
@@ -18,19 +16,21 @@ import {
   CTableHeaderCell,
   CTableRow,
   CButton,
-  CForm,
   CFormInput,
   CFormCheck,
   CModal,
   CModalBody,
   CModalFooter,
   CModalHeader,
-  CModalTitle
+  CModalTitle,
+  CPagination,
+  CPaginationItem
 } from '@coreui/react'
 
 const Device = (response) => {
-    const devices = response.devices   
-    const { data, setData, post, patch, errors, processing, recentlySuccessful, reset } =
+    const devices = response.devices
+    console.log(devices)
+    const { data, setData, post, patch, delete: destroy, errors, processing, recentlySuccessful, reset } =
                 useForm({
                     id : '',
                     macAddress: '',
@@ -44,15 +44,16 @@ const Device = (response) => {
     const [visible, setVisible] = useState(false)
     const [override, setOverride] = useState(false)
     const [isEdit, setIsEdit] = useState(false)
+    const [visibleDelete, setVisibleDelete] = useState(false)
     
     const onCheckChange = (state) => {
         setData('ysnLocation', state)
         setOverride('override', state)
     }
 
-    const onOpenModal = (state, isEdit, device) => {
+    const onOpenModal = (isEdit, device) => {
         reset();       
-        setVisible(state); 
+        setVisible(!visible); 
         setIsEdit(isEdit);
      
         if(isEdit) {
@@ -75,8 +76,9 @@ const Device = (response) => {
 
     const submit = (e) => {
         e.preventDefault(); 
-
+        console.log(isEdit)
         if (!isEdit) {
+            console.log(11)
             post(route('user.device.store'))
             return;
         }
@@ -85,6 +87,25 @@ const Device = (response) => {
        
           
     };  
+
+    const handleDelete = (device) => {
+        setVisibleDelete(!visibleDelete)
+        data.id = device.id  
+    }
+    
+    const handleCloseDeleteModal = () =>{
+        setVisibleDelete(false)     
+        data.id = null       
+    }
+    const deleteDevice = () => {
+   
+        console.log(data.id)
+        destroy(route('user.device.destroy', {id : data.id }), {
+            preserveScroll: true,
+            onSuccess: () => handleCloseDeleteModal(),         
+            onFinish: () => reset(),
+        });
+    };
    
     
   return (
@@ -94,9 +115,8 @@ const Device = (response) => {
         <CRow>
             <CCol xs>
             <CCard className="mb-4">
-                <CCardHeader>
-                    Devices 
-                    <CButton color="primary" className='mx-2' onClick={() => onOpenModal(!visible, false)}>
+                <CCardHeader>                   
+                    <CButton color="primary" className='mx-2' onClick={() => onOpenModal(false)}>
                        Add new Device
                     </CButton>
                     </CCardHeader>        
@@ -124,7 +144,7 @@ const Device = (response) => {
                     </CTableRow>
                     </CTableHead>
                     <CTableBody>
-                    {devices.map((item, index) => (
+                    {devices.data.map((item, index) => (
                         <CTableRow v-for="item in tableItems" key={index}>                        
                         <CTableDataCell>
                             <div>{item.macAddress}</div>
@@ -143,18 +163,34 @@ const Device = (response) => {
                         </CTableDataCell>                       
                         <CTableDataCell>
                             <div className='btn-gap'>
-                            <CButton color="primary" variant="outline" size="sm" onClick={(e) => onOpenModal(!visible, true, item)}>Edit</CButton>  
-                            <CButton color="danger" variant="outline" size="sm">Delete</CButton>   
+                            <CButton color="primary" variant="outline" size="sm" onClick={(e) => onOpenModal(true, item)}>Edit</CButton>  
+                            <CButton color="danger" variant="outline" size="sm" onClick={(e) => handleDelete(item)}>Delete</CButton>   
                             </div>                  
                         </CTableDataCell>                                 
                         </CTableRow>
                     ))}
                     </CTableBody>
-                </CTable>       
+                </CTable> 
+                {devices.next_page_url && (
+                      <CPagination aria-label="Page navigation example" className='mt-3 mx-2'>
+                      <CPaginationItem aria-label="Previous" href={devices.prev_page_url}>
+                          <span aria-hidden="true">&laquo;</span>
+                      </CPaginationItem>
+                      {devices.links.map((link, index) => (
+                          link.url && (<CPaginationItem active={link.active}>{link.label}</CPaginationItem>)
+                      ))}                       
+                      <CPaginationItem aria-label="Next" href={devices.next_page_url}>
+                          <span aria-hidden="true">&raquo;</span>
+                      </CPaginationItem>
+                   </CPagination>
+                )
+                }   
+                 
             </CCard>
             </CCol>
         </CRow>
         </div>
+        {/* Create and edit Modal */}
         <CModal
         //  size="sm"
         visible={visible}
@@ -171,7 +207,7 @@ const Device = (response) => {
                 {recentlySuccessful && (<div class="alert alert-success" role="alert">
                     Successfully Saved
                 </div>)
-                }                
+                }   
                 </CCol>                       
                     <CCol md={12}>
                         <CFormInput 
@@ -191,6 +227,7 @@ const Device = (response) => {
                             value={data.ipAddress}
                             onChange={(e) => setData('ipAddress', e.target.value)}
                          />
+                        <InputError message={errors.ipAddress} className="mt-1" />    
                     </CCol>
                     <CCol md={12}>
                         <CFormInput 
@@ -200,6 +237,7 @@ const Device = (response) => {
                             value={data.latitude}
                             onChange={(e) => setData('latitude', e.target.value)}
                         />
+                          <InputError message={errors.latitude} className="mt-1" />    
                     </CCol> 
                     <CCol md={12}>
                         <CFormInput 
@@ -209,6 +247,7 @@ const Device = (response) => {
                             value={data.longitude}
                             onChange={(e) => setData('longitude', e.target.value)} 
                             />
+                            <InputError message={errors.longitude} className="mt-1" />    
                     </CCol>  
                     <CCol xs={12}>
                         <CFormCheck 
@@ -222,7 +261,15 @@ const Device = (response) => {
                             />   
                     </CCol>                    
                     <CCol xs={12}>
-                        <CFormInput id="location" label="Location" placeholder="1234 Main St" readOnly={!data.ysnLocation} />
+                        <CFormInput 
+                            id="location" 
+                            label="Location" 
+                            placeholder="1234 Main St" 
+                            value={data.location}
+                            onChange={(e) => setData('location', e.target.value)} 
+                            readOnly={!data.ysnLocation}
+                             />
+                            <InputError message={errors.location} className="mt-1" />    
                     </CCol> 
                     </div>                     
                 
@@ -236,7 +283,26 @@ const Device = (response) => {
           </CButton>
         </CModalFooter>
         </form>
+        </CModal>
+        
+        <CModal
+            visible={visibleDelete}
+            onClose={handleCloseDeleteModal}
+            aria-labelledby="LiveDemoExampleLabel"
+        >  
+            <CModalHeader>
+            <CModalTitle id="delete">Delete</CModalTitle>
+            </CModalHeader>
+            <CModalBody>Are you sure want to delete this Device!</CModalBody>
+            <CModalFooter>
+            <CButton color="secondary" onClick={handleCloseDeleteModal}>
+                No
+            </CButton>
+             <CButton color="danger" type='submit' onClick={deleteDevice}>Yes</CButton>
+            </CModalFooter>
+            
       </CModal>
+
      </DefaultLayout>
   )
 }

@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();           
             $table->macAddress('macAddress');
             $table->ipAddress('ipAddress')->nullable();
-            $table->string('latitude')->nullable();
-            $table->string('longitude')->nullable();
+            $table->float('latitude')->nullable();
+            $table->float('longitude')->nullable();  
             $table->string('location')->nullable();
             $table->boolean('ysnLocation')->default(0);
             $table->unsignedBigInteger('user_id'); 

@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class DeviceRequest extends FormRequest
 {
@@ -22,7 +23,13 @@ class DeviceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'macAddress' => 'required|string|max:255',  
+            'macAddress' => 'required|string|max:255|unique:devices,id,' . $this->id,           
+            'ipAddress' => 'nullable|string',
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric', 
+            'ysnLocation' => 'nullable|boolean',   
+            'location' => Rule::requiredIf($this->ysnLocation == true),
+              
         ];
     }
 }
