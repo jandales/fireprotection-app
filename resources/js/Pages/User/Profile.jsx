@@ -38,7 +38,7 @@ const Profile = () => {
             <CCol xs>
             <CCard className="mb-4">          
                 <CCardBody>
-                <CForm className="row g-3" onSubmit={submit}>
+                <CForm className="row g-3" onSubmit={submit} enctype="multipart/form-data">
                     <CCol md={12}> 
                         <CRow className="mb-3"> 
                         <CCol md={1}>

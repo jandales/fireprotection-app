@@ -13,10 +13,14 @@ return new class extends Migration
     {
         Schema::create('devices', function (Blueprint $table) {
             $table->id();           
-            $table->macAddress('macAddress')->nullable();
+            $table->macAddress('macAddress');
             $table->ipAddress('ipAddress')->nullable();
-            $table->unsignedBigInteger('resident_id'); 
-            $table->foreign('resident_id')->references('id')->on('residents');
+            $table->string('latitude')->nullable();
+            $table->string('longitude')->nullable();
+            $table->string('location')->nullable();
+            $table->boolean('ysnLocation')->default(0);
+            $table->unsignedBigInteger('user_id'); 
+            $table->foreign('user_id')->references('id')->on('users');
             $table->timestamps();
         });
     }

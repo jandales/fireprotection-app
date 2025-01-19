@@ -60,13 +60,13 @@ export const AppSidebarNav = ({ items }) => {
         }       
 
         <div className='nav-item'>
-          <Link  className='nav-link'>
+          <Link  className='nav-link' href={route('user')} active={route().current('user')} >
             <CIcon icon={cilUser} className='nav-icon' /> Profile   
           </Link>
         </div> 
 
         <div className='nav-item'>
-          <Link  className='nav-link'>
+          <Link  className='nav-link' href={route('user.devices')} active={route().current('devices')}>
             <CIcon icon={cilDevices} className='nav-icon' /> Devices   
           </Link>
         </div> 
