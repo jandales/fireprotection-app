@@ -32,20 +32,15 @@ export const AppSidebarNav = ({ items }) => {
             </div>
             <div className='nav-item'>
               <Link className='nav-link' href={route('alerts')} active={route().current('alerts')}>
-                <CIcon icon={cilBell} className='nav-icon'/> Alerts
+                <CIcon icon={cilBell} className='nav-icon'/> Notifications
               </Link>
              </div>
             <div className='nav-item'>
-              <Link  className='nav-link'>
+              <Link  className='nav-link' href={route('users')} active={route().current('users')} >
                 <CIcon icon={cilGroup} className='nav-icon' /> Users    
               </Link>
-            </div>  
-            <div className='nav-item'>
-              <Link className='nav-link' href={route('residents')} active={route().current('residents')}>
-                <CIcon icon={cilUser} className='nav-icon'   /> Residents    
-              </Link>
             </div> 
-            <div className='nav-item'>
+            {/* <div className='nav-item'>
               <Link  className='nav-link'>
                 <CIcon icon={cilPrint} className='nav-icon' /> Reports   
               </Link>
@@ -54,30 +49,37 @@ export const AppSidebarNav = ({ items }) => {
               <Link  className='nav-link'>
                 <CIcon icon={cilPrint} className='nav-icon' /> Reports   
               </Link>
-            </div>
+            </div> */}
             </>
           )
         }       
 
-        <div className='nav-item'>
-          <Link  className='nav-link' href={route('user')} active={route().current('user')} >
-            <CIcon icon={cilUser} className='nav-icon' /> Profile   
-          </Link>
-        </div> 
+        {
+           user.role === 'user' && (
+              <>
+              <div className='nav-item'>
+              <Link  className='nav-link' href={route('user')} active={route().current('user')} >
+                <CIcon icon={cilUser} className='nav-icon' /> Profile   
+              </Link>
+            </div> 
+    
+            <div className='nav-item'>
+              <Link  className='nav-link' href={route('user.devices')} active={route().current('user.devices')}>
+                <CIcon icon={cilDevices} className='nav-icon' /> Devices   
+              </Link>
+            </div> 
+    
+            <div className='nav-item'>
+              <Link  className='nav-link' href={route('user.settings')} active={route().current('user.settings')} >
+                <CIcon icon={cilSettings} className='nav-icon' /> Settings
+              </Link>
+            </div>
+              </>
+           )
+        }
+        
 
         <div className='nav-item'>
-          <Link  className='nav-link' href={route('user.devices')} active={route().current('user.devices')}>
-            <CIcon icon={cilDevices} className='nav-icon' /> Devices   
-          </Link>
-        </div> 
-
-        <div className='nav-item'>
-          <Link  className='nav-link' href={route('user.settings')} active={route().current('user.settings')} >
-            <CIcon icon={cilSettings} className='nav-icon' /> Settings
-          </Link>
-        </div>
-
-        {/* <div className='nav-item'>
           <Link  className='nav-link'
              href={route('logout')}
              method="post"
@@ -85,7 +87,7 @@ export const AppSidebarNav = ({ items }) => {
           >
             <CIcon icon={cilCog} className='nav-icon' /> Logout
           </Link>
-        </div>         */}
+        </div>        
        
     </CSidebarNav>
   )

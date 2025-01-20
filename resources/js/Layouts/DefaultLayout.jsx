@@ -21,7 +21,7 @@ export default function DefaultLayout({ header, children }) {
       <div className="wrapper d-flex flex-column min-vh-100">
         <AppHeader />
         <div className="body flex-grow-1">
-           <CContainer className="px-4" lg>{children}</CContainer>        
+           <CContainer className="px-4" fluid>{children}</CContainer>        
         </div>
         <AppFooter />
       </div>

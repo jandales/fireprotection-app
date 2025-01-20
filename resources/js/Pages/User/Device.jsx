@@ -29,7 +29,7 @@ import {
 
 const Device = (response) => {
     const devices = response.devices
-    console.log(devices)
+
     const { data, setData, post, patch, delete: destroy, errors, processing, recentlySuccessful, reset } =
                 useForm({
                     id : '',

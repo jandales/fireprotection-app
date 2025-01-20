@@ -6,6 +6,7 @@ use App\Http\Controllers\ResidentController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\User\DeviceController;
 use App\Http\Controllers\User\UserSettingController;
+use App\Http\Controllers\Admin\AdminUserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -31,6 +32,10 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
+
+    Route::get('/users', [AdminUserController::Class, 'index'])->name('users');
+    Route::get('/users/{user}', [AdminUserController::Class, 'show'])->name('users.show');
+
     Route::get('/residents', [ResidentController::Class, 'index'])->name('residents');
     Route::get('/residents/create', [ResidentController::Class, 'create'])->name('residents.create');
     Route::get('/residents/edit/{id}', [ResidentController::Class, 'edit'])->name('residents.edit');

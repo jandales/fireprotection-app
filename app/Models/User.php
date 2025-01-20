@@ -52,4 +52,12 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    protected $appends = [
+        'location'
+    ];
+
+    public function getLocationAttribute(){
+        return $this->address . ' ' . $this->address1 . ' ' . $this->city . ' ' . $this->province . ' ' . $this->zipcode;
+    }
 }

@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Models\UserSetting;
 
 class RegisteredUserController extends Controller
 {
@@ -42,6 +43,14 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
             'role' =>  $request->role ?? 'admin'
         ]);
+        
+        if($user->role === 'user')
+        {
+            UserSetting::create([           
+                'user_id' => $user->id  
+            ]);
+        }
+       
 
         event(new Registered($user));
 
