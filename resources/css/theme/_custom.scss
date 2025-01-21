@@ -28,7 +28,24 @@
 }
 
 .user-profile-wrapper span{
-    display: block;
-   
+    font-size: 12px;   
+}
+
+.flex-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+.custom-pagination-wrapper{
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;    
+}
+
+
+.pagination-label {
+    font-size: 12px;
 }
 

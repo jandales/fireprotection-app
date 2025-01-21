@@ -1,7 +1,6 @@
 import DefaultLayout from '@/Layouts/DefaultLayout';
-
-import { Link } from '@inertiajs/react';
-
+import { Link, router, useForm } from '@inertiajs/react';
+import React, { useState, useEffect } from "react";
 import {
   CCard,
   CCardHeader,
@@ -14,21 +13,35 @@ import {
   CTableHeaderCell,
   CTableRow,
   CAvatar,
-  CPagination,
-  CPaginationItem
+  CFormInput,
+  CForm
+
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import {  cilPeople  } from '@coreui/icons'
+import user from  '@/assets/images/avatars/user.png';
+import Pagination from '@/Components/Pagination';
 
 
-import user from  '@/assets/images/avatars/user.png'
-import { Route } from 'react-router-dom';
-
-
-const User = (res) => {
-    const users = res.users
-    const links = users.links.filter(link => link.label !== "Next &raquo;" && link.label !== "&laquo; Previous")
+const User = (res, filter) => {
     
+    const [search, setSearch] = useState(filter || "");
+    const [debouncedSearch, setDebouncedSearch] = useState(search);
+    
+    const users = res.users  
+  
+    const onPageChange = (url) => {
+        router.get(url, {}, { preserveScroll: true, preserveState: true });
+    }
+
+    const handleSearch = (event) => {
+
+        if(search != null && event.key == 'Enter') {
+            router.get(route('users'), { search }, { preserveScroll: true, preserveState: true });
+        }     
+    };
+
+
   return (
       <DefaultLayout     
       >
@@ -37,7 +50,18 @@ const User = (res) => {
             <CCol xs>
             <CCard className="mb-4">
                 <CCardHeader>
-                    Users                  
+                    <CRow>                       
+                        <CCol md={2}>
+                            <CFormInput 
+                                type="text" 
+                                id="filter" 
+                                placeholder="Search" 
+                                aria-describedby="exampleFormControlInputHelpInline"
+                                onChange={(e) => setSearch(e.target.value)}
+                                onKeyDown={handleSearch}
+                                 />
+                        </CCol>
+                    </CRow>   
                     </CCardHeader>        
                 <CTable align="middle" className="mb-0 border" hover responsive>
                     <CTableHead className="text-nowrap">
@@ -88,21 +112,21 @@ const User = (res) => {
                         </CTableRow>
                     ))}
                     </CTableBody>
-                </CTable>  
-                             {links.length > 1 && (
-                                      <CPagination aria-label="Page navigation example" className='mt-3 mx-2'>
-                                      <CPaginationItem aria-label="Previous" href={users.prev_page_url}>
-                                          <span aria-hidden="true">&laquo;</span>
-                                      </CPaginationItem>
-                                      {links.map((link, index) => (                                     
-                                          link.url && (<CPaginationItem href={link.url} active={link.active}>{link.label}</CPaginationItem>)
-                                      ))}                       
-                                      <CPaginationItem aria-label="Next" href={users.next_page_url}>
-                                          <span aria-hidden="true">&raquo;</span>
-                                      </CPaginationItem>
-                                   </CPagination>
-                                )
-                                }      
+                </CTable> 
+
+                 { users.last_page > 1 && (
+                    <Pagination
+                        currentpage={users.current_page}
+                        nextpage={users.next_page_url}
+                        prevpage={users.prev_page_url}
+                        firstpage={users.first_page_url}
+                        lastpage={users.last_page_url}
+                        totalRecord={users.total}
+                        totalPage={users.last_page}
+                        onPageChange={onPageChange}
+                     />
+
+                 )}
             </CCard>
             </CCol>
         </CRow>

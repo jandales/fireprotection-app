@@ -11,12 +11,25 @@ use Inertia\Response;
 
 class AdminUserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $data = User::where('role', 'user')->paginate(10);
+
+        $query = User::query();
+
+        if ($request->has('search') ) {
+            $query
+                ->where('role', 'user')
+                ->where('name', 'like', '%' . $request->search . '%');
+        }
+        else {
+            $query->where('role', 'user');
+        }
+       
+        $data = $query->paginate(10);
 
         return Inertia::render('Admin/User', [
-            'users' => $data
+            'users' => $data,
+            'filter' => $request->search
         ]);
     }
 
