@@ -7,6 +7,7 @@ use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\User\DeviceController;
 use App\Http\Controllers\User\UserSettingController;
 use App\Http\Controllers\Admin\AdminUserController;
+use App\Http\Controllers\Admin\NotificationController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -27,18 +28,11 @@ Route::get('/admin', function () {
     return Inertia::render('Admin');
 })->middleware(['auth', 'verified'])->name('admin');
 
-Route::middleware('auth')->group(function () {
-    Route::get('/locations', [LocationController::Class, 'index'])->name('location');
-});
 
 Route::middleware('auth')->group(function () {
-
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications');
     Route::get('/users', [AdminUserController::Class, 'index'])->name('users');
-    Route::get('/users/{user}', [AdminUserController::Class, 'show'])->name('users.show');
-
-    Route::get('/residents', [ResidentController::Class, 'index'])->name('residents');
-    Route::get('/residents/create', [ResidentController::Class, 'create'])->name('residents.create');
-    Route::get('/residents/edit/{id}', [ResidentController::Class, 'edit'])->name('residents.edit');
+    Route::get('/users/{user}', [AdminUserController::Class, 'show'])->name('users.show');  
 });
 
 Route::middleware('auth')->group(function () {

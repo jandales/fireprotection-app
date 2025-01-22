@@ -23,10 +23,9 @@ class UserUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',            
-            'password' => 'nullable|min:8|confirmed', // Only validate if password is provided
+            'name' => 'nullable|string|max:255', 
             'phonenumber' => 'nullable|string|max:15',
-            'avatar' => 'nullable|image|max:2048', // Validate for file upload
+            'avatar' => 'nullable|image|max:2048', 
             'address1' => 'nullable|string|max:255',
             'address2' => 'nullable|string|max:255',
             'city' => 'nullable|string|max:255',

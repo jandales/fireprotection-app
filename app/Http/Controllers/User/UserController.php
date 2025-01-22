@@ -30,7 +30,8 @@ class UserController extends Controller
 
  
    public function update(UserUpdateRequest $request): RedirectResponse
-   {       
+   {    
+       
        $request->user()->fill($request->validated());           
    
        if ($request->hasFile('avatar')) {

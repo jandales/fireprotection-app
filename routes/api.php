@@ -2,15 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\LocationController;
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+use  App\Http\Controllers\Api\PostController;
 
-Route::controller(LocationController::class)->prefix('locations')->group(function () {
-
-    Route::get('/', 'index');    
-
-    Route::post('/store','store');   
-
-});
+Route::post('/post', [PostController::class, 'store'])->name('post');
+   

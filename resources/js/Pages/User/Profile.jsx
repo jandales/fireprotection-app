@@ -18,15 +18,11 @@ const Profile = () => {
                 city: user.city,
                 province: user.province,
                 zipcode : user.zipcode,
-            });
+            });   
     
-        const handleFileChange = (e) => {
-            const file = e.target.files[0];  // Access the first selected file        
-            setData('avatar', file);  // Set the file object in the form data
-        };
-
         const submit = (e) => {
-            e.preventDefault(); 
+            e.preventDefault();
+            console.log(data) 
             patch(route('user.update'));
         };  
 
@@ -38,7 +34,7 @@ const Profile = () => {
             <CCol xs>
             <CCard className="mb-4">          
                 <CCardBody>
-                <CForm className="row g-3" onSubmit={submit} enctype="multipart/form-data">
+                <CForm className="row g-3" onSubmit={submit}>
                     <CCol md={12}> 
                         <CRow className="mb-3"> 
                         <CCol md={1}>
@@ -197,7 +193,7 @@ const Profile = () => {
                                 <CFormInput 
                                     type="file"
                                      id="avatar" 
-                                     onChange={handleFileChange} 
+                                     onChange={(e) => setData('avatar', e.target.files[0])} 
                                      />                              
                                 </CCol>
                         </CRow>   
