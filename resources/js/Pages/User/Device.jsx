@@ -1,8 +1,8 @@
 import DefaultLayout from '@/Layouts/DefaultLayout';
 import InputError from '@/Components/InputError';
-
-import { useForm } from '@inertiajs/react';
+import { router, useForm} from '@inertiajs/react';
 import React, { useState } from 'react'
+import Pagination from '@/Components/Pagination';
 
 import {
   CCard,
@@ -27,10 +27,10 @@ import {
   CPaginationItem
 } from '@coreui/react'
 
-const Device = (response) => {
+const Device = (response, filter) => {
     const devices = response.devices
-
-    const { data, setData, post, patch, delete: destroy, errors, processing, recentlySuccessful, reset } =
+    const [search, setSearch] = useState(filter || "");
+    const { data, setData, post, get, patch, delete: destroy, errors, processing, recentlySuccessful, reset } =
                 useForm({
                     id : '',
                     macAddress: '',
@@ -97,16 +97,23 @@ const Device = (response) => {
         setVisibleDelete(false)     
         data.id = null       
     }
-    const deleteDevice = () => {
-   
-        console.log(data.id)
+    const deleteDevice = () => {  
         destroy(route('user.device.destroy', {id : data.id }), {
             preserveScroll: true,
             onSuccess: () => handleCloseDeleteModal(),         
             onFinish: () => reset(),
         });
     };
-   
+
+    const handleSearch = (event) => {    
+        if(search != null && event.key == 'Enter') {
+            router.get(route('user.devices'), { search }, { preserveScroll: true, preserveState: true });
+        }     
+    };
+
+    const onPageChange = (url) => {
+        router.get(url, {}, { preserveScroll: true, preserveState: true });
+    }   
     
   return (
       <DefaultLayout     
@@ -115,16 +122,33 @@ const Device = (response) => {
         <CRow>
             <CCol xs>
             <CCard className="mb-4">
-                <CCardHeader>                   
-                    <CButton color="primary" className='mx-2' onClick={() => onOpenModal(false)}>
-                       Add new Device
-                    </CButton>
+                <CCardHeader>  
+                    <CRow>                       
+                        <CCol md={2}>
+                            <CFormInput 
+                                type="text" 
+                                id="filter" 
+                                placeholder="Search" 
+                                aria-describedby="exampleFormControlInputHelpInline"
+                                onChange={(e) => setSearch(e.target.value)}
+                                onKeyDown={handleSearch}
+                                    />
+                        </CCol>
+                        <CCol md={10}>
+                            <CButton color="primary" className='mx-2 float-end' onClick={() => onOpenModal(false)}>
+                                New Device
+                            </CButton>
+                        </CCol>
+                    </CRow>   
                     </CCardHeader>        
                 <CTable align="middle" className="mb-0 border" hover responsive>
                     <CTableHead className="text-nowrap">
-                    <CTableRow>                                        
+                    <CTableRow> 
                         <CTableHeaderCell className="bg-body-tertiary">
-                            Device
+                            Name
+                        </CTableHeaderCell>                                        
+                        <CTableHeaderCell className="bg-body-tertiary">
+                            Mac Address
                         </CTableHeaderCell> 
                         <CTableHeaderCell className="bg-body-tertiary">
                             IP Address
@@ -145,7 +169,10 @@ const Device = (response) => {
                     </CTableHead>
                     <CTableBody>
                     {devices.data.map((item, index) => (
-                        <CTableRow v-for="item in tableItems" key={index}>                        
+                        <CTableRow v-for="item in tableItems" key={index}>    
+                         <CTableDataCell>
+                            <div>{item.name}</div>
+                        </CTableDataCell>                               
                         <CTableDataCell>
                             <div>{item.macAddress}</div>
                         </CTableDataCell>                                           
@@ -171,21 +198,19 @@ const Device = (response) => {
                     ))}
                     </CTableBody>
                 </CTable> 
-                {devices.next_page_url && (
-                      <CPagination aria-label="Page navigation example" className='mt-3 mx-2'>
-                      <CPaginationItem aria-label="Previous" href={devices.prev_page_url}>
-                          <span aria-hidden="true">&laquo;</span>
-                      </CPaginationItem>
-                      {devices.links.map((link, index) => (
-                          link.url && (<CPaginationItem active={link.active}>{link.label}</CPaginationItem>)
-                      ))}                       
-                      <CPaginationItem aria-label="Next" href={devices.next_page_url}>
-                          <span aria-hidden="true">&raquo;</span>
-                      </CPaginationItem>
-                   </CPagination>
-                )
-                }   
-                 
+                { devices.last_page > 1 && (
+                    <Pagination
+                        currentpage={devices.current_page}
+                        nextpage={devices.next_page_url}
+                        prevpage={devices.prev_page_url}
+                        firstpage={devices.first_page_url}
+                        lastpage={devices.last_page_url}
+                        totalRecord={devices.total}
+                        totalPage={devices.last_page}
+                        onPageChange={onPageChange}
+                     />
+
+                 )}                 
             </CCard>
             </CCol>
         </CRow>

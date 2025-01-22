@@ -12,24 +12,35 @@ use App\Http\Requests\DeviceRequest;
 
 class DeviceController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {    
+        $query = Device::query();
+        $query->where('user_id', Auth::user()->id);
 
-        $data = Device::where('user_id', Auth::user()->id)->paginate(10);    
+        if ($request->has('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }        
+       
+        $data = $query->paginate(10);      
+           
         return Inertia::render('User/Device', [
             'devices' => $data,
+            'filter' => $request->search
         ]);
 
     }
 
     public function store(DeviceRequest $request)
     {
-        $devices = Device::create([
+        $lastDeviceId = Device::orderBy('id', 'desc')->first()->id;
+        $device_name = 'Device-' . $lastDeviceId + 1; 
+        $device = Device::create([
+            'name'       => $device_name,
             'macAddress' => $request->macAddress,
-            'ipAddress' => $request->ipAddress,
-            'latitude'  => $request->latitude,
-            'longitude' => $request->longitude,
-            'location' => $request->location,
+            'ipAddress'  => $request->ipAddress,
+            'latitude'   => $request->latitude,
+            'longitude'  => $request->longitude,
+            'location'   => $request->location,
             'ysnLocation' => $request->ysnLocation,
             'user_id'  => $request->user()->id,
         ]);

@@ -11,6 +11,7 @@ class Device extends Model
     use HasFactory;
 
     protected $fillable = [
+        'name',
         'macAddress',
         'ipAddress',
         'latitude',

@@ -1,6 +1,6 @@
 import DefaultLayout from '@/Layouts/DefaultLayout';
-import { Link, router, useForm } from '@inertiajs/react';
-import React, { useState, useEffect } from "react";
+import { Link, router } from '@inertiajs/react';
+import React, { useState } from "react";
 import {
   CCard,
   CCardHeader,
@@ -14,8 +14,6 @@ import {
   CTableRow,
   CAvatar,
   CFormInput,
-  CForm
-
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import {  cilPeople  } from '@coreui/icons'
@@ -26,8 +24,7 @@ import Pagination from '@/Components/Pagination';
 const User = (res, filter) => {
     
     const [search, setSearch] = useState(filter || "");
-    const [debouncedSearch, setDebouncedSearch] = useState(search);
-    
+
     const users = res.users  
   
     const onPageChange = (url) => {
@@ -35,7 +32,6 @@ const User = (res, filter) => {
     }
 
     const handleSearch = (event) => {
-
         if(search != null && event.key == 'Enter') {
             router.get(route('users'), { search }, { preserveScroll: true, preserveState: true });
         }     

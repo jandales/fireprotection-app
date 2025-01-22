@@ -18,6 +18,7 @@ class DeviceFactory extends Factory
     {
         $ysnLocation = fake()->boolean(50);
         return [
+            'name' => 'Device-' . $faker->randomNumber(5, false),
             'macAddress' => fake()->macAddress(),
             'ipAddress' => fake()->ipv4(),
             'latitude'  => fake()->latitude(-90, 90),
