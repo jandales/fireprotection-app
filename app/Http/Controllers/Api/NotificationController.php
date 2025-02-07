@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\NotificationEvent;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
@@ -34,7 +35,7 @@ class NotificationController extends Controller
             ]);
     
             $user  = User::where('id', $notification->user_id)->first();  
-    
+            event(new NotificationEvent($notification->message));
             return response()->json(['message' => $notification->message], 200);
 
 

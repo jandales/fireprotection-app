@@ -1,6 +1,7 @@
 import DefaultLayout from '@/Layouts/DefaultLayout';
 import { Link, router } from '@inertiajs/react';
 import React, { useState } from "react";
+import NotificationAlert from '@/Components/NotificationAlert';
 import {
   CCard,
   CCardHeader,
@@ -26,7 +27,7 @@ const Notification = (res, filter) => {
     const [search, setSearch] = useState(filter || "");
 
     const notifications  = res.notifications  
-    console.log(notifications)
+
     const onPageChange = (url) => {
         router.get(url, {}, { preserveScroll: true, preserveState: true });
     }
@@ -134,9 +135,11 @@ const Notification = (res, filter) => {
                      />
 
                  )}
+                <NotificationAlert />     
             </CCard>
             </CCol>
         </CRow>
+
         </div>
      </DefaultLayout>
   )

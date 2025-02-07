@@ -1,6 +1,7 @@
 import ApplicationLogo from '@/Components/ApplicationLogo';
 import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
+import ChatComponent from '@/Components/NotificationAlert';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
@@ -181,9 +182,11 @@ export default function AuthenticatedLayout({ header, children }) {
                      
                     </div>
                 </header>
-            )}
-
-            <main>{children}</main>
+            )}          
+            <main>         
+                {children}
+            </main>
+            
         </div>
     );
 }
