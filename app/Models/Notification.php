@@ -13,6 +13,7 @@ class Notification extends Model
        'latitude',
        'longitude',          
        'location',
+       'message',
        'status'      
     ];
 
