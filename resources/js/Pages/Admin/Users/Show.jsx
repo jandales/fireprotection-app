@@ -233,15 +233,6 @@ const Show = (res) => {
                                     />
                             </CCol>  
                             <CCol xs={12}>
-                                <CFormCheck 
-                                        id="flexCheckDefault" 
-                                        label="Override Location"
-                                        name="override"
-                                        checked={device.ysnLocation} 
-                                        readOnly={true}                                      
-                                    />   
-                            </CCol>                    
-                            <CCol xs={12}>
                                 <CFormInput 
                                     id="location" 
                                     label="Location" 
@@ -250,6 +241,16 @@ const Show = (res) => {
                                     readOnly={true}  
                                      />
                             </CCol> 
+                            <CCol xs={12}>
+                                <CFormCheck 
+                                        id="flexCheckDefault" 
+                                        label="Use the main address"
+                                        name="override"
+                                        checked={device.ysnLocation} 
+                                        readOnly={true}                                      
+                                    />   
+                            </CCol>                   
+                      
                             </div>                     
                         
                 </CModalBody>

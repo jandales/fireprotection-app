@@ -3,6 +3,7 @@ import InputError from '@/Components/InputError';
 import { router, useForm} from '@inertiajs/react';
 import React, { useState } from 'react'
 import Pagination from '@/Components/Pagination';
+import DeviceModal from '@/Components/DeviceModal';
 
 import {
   CCard,
@@ -224,7 +225,7 @@ const Device = (response, filter) => {
       >
         <form  onSubmit={submit}>
         <CModalHeader>
-          <CModalTitle id="LiveDemoExampleLabel"> {isEdit == true ? 'Edit Device' : 'Add Device'}</CModalTitle>
+        <CModalTitle id="LiveDemoExampleLabel"> {isEdit == true ? 'Edit Device' : 'Add Device'}</CModalTitle>
         </CModalHeader>
         <CModalBody>
             <div className="row g-3"> 
@@ -275,27 +276,26 @@ const Device = (response, filter) => {
                             <InputError message={errors.longitude} className="mt-1" />    
                     </CCol>  
                     <CCol xs={12}>
+                        <CFormInput 
+                            id="location" 
+                            label="Location" 
+                            placeholder="1234 Main St" 
+                            value={data.location}
+                            onChange={(e) => setData('location', e.target.value)}                           
+                         />
+                        <InputError message={errors.location} className="mt-1" />    
+                    </CCol> 
+                    <CCol xs={12}>
                         <CFormCheck 
                                 id="flexCheckDefault" 
-                                label="Override Location"
+                                label="Use the main address"
                                 name="override"
                                 checked={data.ysnLocation}
                                 onChange={(e) =>                                   
                                     onCheckChange(e.target.checked)                                                                   
                                 }
                             />   
-                    </CCol>                    
-                    <CCol xs={12}>
-                        <CFormInput 
-                            id="location" 
-                            label="Location" 
-                            placeholder="1234 Main St" 
-                            value={data.location}
-                            onChange={(e) => setData('location', e.target.value)} 
-                            readOnly={!data.ysnLocation}
-                             />
-                            <InputError message={errors.location} className="mt-1" />    
-                    </CCol> 
+                    </CCol>  
                     </div>                     
                 
         </CModalBody>
@@ -326,7 +326,7 @@ const Device = (response, filter) => {
              <CButton color="danger" type='submit' onClick={deleteDevice}>Yes</CButton>
             </CModalFooter>
             
-      </CModal>
+      </CModal>   
 
      </DefaultLayout>
   )

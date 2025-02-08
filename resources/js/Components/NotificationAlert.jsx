@@ -46,7 +46,7 @@ const NotificationAlert = () => {
                                     <p>{notification.message}</p>
                                     <p>Name     : {notification.user?.name && notification.user.name}</p> 
                                     <p>Contact  : {notification.user?.phonenumber}</p> 
-                                    <p>Location : {notification.device?.location}</p>
+                                    <p>Location : {notification.device?.ysnLocation == true ? notification.user?.location : notification.device?.location}</p>
                                     <p>Device   : {notification.device?.name}</p>
                                 </div>
                             </div> 
