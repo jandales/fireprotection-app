@@ -38,6 +38,12 @@
     gap: 20px;
 }
 
+.filter-icon {
+    display: flex;
+    align-items: center; 
+    margin-left: -15px;    
+}
+
 .custom-pagination-wrapper{
     display: flex;
     justify-content: space-between; 
@@ -59,5 +65,14 @@
 
 .alert-body p {
     margin-bottom: 0 !important;
+}
+
+.count {
+    font-size: 2rem;
+}
+
+.container-center-items{
+    display: flex;
+    align-items: center;      
 }
 

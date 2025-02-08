@@ -1,7 +1,7 @@
 import DefaultLayout from '@/Layouts/DefaultLayout';
 import { Link, router } from '@inertiajs/react';
 import NotificationAlert from '@/Components/NotificationAlert';
-import React, { useState } from "react";
+import React from "react";
 import {
   CCard,
   CCardHeader,
@@ -14,30 +14,21 @@ import {
   CTableHeaderCell,
   CTableRow,
   CAvatar,
-  CFormInput,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import {  cilPeople  } from '@coreui/icons'
 import user from  '@/assets/images/avatars/user.png';
 import Pagination from '@/Components/Pagination';
+import Search from '@/Components/Search';
 
 
-const User = (res, filter) => {
-    
-    const [search, setSearch] = useState(filter || "");
-
+const User = (res, filter) => {    
+   
     const users = res.users  
   
     const onPageChange = (url) => {
         router.get(url, {}, { preserveScroll: true, preserveState: true });
-    }
-
-    const handleSearch = (event) => {
-        if(search != null && event.key == 'Enter') {
-            router.get(route('users'), { search }, { preserveScroll: true, preserveState: true });
-        }     
-    };
-
+    } 
 
   return (
       <DefaultLayout     
@@ -47,19 +38,8 @@ const User = (res, filter) => {
             <CCol xs>
             <CCard className="mb-4">
                 <CCardHeader>
-                    <CRow>                       
-                        <CCol md={2}>
-                            <CFormInput 
-                                type="text" 
-                                id="filter" 
-                                placeholder="Search" 
-                                aria-describedby="exampleFormControlInputHelpInline"
-                                onChange={(e) => setSearch(e.target.value)}
-                                onKeyDown={handleSearch}
-                                 />
-                        </CCol>
-                    </CRow>   
-                    </CCardHeader>        
+                    <Search route={route('users')} filter={filter} />  
+                </CCardHeader>        
                 <CTable align="middle" className="mb-0 border" hover responsive>
                     <CTableHead className="text-nowrap">
                     <CTableRow>  
@@ -122,7 +102,6 @@ const User = (res, filter) => {
                         totalPage={users.last_page}
                         onPageChange={onPageChange}
                      />
-
                  )}
                    <NotificationAlert/> 
             </CCard>

@@ -8,17 +8,19 @@ use App\Http\Controllers\User\DeviceController;
 use App\Http\Controllers\User\UserSettingController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\NotificationController;
+use App\Http\Controllers\Admin\DashboardController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', function () {
-    return Inertia::render('Dashboard');
+Route::get('/', function () { 
+    if (Auth::check() && Auth::user()->role === 'admin') {
+        return redirect('/dashboard');
+    }
+    return redirect('/user'); 
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/alerts', function () {
     return Inertia::render('Alerts');

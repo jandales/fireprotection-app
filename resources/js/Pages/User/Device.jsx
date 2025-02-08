@@ -3,7 +3,7 @@ import InputError from '@/Components/InputError';
 import { router, useForm} from '@inertiajs/react';
 import React, { useState } from 'react'
 import Pagination from '@/Components/Pagination';
-import DeviceModal from '@/Components/DeviceModal';
+
 
 import {
   CCard,
@@ -27,6 +27,7 @@ import {
   CPagination,
   CPaginationItem
 } from '@coreui/react'
+import Search from '@/Components/Search';
 
 const Device = (response, filter) => {
     const devices = response.devices
@@ -124,18 +125,11 @@ const Device = (response, filter) => {
             <CCol xs>
             <CCard className="mb-4">
                 <CCardHeader>  
-                    <CRow>                       
-                        <CCol md={2}>
-                            <CFormInput 
-                                type="text" 
-                                id="filter" 
-                                placeholder="Search" 
-                                aria-describedby="exampleFormControlInputHelpInline"
-                                onChange={(e) => setSearch(e.target.value)}
-                                onKeyDown={handleSearch}
-                                    />
+                    <CRow> 
+                        <CCol md={10}>                      
+                        <Search route={route('user.devices')} filter={filter} /> 
                         </CCol>
-                        <CCol md={10}>
+                        <CCol md={2}>
                             <CButton color="primary" className='mx-2 float-end' onClick={() => onOpenModal(false)}>
                                 New Device
                             </CButton>

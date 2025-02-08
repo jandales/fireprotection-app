@@ -1,6 +1,6 @@
 import DefaultLayout from '@/Layouts/DefaultLayout';
 import { Link, router } from '@inertiajs/react';
-import React, { useState } from "react";
+import React, { useEffect,useState } from "react";
 import NotificationAlert from '@/Components/NotificationAlert';
 import {
   CCard,
@@ -14,30 +14,20 @@ import {
   CTableHeaderCell,
   CTableRow,
   CAvatar,
-  CFormInput,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import {  cilPeople  } from '@coreui/icons'
+import {  cilPeople, cilFilterX  } from '@coreui/icons'
 import user from  '@/assets/images/avatars/user.png';
 import Pagination from '@/Components/Pagination';
+import Search from '@/Components/Search';
 
-
-const Notification = (res, filter) => {
-    
-    const [search, setSearch] = useState(filter || "");
+const Notification = (res, filter) => { 
 
     const notifications  = res.notifications  
 
     const onPageChange = (url) => {
         router.get(url, {}, { preserveScroll: true, preserveState: true });
-    }
-
-    const handleSearch = (event) => {
-        if(search != null && event.key == 'Enter') {
-            router.get(route('notifications'), { search }, { preserveScroll: true, preserveState: true });
-        }     
-    };
-
+    } 
 
   return (
       <DefaultLayout     
@@ -46,20 +36,9 @@ const Notification = (res, filter) => {
         <CRow>
             <CCol xs>
             <CCard className="mb-4">
-                <CCardHeader>
-                    <CRow>                       
-                        <CCol md={2}>
-                            <CFormInput 
-                                type="text" 
-                                id="filter" 
-                                placeholder="Search" 
-                                aria-describedby="exampleFormControlInputHelpInline"
-                                onChange={(e) => setSearch(e.target.value)}
-                                onKeyDown={handleSearch}
-                                 />
-                        </CCol>
-                    </CRow>   
-                    </CCardHeader>        
+                <CCardHeader>    
+                    <Search route={route('notifications')} filter={filter} />  
+                </CCardHeader>        
                 <CTable align="middle" className="mb-0 border" hover responsive>
                     <CTableHead className="text-nowrap">
                     <CTableRow>  
