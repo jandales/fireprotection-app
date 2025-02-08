@@ -33,9 +33,13 @@ class NotificationController extends Controller
                 'location'  => $request->location, 
                 'message'   => $request->message,
             ]);
+
+            $notification->load('device');
     
             $user  = User::where('id', $notification->user_id)->first();  
-            event(new NotificationEvent($notification->message));
+
+            event(new NotificationEvent($notification));
+
             return response()->json(['message' => $notification->message], 200);
 
 

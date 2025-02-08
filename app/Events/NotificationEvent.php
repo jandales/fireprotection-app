@@ -32,11 +32,11 @@ class NotificationEvent implements ShouldBroadcast
     //     return new PrivateChannel('notifications.'.$this->id);        
     // }
 
-    public $message;
+    public $notification;
 
-    public function __construct($message)
+    public function __construct(Notification $model)
     {
-        $this->message = $message;
+        $this->notification = $model;
     }
 
     public function broadcastOn()

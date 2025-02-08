@@ -10,31 +10,21 @@ import {
  
   } from '@coreui/react'
 import warningIcon from '@/assets/images/warning.png'
-import CIcon from '@coreui/icons-react'
-import {  cilWarning  } from '@coreui/icons'
+
 const NotificationAlert = () => {
-    const [message, setMessage] = useState("");
+    const [notification, setNotification] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
-        echo.channel("notification-channel").listen("NotificationEvent", (e) => {
-            setMessage(e.message);
-            setIsModalOpen((prev) => {
-                console.log("Before state update:", prev);
-                return true;
-            });
-            console.log(isModalOpen);
-            console.log(e.message);
+        echo.channel("notification-channel").listen("NotificationEvent", (e) => {  
+            setNotification(e.notification);     
+            setIsModalOpen(true);         
         });
 
         return () => {
-            echo.leaveChannel("notification-channel"); // Cleanup when unmounting
+            echo.leaveChannel("notification-channel"); 
         };
     }, []);
-
-    useEffect(() => {
-        console.log("Modal state updated:", isModalOpen);
-    }, [isModalOpen]);
 
     return (
         <div>           
@@ -53,11 +43,11 @@ const NotificationAlert = () => {
                                      <img src={warningIcon} width="120px" height="120px"  />
                                 </div>                                 
                                 <div className="alert-body">
-                                    <p>{message}</p>
-                                    <p>Name     : Jesus Andales</p>
-                                    <p>Contact  : 04124124124</p>
-                                    <p>Location : Allen Northern Samar</p>
-                                    <p>Device   : Device-1</p>
+                                    <p>{notification.message}</p>
+                                    <p>Name     : {notification.user?.name && notification.user.name}</p> 
+                                    <p>Contact  : {notification.user?.phonenumber}</p> 
+                                    <p>Location : {notification.device?.location}</p>
+                                    <p>Device   : {notification.device?.name}</p>
                                 </div>
                             </div> 
                             
