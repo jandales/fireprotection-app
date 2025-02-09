@@ -79,6 +79,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/user/settings', [UserSettingController::class, 'index'])->name('user.settings');
     Route::patch('/user/settings', [UserSettingController::class, 'update'])->name('user.settings.update');
+    Route::post('/user/settings/generate', [UserSettingController::class, 'generate'])->name('user.settings.generate');
 
 });
 

@@ -68,7 +68,7 @@ const User = (res, filter) => {
     };
   
 
-    console.log(users.data)
+
    
 
   return (
