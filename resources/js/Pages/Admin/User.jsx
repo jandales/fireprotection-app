@@ -83,7 +83,7 @@ const User = (res, filter) => {
                         </CTableDataCell> 
                         <CTableDataCell>
                             <div className='btn-gap'>
-                                <Link color="info" variant="outline" size="sm" href={route('users.show', item)}>View</Link>   
+                                <Link color="info" className="btn btn-outline-primary btn-sm" variant="outline" size="sm" href={route('users.show', item)}>View</Link>
                             </div>                  
                         </CTableDataCell>                                 
                         </CTableRow>

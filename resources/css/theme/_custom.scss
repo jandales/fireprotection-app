@@ -105,10 +105,11 @@ input[type=number] {
     font-size: 12px;
 }
 
-.status .active{
-    background: green;
+.status-active{
+    background-color: #5cb85c;
 }
 
-.status .inactive {
-    background: orange;
+.status-inactive{
+    background-color: #f0ad4e;
+    color: #000;
 }

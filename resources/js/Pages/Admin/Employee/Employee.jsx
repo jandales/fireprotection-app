@@ -141,13 +141,13 @@ const User = (res, filter) => {
                             <div>{item.location}</div>                       
                         </CTableDataCell> 
                         <CTableDataCell>
-                            <span className='capitalize status'>{item.statusName}</span>                       
+                            <span className={ item.status == 1 ? 'capitalize status status-active' : 'capitalize status status-inactive' }>{item.statusName}</span>                       
                         </CTableDataCell> 
                         <CTableDataCell>  
                             <div className='btn-gap'>
                                 <CButton color="danger" variant="outline" size="sm"  onClick={(e) => handleOpenModal(item.id)}>Delete</CButton>   
-                                <Link  className="btn btn-primary" color="info" variant="outline" size="sm" href={route('employees.edit', item.id)}>Edit</Link>  
-                                <Link  className="btn btn-info" color="info" variant="outline" size="sm" href={route('employees.show', item.id)}>View</Link>   
+                                <Link  className="btn btn-outline-primary btn-sm" color="info" variant="outline" size="sm" href={route('employees.edit', item.id)}>Edit</Link>  
+                                <Link  className="btn btn-outline-info btn-sm" color="info" variant="outline" size="sm" href={route('employees.show', item.id)}>View</Link>   
                             </div> 
                         </CTableDataCell>                                 
                         </CTableRow>

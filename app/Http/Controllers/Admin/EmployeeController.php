@@ -99,16 +99,16 @@ class EmployeeController extends Controller
             'phonenumber' => 'required'        
         ]);
 
-        $user = User::find($request->id);               
-        $user->name = $request->name;
+        $user = User::find($request->id);  
+        $user->name         = $request->name;
         $user->phonenumber  = $request->phonenumber;
-        $user->role =  $request->role;
-        $user->address1 = $request->address1;
-        $user->address2 = $request->address2;
-        $user->city  = $request->city;
-        $user->province = $request->province;
-        $user->zipcode   = $request->zipcode;
-        $user->status = $request->status;
+        $user->role         =  $request->role;
+        $user->address1     = $request->address1;
+        $user->address2     = $request->address2;
+        $user->city         = $request->city;
+        $user->province     = $request->province;
+        $user->zipcode      = $request->zipcode;
+        $user->status       = $user->master === 1 ? $user->master : $request->status;
         $user->save();
 
         return redirect()->back()->with('success', 'Employee updated successfully!');

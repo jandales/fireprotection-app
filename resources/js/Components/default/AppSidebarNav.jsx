@@ -41,7 +41,7 @@ export const AppSidebarNav = ({ items }) => {
               </Link>
             </div> 
             <div className='nav-item'>
-              <Link  className='nav-link' href={route('users')} active={route().current('users')} >
+              <Link  className='nav-link' href={route('devices')} active={route().current('devices')} >
                 <CIcon icon={cilDevices} className='nav-icon' /> Devices    
               </Link>
             </div> 
@@ -49,17 +49,7 @@ export const AppSidebarNav = ({ items }) => {
               <Link  className='nav-link' href={route('employees')} active={route().current('employees')} >
                 <CIcon icon={cilGroup} className='nav-icon' /> Employee    
               </Link>
-            </div> 
-            {/* <div className='nav-item'>
-              <Link  className='nav-link'>
-                <CIcon icon={cilPrint} className='nav-icon' /> Reports   
-              </Link>
-            </div>
-            <div className='nav-item'>
-              <Link  className='nav-link'>
-                <CIcon icon={cilPrint} className='nav-icon' /> Reports   
-              </Link>
-            </div> */}
+            </div>           
             </>
           )
         }       
