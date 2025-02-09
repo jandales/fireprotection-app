@@ -2,12 +2,13 @@
 
 namespace App\Listeners;
 
+use Illuminate\Auth\Events\Logout;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Auth\Events\Login;
 use App\Models\Activity;
 
-class CreateActivityOnLogin
+class CreateActivityOnLogout
 {
     /**
      * Create the event listener.
@@ -20,13 +21,13 @@ class CreateActivityOnLogin
     /**
      * Handle the event.
      */
-    public function handle(Login $event): void
+    public function handle(Logout $event): void
     {
-         // Create an Activity when the user logs in
-         Activity::create([
+        /// Create an Activity when the user logs out
+        Activity::create([
             'user_id' => $event->user->id,
-            'action'  => 'Login',
-            'changes' => 'User logged in',
+            'action'  => 'Logout',
+            'changes' => 'User logged out',
         ]);
     }
 }

@@ -14,7 +14,7 @@ use Inertia\Inertia;
 class DashboardController extends Controller
 {
     public function index(){
-        if (Auth::check() && Auth::user()->role === 'admin') {
+        if (Auth::check() && Auth::user()->role === 'administrator') {
 
             $userCount     = User::where('role', 'user')->count();
             $deviceCount   = Device::count();

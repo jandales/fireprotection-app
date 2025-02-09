@@ -23,7 +23,7 @@ export const AppSidebarNav = ({ items }) => {
   return (
     <CSidebarNav as={SimpleBar}>    
         {
-          user.role === 'admin' && (
+          user.role === 'administrator' && (
             <>
             <div className='nav-item'>
               <Link className='nav-link' href={route('dashboard')} active={route().current('dashboard')}>
@@ -38,6 +38,16 @@ export const AppSidebarNav = ({ items }) => {
             <div className='nav-item'>
               <Link  className='nav-link' href={route('users')} active={route().current('users')} >
                 <CIcon icon={cilGroup} className='nav-icon' /> Users    
+              </Link>
+            </div> 
+            <div className='nav-item'>
+              <Link  className='nav-link' href={route('users')} active={route().current('users')} >
+                <CIcon icon={cilDevices} className='nav-icon' /> Devices    
+              </Link>
+            </div> 
+            <div className='nav-item'>
+              <Link  className='nav-link' href={route('employees')} active={route().current('employees')} >
+                <CIcon icon={cilGroup} className='nav-icon' /> Employee    
               </Link>
             </div> 
             {/* <div className='nav-item'>

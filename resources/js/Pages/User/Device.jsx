@@ -77,14 +77,11 @@ const Device = (response, filter) => {
     }
 
     const submit = (e) => {
-        e.preventDefault(); 
-        console.log(isEdit)
-        if (!isEdit) {
-            console.log(11)
+        e.preventDefault();        
+        if (!isEdit) {           
             post(route('user.device.store'))
             return;
-        }
-          
+        }          
         patch(route('user.device.update'))
        
           
@@ -106,13 +103,7 @@ const Device = (response, filter) => {
             onFinish: () => reset(),
         });
     };
-
-    const handleSearch = (event) => {    
-        if(search != null && event.key == 'Enter') {
-            router.get(route('user.devices'), { search }, { preserveScroll: true, preserveState: true });
-        }     
-    };
-
+   
     const onPageChange = (url) => {
         router.get(url, {}, { preserveScroll: true, preserveState: true });
     }   

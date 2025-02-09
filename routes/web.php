@@ -9,12 +9,15 @@ use App\Http\Controllers\User\UserSettingController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\EmployeeController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 Route::get('/', function () { 
-    if (Auth::check() && Auth::user()->role === 'admin') {
+    if (Auth::check() && Auth::user()->role === 'administrator') {
+        dd(Auth::user()->role);
         return redirect('/dashboard');
     }
     return redirect('/user'); 
@@ -34,7 +37,17 @@ Route::get('/admin', function () {
 Route::middleware('auth')->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications');
     Route::get('/users', [AdminUserController::Class, 'index'])->name('users');
-    Route::get('/users/{user}', [AdminUserController::Class, 'show'])->name('users.show');  
+    Route::get('/users/{user}', [AdminUserController::Class, 'show'])->name('users.show'); 
+});
+
+Route::middleware('auth')->group(function () {  
+    Route::get('/employees',        [EmployeeController::Class, 'index'])->name('employees');  
+    Route::get('/employees/create', [EmployeeController::Class, 'create'])->name('employees.create');
+    Route::post('/employees/store', [EmployeeController::Class, 'store'])->name('employees.store');
+    Route::get('/employees/edit/{id}', [EmployeeController::Class, 'edit'])->name('employees.edit');
+    Route::patch('/employees/update', [EmployeeController::Class, 'update'])->name('employees.update');
+    Route::get('/employees/show/{id}', [EmployeeController::Class, 'show'])->name('employees.show');
+    Route::delete('/employees/destoy/{id}', [EmployeeController::Class, 'destroy'])->name('employees.destroy');
 });
 
 Route::middleware('auth')->group(function () {

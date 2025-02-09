@@ -1,5 +1,17 @@
 // Here you can add other styles
 
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
 .btn-gap {
     display: flex;
     gap: 10px;    
@@ -28,7 +40,7 @@
 }
 
 .user-profile-wrapper span{
-    font-size: 12px;   
+     
 }
 
 .flex-container {
@@ -75,4 +87,10 @@
     display: flex;
     align-items: center;      
 }
+.capitalize {
+    text-transform: capitalize;
+}
 
+.float-right {
+    float: right;
+}
