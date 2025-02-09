@@ -6,7 +6,7 @@ import {
   AppHeader
 } from '@/Components/default/index';
 
-import {   ToastContainer } from 'react-toastify';
+import {  ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import { CContainer, CSpinner } from '@coreui/react'

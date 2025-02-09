@@ -108,6 +108,7 @@ class EmployeeController extends Controller
         $user->city  = $request->city;
         $user->province = $request->province;
         $user->zipcode   = $request->zipcode;
+        $user->status = $request->status;
         $user->save();
 
         return redirect()->back()->with('success', 'Employee updated successfully!');
@@ -118,6 +119,10 @@ class EmployeeController extends Controller
     {        
         // Find the user by ID, or return an error if not found
         $user = User::find($id);
+
+        if ($user->master === 1){
+            return redirect()->back()->with('error', 'User cannot be deleted');
+        }
         
         if (!$user) {
             return redirect()->back()->with('error', 'User not found');

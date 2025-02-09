@@ -23,11 +23,12 @@ class User extends Authenticatable
         'password',
         'phonenumber',
         'role',
+        'status',
         'avatar',
         'address1',
         'address2',
         'city',
-        'province',
+        'province', 
         'zipcode'
     ];
 
@@ -55,10 +56,15 @@ class User extends Authenticatable
     }
 
     protected $appends = [
-        'location'
+        'location',
+        'statusName'
     ];
 
     public function getLocationAttribute(){
         return $this->address . ' ' . $this->address1 . ' ' . $this->city . ' ' . $this->province . ' ' . $this->zipcode;
+    }
+
+    public function getStatusNameAttribute(){ 
+        return $this->status === 1 ? 'Active' : 'Inactive';
     }
 }

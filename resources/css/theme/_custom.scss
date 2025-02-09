@@ -94,3 +94,21 @@ input[type=number] {
 .float-right {
     float: right;
 }
+
+.status {
+    background-color: #3498db; /* Change to your desired color */
+    border-radius: 5px; /* Adjust for more or less rounding */
+    padding: 3px 10px; 
+    // height: 100px; /* Example height */
+    text-align: center;
+    color: white;
+    font-size: 12px;
+}
+
+.status .active{
+    background: green;
+}
+
+.status .inactive {
+    background: orange;
+}

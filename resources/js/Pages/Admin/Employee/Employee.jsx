@@ -67,6 +67,8 @@ const User = (res, filter) => {
       setIsModalOpen(false);
     };
   
+
+    console.log(users.data)
    
 
   return (
@@ -108,7 +110,10 @@ const User = (res, filter) => {
                         </CTableHeaderCell>
                         <CTableHeaderCell className="bg-body-tertiary">
                             Address
-                        </CTableHeaderCell> 
+                        </CTableHeaderCell>
+                        <CTableHeaderCell className="bg-body-tertiary">
+                            Status
+                        </CTableHeaderCell>
                         <CTableHeaderCell className="bg-body-tertiary">
                             Action
                         </CTableHeaderCell>                   
@@ -134,6 +139,9 @@ const User = (res, filter) => {
                         </CTableDataCell> 
                         <CTableDataCell>
                             <div>{item.location}</div>                       
+                        </CTableDataCell> 
+                        <CTableDataCell>
+                            <span className='capitalize status'>{item.statusName}</span>                       
                         </CTableDataCell> 
                         <CTableDataCell>  
                             <div className='btn-gap'>

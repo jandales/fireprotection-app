@@ -1,9 +1,7 @@
 import DefaultLayout from '@/Layouts/DefaultLayout';
-import React, { useEffect } from 'react';
-import InputError from '@/Components/InputError';
-import { Transition } from '@headlessui/react';
-import {  CRow, CCard, CCardHeader, CFormLabel, CButton, CCol, CForm, CFormInput, CFormSelect, CCardBody } from '@coreui/react'
-import {  useForm, usePage } from '@inertiajs/react';
+import React  from 'react';
+import {  CRow, CCard, CCardHeader, CFormLabel, CButton, CCol, CForm, CFormInput, CFormSelect, CCardBody, CFormCheck } from '@coreui/react'
+import {  useForm } from '@inertiajs/react';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -21,6 +19,7 @@ const Edit = ({user}) => {
                 city: user.city,
                 province: user.province,
                 zipcode : user.zipcode,
+                status : user.status
             });   
     
             const submit = (e) => {
@@ -211,23 +210,27 @@ const Edit = ({user}) => {
                                     value={data.zipcode} 
                                     onChange={ (e) => setData('zipcode', e.target.value) }
                                 />
-                                </CCol>
+                                </CCol>                    
                             </CRow>
+                     <CRow className="mb-3">
+                                 <CFormLabel htmlFor="zipcode" className="col-sm-2 col-form-label">
+                                   Active
+                                </CFormLabel>   
+                                <CCol sm={10}>        
+                                    <CFormCheck 
+                                        id="flexCheckDefault"                               
+                                        name="override"
+                                        checked={data.status}
+                                        onChange={(e) =>                                   
+                                            setData('status', e.target.checked)                                                                   
+                                        }
+                                    />   
+                                </CCol>
+                  
+                     </CRow>
                     </CCol>                         
                     <CCol xs={12}>
                        <CButton color="primary" type="submit" disabled={processing}>Save</CButton>
-                     
-                                         <Transition
-                                             show={recentlySuccessful}
-                                             enter="transition ease-in-out"
-                                             enterFrom="opacity-0"
-                                             leave="transition ease-in-out"
-                                             leaveTo="opacity-0"
-                                         >
-                                             <p className="text-sm text-gray-600">
-                                                 Saved.
-                                             </p>
-                                         </Transition>
                     </CCol>
                 </CForm>
                 </CCardBody>

@@ -14,7 +14,7 @@ class DeviceObserver
     {
         Activity::create([
             'user_id'      => $device->user_id, 
-            'action'       => 'Created',
+            'action'       => 'Create',
             'changes'      => 'Device Created'
         ]);
     }
@@ -26,7 +26,7 @@ class DeviceObserver
     {
         Activity::create([
             'user_id'      => $device->user_id, 
-            'action'       => 'Updated',
+            'action'       => 'Update',
             'changes'      => 'Device Updated'
         ]);
     }

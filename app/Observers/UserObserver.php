@@ -18,12 +18,12 @@ class UserObserver
 
         if(Auth::user()->id <> $user->id){
             $creatorId = Auth::user()->id;
-            $changes =  'Create user' . $user->name;
+            $changes =  'Create user ' . $user->name;
         } 
 
         Activity::create([
             'user_id'      => $creatorId, 
-            'action'       => 'Created',
+            'action'       => 'Create',
             'changes'      =>  $changes
         ]);
     }
@@ -47,7 +47,7 @@ class UserObserver
 
         Activity::create([
             'user_id'      => $creatorId, 
-            'action'       => 'Updated',
+            'action'       => 'Update',
             'changes'      => $changes
         ]);
     }
@@ -58,25 +58,10 @@ class UserObserver
     public function deleted(user $user): void
     {
         Activity::create([
-            'user_id'      => $user->id, 
-            'action'       => 'Updated',
-            'changes'      => 'User Delete'
+            'user_id'      =>  Auth::user()->id, 
+            'action'       => 'Delete',
+            'changes'      => 'Delete user' . $user->name
         ]);
     }
-
-    /**
-     * Handle the user "restored" event.
-     */
-    public function restored(user $user): void
-    {
-        //
-    }
-
-    /**
-     * Handle the user "force deleted" event.
-     */
-    public function forceDeleted(user $user): void
-    {
-        //
-    }
+    
 }

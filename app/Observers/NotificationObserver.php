@@ -14,7 +14,7 @@ class NotificationObserver
     {         
          Activity::create([
             'user_id'      => $notification->user_id, 
-            'action'       => 'Created',
+            'action'       => 'Create',
             'changes'      => 'Sent Fire Notification'
         ]);
     }

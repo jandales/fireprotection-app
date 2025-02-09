@@ -16,8 +16,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 Route::get('/', function () { 
-    if (Auth::check() && Auth::user()->role === 'administrator') {
-        dd(Auth::user()->role);
+    if (Auth::check() && Auth::user()->role === 'administrator') {    
         return redirect('/dashboard');
     }
     return redirect('/user'); 
