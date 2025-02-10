@@ -1,30 +1,68 @@
 import DefaultLayout from '@/Layouts/DefaultLayout';
-
-import InputError from '@/Components/InputError';
 import {  CRow, CCard,  CFormLabel, CButton, CCol, CForm, CFormCheck, CFormInput,  CCardBody } from '@coreui/react'
 import {  useForm} from '@inertiajs/react';
-import { router } from '@inertiajs/react';
+import { toast } from 'react-toastify';
 const Setting = (response) => {      
 
       const setting = response.settings;
   
-      const { data, setData, patch, post, errors, processing, recentlySuccessful } =
+      const { data, setData, patch, post, put, errors, processing, recentlySuccessful } =
             useForm({
                 perpage: setting.perpage,
                 ysnHomeLocationAsDefault : setting.ysnHomeLocationAsDefault,
-                code : setting.code             
+                code : setting.code,
+                oldpassword : '',
+                newpassword : '',
+                newpassword_confirmation : ''           
             });
     
-            const submit = (e) => {
+            const onSettingSubmit = (e) => {
                 e.preventDefault(); 
-                patch(route('user.settings.update'));
+                patch(route('user.settings.update'),{
+                    preserveScroll: true,
+                    onSuccess: (res) => { 
+                        toast.success('Setting updated successfully!', {                          
+                            autoClose: 1000,
+                        });                                           
+                    },                    
+                });
             }; 
             
             const onGenerateCode = (e) => {
                 e.preventDefault(); 
                 post(route('user.settings.generate'), {
+                    preserveScroll: true,
                     onSuccess: (res) => {
+                        toast.success('Code generated successfully!', {                          
+                            autoClose: 1000,
+                        });   
                         setData('code', res.props.settings.code)                       
+                    }
+                });
+            }
+
+            const onChangePassword = (e) => {
+                e.preventDefault();           
+                put(route('user.settings.changePassword'), {
+                    preserveScroll: true,
+                    onSuccess: (res) => {                    
+                        setData('oldpassword', '') 
+                        setData('newpassword', '') 
+                        setData('newpassword_confirmation', '')                     
+                        toast.success('Password updated successfully!', {                          
+                            autoClose: 1000,
+                        });                     
+                                                                      
+                    },
+                    onError: (res) => {                        
+                        Object.keys(res).forEach((field) => {                       
+                            toast.error(res[field], {                          
+                                autoClose: 1000,
+                            });                                              
+                        });
+                        setData('oldpassword', '') 
+                        setData('newpassword', '') 
+                        setData('newpassword_confirmation', '')     
                     }
                 });
             }
@@ -33,18 +71,12 @@ const Setting = (response) => {
   return (
       <DefaultLayout     
       >
-        <div className="py-12">
-           <CCol md={12}>
-                {recentlySuccessful && (<div class="alert alert-success" role="alert">
-                    Successfully Saved
-                </div>)
-                }   
-            </CCol> 
+        <div className="py-12">           
         <CRow>
             <CCol xs>
             <CCard className="mb-4">          
                 <CCardBody>
-                <CForm className="row g-3" onSubmit={submit} enctype="multipart/form-data">
+                <CForm className="row g-3" onSubmit={onSettingSubmit} enctype="multipart/form-data">
                     <CCol md={12}>
                         <CRow className="mb-3">
                             <CFormLabel htmlFor="Address" className="col-sm-2 col-form-label">
@@ -67,8 +99,7 @@ const Setting = (response) => {
                                     onChange={(e) => setData('perpage', e.target.value)}
                                 />
                                 </CCol>
-                            </CRow>
-                             <InputError message={errors.perpage} className="mt-1" />   
+                            </CRow>                          
                     </CCol> 
 
                     <CCol md={12}>
@@ -83,8 +114,7 @@ const Setting = (response) => {
                                     onChange={(e) => setData('ysnHomeLocationAsDefault', e.target.checked)}
                                 />
                                 </CCol>
-                            </CRow>
-                            <InputError message={errors.ysnHomeLocationAsDefault} className="mt-1" />   
+                            </CRow>                            
                     </CCol> 
                        
                     <CCol xs={12}>
@@ -124,8 +154,7 @@ const Setting = (response) => {
                                     onChange={(e) => setData('perpage', e.target.value)}
                                 />
                                 </CCol>
-                            </CRow>
-                             <InputError message={errors.perpage} className="mt-1" />   
+                            </CRow>                             
                     </CCol> 
                  
                        
@@ -141,7 +170,7 @@ const Setting = (response) => {
             <CCol xs>
             <CCard className="mb-4">          
                 <CCardBody>
-                <CForm className="row g-3" onSubmit={onGenerateCode} enctype="multipart/form-data">   
+                <CForm className="row g-3" onSubmit={onChangePassword} enctype="multipart/form-data">   
                     <CCol md={12}>
                         <CRow className="mb-3">
                             <CFormLabel htmlFor="Address" className="col-sm-2 col-form-label">
@@ -153,55 +182,44 @@ const Setting = (response) => {
                               
                     <CCol md={12}>
                             <CRow className="mb-3">
-                                <CFormLabel htmlFor="perpage" className="col-sm-2 col-form-label">
+                                <CFormLabel htmlFor="newpassword" className="col-sm-2 col-form-label">
                                   New Password
                                 </CFormLabel>
                                 <CCol sm={10}>
                                 <CFormInput 
-                                    type="text" 
-                                    id="perpage" 
-                                    value={data.code} 
-                                    readOnly 
-                                    onChange={(e) => setData('perpage', e.target.value)}
+                                    type="password" 
+                                    value={data.newpassword}                                                            
+                                    onChange={(e) => setData('newpassword', e.target.value)}
                                 />
                                 </CCol>
-                            </CRow>
-                             <InputError message={errors.perpage} className="mt-1" /> 
+                            </CRow>                             
                              <CRow className="mb-3">
-                                <CFormLabel htmlFor="perpage" className="col-sm-2 col-form-label">
+                                <CFormLabel htmlFor="newpassword_confirmation" className="col-sm-2 col-form-label">
                                   Confirm Password
                                 </CFormLabel>
                                 <CCol sm={10}>
                                 <CFormInput 
-                                    type="text" 
-                                    id="perpage" 
-                                    value={data.code} 
-                                    readOnly 
-                                    onChange={(e) => setData('perpage', e.target.value)}
+                                    type="password"
+                                    value={data.newpassword_confirmation}    
+                                    onChange={(e) => setData('newpassword_confirmation', e.target.value)}
                                 />
                                 </CCol>
                             </CRow>
                             <CRow className="mb-3">
-                                <CFormLabel htmlFor="perpage" className="col-sm-2 col-form-label">
+                                <CFormLabel htmlFor="oldpassword" className="col-sm-2 col-form-label">
                                   Current Password
                                 </CFormLabel>
                                 <CCol sm={10}>
                                 <CFormInput 
-                                    type="text" 
-                                    id="perpage" 
-                                    value={data.code} 
-                                    readOnly 
-                                    onChange={(e) => setData('perpage', e.target.value)}
+                                    type="password"  
+                                    value={data.oldpassword} 
+                                    onChange={(e) => setData('oldpassword', e.target.value)}
                                 />
                                 </CCol>
-                            </CRow>
-                             <InputError message={errors.perpage} className="mt-1" />  
-                             <InputError message={errors.perpage} className="mt-1" />    
-                    </CCol> 
-                 
-                       
+                            </CRow>                             
+                    </CCol>                        
                     <CCol xs={12}>
-                       <CButton color="primary" type="submit">Submit</CButton>
+                       <CButton color="primary" type="submit">Save Changes</CButton>
                     </CCol>
                 </CForm>
                 </CCardBody>

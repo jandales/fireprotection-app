@@ -5,10 +5,13 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use App\Models\UserSetting;
 use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rules;
+
 
 class UserSettingController extends Controller
 {
@@ -40,5 +43,27 @@ class UserSettingController extends Controller
         $setting = UserSetting::where('user_id', $request->user()->id)->first();
         $setting->code = $code;
         $setting->save();
+    }
+
+    public function changePassword(Request $request) {
+
+        $request->validate([
+            'oldpassword' => ['required'],
+            'newpassword' => ['required', 'confirmed', \Illuminate\Validation\Rules\Password::defaults()],
+        ]);
+
+        if (!Hash::check($request->oldpassword, auth()->user()->password)) {
+            return back()->withErrors([
+                'oldpassword' => 'The old password is incorrect.'
+            ]);
+        }
+
+        // Update the password
+        $user = Auth::user();
+        $user->password = Hash::make($request->newpassword);
+        $user->save();
+
+        return back()->with('success', 'Password updated successfully!');
+
     }
 }
