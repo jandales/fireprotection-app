@@ -105,7 +105,7 @@ const Dashboard = ({activities, userCount, deviceCount, employeeCount, notifitio
               </CTable>  
               </CCard>   
         </CCol>
-      </CRow>
+        </CRow>
        </DefaultLayout>
   )
 }

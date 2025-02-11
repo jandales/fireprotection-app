@@ -13,7 +13,9 @@ class NotificationController extends Controller
     public function index(Request $request){
         
         $query  = Notification::query();  
+
         $search = $request->search;
+        
         if ($request->has('search') ) {            
             $query->whereHas('user', function ($q) use ($search) {
                 $q->where('name', 'like', '%' . $search . '%');

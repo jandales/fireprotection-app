@@ -60,9 +60,9 @@ const Notification = (res, filter) => {
                         <CTableHeaderCell className="bg-body-tertiary">
                             Status
                         </CTableHeaderCell> 
-                        <CTableHeaderCell className="bg-body-tertiary">
+                        {/* <CTableHeaderCell className="bg-body-tertiary">
                             Action
-                        </CTableHeaderCell> 
+                        </CTableHeaderCell>  */}
                     </CTableRow>
                     </CTableHead>
                     <CTableBody>
@@ -91,11 +91,11 @@ const Notification = (res, filter) => {
                         <CTableDataCell >
                             <div className='text-capitalize small'>{item.status}</div>                       
                         </CTableDataCell> 
-                        <CTableDataCell>
+                        {/* <CTableDataCell>
                             <div className='btn-gap'>
                                 <Link color="info" variant="outline" size="sm" href={route('users.show', item)}>View</Link>   
                             </div>                  
-                        </CTableDataCell>                                 
+                        </CTableDataCell>                                  */}
                         </CTableRow>
                     ))}
                     </CTableBody>

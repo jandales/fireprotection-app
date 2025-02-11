@@ -1,6 +1,5 @@
 import DefaultLayout from '@/Layouts/DefaultLayout';
 import { Link, router } from '@inertiajs/react';
-import NotificationAlert from '@/Components/NotificationAlert';
 import React from "react";
 import {
   CCard,
@@ -103,7 +102,7 @@ const User = (res, filter) => {
                         onPageChange={onPageChange}
                      />
                  )}
-                   <NotificationAlert/> 
+             
             </CCard>
             </CCol>
         </CRow>
