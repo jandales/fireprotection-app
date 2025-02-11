@@ -17,14 +17,15 @@ class PostController extends Controller
 
         $device = Device::with(['user'])
                         ->where('macAddress', $request->macAddress)
-                        ->first();        
+                        ->first();   
+                             
           
         return Notification::create([
             'user_id' => $device->user->id,    
             'device_id' => $device->id,    
             'latitude' => $request->latitude,
             'longitude'=> $request->longitude,     
-            'location' => $request->location, 
+            'location' => $device->ysnLocation == 1 ? $device->user->location : $device->location, 
         ]);
     }
 }
