@@ -13,10 +13,11 @@ class UserObserver
      */
     public function created(user $user): void
     {
+
         $changes = 'User Registered';
         $creatorId = $user->id;
-
-        if(Auth::user()->id <> $user->id){
+        
+        if(Auth::check() && Auth::user()->id <> $user->id){
             $creatorId = Auth::user()->id;
             $changes =  'Create user ' . $user->name;
         } 
