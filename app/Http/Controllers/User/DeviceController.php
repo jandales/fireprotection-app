@@ -33,7 +33,13 @@ class DeviceController extends Controller
     public function store(DeviceRequest $request)
     {
         $lastDeviceId = Device::orderBy('id', 'desc')->first()->id;
-        $device_name = 'Device-' . $lastDeviceId + 1; 
+
+        if($lastDeviceId) {
+            $device_name = 'Device-' . $lastDeviceId + 1; 
+        }else {
+            $device_name = 'Device-1';
+        }
+        
         $device = Device::create([
             'name'       => $device_name,
             'macAddress' => $request->macAddress,

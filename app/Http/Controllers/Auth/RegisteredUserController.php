@@ -41,7 +41,7 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' =>  $request->role ?? 'admin'
+            'role' =>  'user'
         ]);
         
         if($user->role === 'user')
@@ -49,8 +49,7 @@ class RegisteredUserController extends Controller
             UserSetting::create([           
                 'user_id' => $user->id  
             ]);
-        }
-       
+        }       
 
         event(new Registered($user));
 
