@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EmployeeController;
 use App\Http\Controllers\Admin\DeviceController as AdminDeviceController; 
+use App\Http\Controllers\Admin\DirectionsController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
@@ -48,6 +49,11 @@ Route::middleware('auth')->group(function () {
     Route::patch('/employees/update', [EmployeeController::Class, 'update'])->name('employees.update');
     Route::get('/employees/show/{id}', [EmployeeController::Class, 'show'])->name('employees.show');
     Route::delete('/employees/destoy/{id}', [EmployeeController::Class, 'destroy'])->name('employees.destroy');
+
+
+    Route::get('/maps', [DirectionsController::class, 'index']);
+    
+
 });
 
 Route::middleware('auth')->group(function () {  

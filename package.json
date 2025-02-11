@@ -31,6 +31,7 @@
         "@coreui/react": "^5.4.1",
         "@coreui/react-chartjs": "^3.0.0",
         "@coreui/utils": "^2.0.2",
+        "@react-google-maps/api": "^2.20.5",
         "classnames": "^2.5.1",
         "prop-types": "^15.8.1",
         "react-redux": "^9.2.0",

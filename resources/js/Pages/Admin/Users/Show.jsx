@@ -259,7 +259,7 @@ const Show = (res) => {
                     Close
                   </CButton>                 
                 </CModalFooter>          
-                </CModal>
+            </CModal>
      </DefaultLayout>
   )
 }
