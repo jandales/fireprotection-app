@@ -12,6 +12,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { CContainer, CSpinner } from '@coreui/react'
 import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
+import NotificationAlert from '@/Components/NotificationAlert';
 
 export default function DefaultLayout({ header, children }) {
     const user = usePage().props.auth.user;
@@ -29,6 +30,7 @@ export default function DefaultLayout({ header, children }) {
         {/* <AppFooter /> */}
       </div>
        <ToastContainer />
+       {user.role != 'user' && <NotificationAlert /> } 
     </div>
   )
 }

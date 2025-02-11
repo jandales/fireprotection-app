@@ -1,7 +1,7 @@
 import DefaultLayout from '@/Layouts/DefaultLayout';
 import { Link, router } from '@inertiajs/react';
 import React, { useEffect,useState } from "react";
-import NotificationAlert from '@/Components/NotificationAlert';
+
 import {
   CCard,
   CCardHeader,
@@ -114,7 +114,7 @@ const Notification = (res, filter) => {
                      />
 
                  )}
-                <NotificationAlert />     
+                
             </CCard>
             </CCol>
         </CRow>
