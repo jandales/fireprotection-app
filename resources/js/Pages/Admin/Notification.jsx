@@ -20,14 +20,24 @@ import {  cilPeople, cilFilterX  } from '@coreui/icons'
 import user from  '@/assets/images/avatars/user.png';
 import Pagination from '@/Components/Pagination';
 import Search from '@/Components/Search';
-
+import echo from "../../../js/echo.js"
 const Notification = (res, filter) => { 
-
+    
     const notifications  = res.notifications  
-
+  
     const onPageChange = (url) => {
         router.get(url, {}, { preserveScroll: true, preserveState: true });
     } 
+
+    useEffect(() => {
+        echo.channel("notification-channel").listen("NotificationEvent", (e) => {  
+            router.get('/notifications', {}, { preserveScroll: true, preserveState: true });
+        });
+
+        return () => {
+            echo.leaveChannel("notification-channel"); 
+        };
+    }, []);
 
   return (
       <DefaultLayout     
@@ -80,10 +90,10 @@ const Notification = (res, filter) => {
                             </div>
                         </CTableDataCell>
                         <CTableDataCell>
-                            <div>{item.device + ':' + item.macAddress}</div>                       
+                            <div>{item.deviceName + ':' + item.macAddress}</div>                       
                         </CTableDataCell>                     
                         <CTableDataCell>
-                            <div>{item.location}</div>                       
+                            <div>{item.deviceLocation}</div>                       
                         </CTableDataCell> 
                         <CTableDataCell>
                             <div>{item.created_at}</div>                       

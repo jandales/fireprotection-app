@@ -18,7 +18,8 @@ class DeviceController extends Controller
         $query->where('user_id', Auth::user()->id);
 
         if ($request->has('search')) {
-            $query->where('name', 'like', '%' . $request->search . '%');
+            $query->where('name', 'like', '%' . $request->search . '%')
+                  ->orWhere('macAddress', 'like', '%' . $request->search . '%' );
         }        
        
         $data = $query->paginate(10);      

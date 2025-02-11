@@ -18,9 +18,10 @@ class Notification extends Model
     ];
 
     protected $appends = [
-        'device',
+        'deviceName',
         'name',
-        'macAddress'              
+        'macAddress',
+        'deviceLocation'             
     ];
 
     protected function casts(): array
@@ -47,7 +48,7 @@ class Notification extends Model
     }
 
     // Accessor for 'device' attribute
-    public function getDeviceAttribute(): ?string
+    public function getDeviceNameAttribute(): ?string
     {
         return $this->device()->first()?->name;
     }
@@ -55,5 +56,15 @@ class Notification extends Model
     public function getMacAddressAttribute(): ?string
     {
         return $this->device()->first()?->macAddress;
+    }
+
+    public function getDeviceLocationAttribute() 
+    {
+        if($this->device()->first()?->ysnLocation === 1)
+        {
+            return $this->user ? $this->user->location : $this->device()->first()?->location;;
+        }     
+
+        return $this->device()->first()?->location;
     }
 }

@@ -22,7 +22,7 @@ class NotificationController extends Controller
             });
         }      
         
-        $data = $query->orderBy('created_at', 'desc')->paginate(10);
+        $data = $query->with('device')->orderBy('created_at', 'desc')->paginate(10);
 
         return Inertia::render('Admin/Notification', [
             'notifications' => $data,
