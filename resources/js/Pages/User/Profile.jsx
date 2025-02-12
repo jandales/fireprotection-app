@@ -1,10 +1,9 @@
 import DefaultLayout from '@/Layouts/DefaultLayout';
-
 import InputError from '@/Components/InputError';
-import { Transition } from '@headlessui/react';
-import {  CAvatar, CRow, CCard, CCardHeader, CFormLabel, CButton, CCol, CForm, CFormCheck, CFormInput, CFormSelect, CCardBody } from '@coreui/react'
+import {  CAvatar, CRow, CCard, CFormLabel, CButton, CCol, CForm, CFormInput, CFormSelect, CCardBody } from '@coreui/react'
 import { usePage, useForm} from '@inertiajs/react';
 import avatar8 from '@/assets/images/avatars/8.jpg'
+import { toast } from 'react-toastify';
 const Profile = () => {  
       const user = usePage().props.auth.user;   
       const { data, setData, patch, errors, processing, recentlySuccessful } =
@@ -21,9 +20,17 @@ const Profile = () => {
             });   
     
         const submit = (e) => {
-            e.preventDefault();
-            console.log(data) 
-            patch(route('user.update'));
+            e.preventDefault();          
+            patch(route('user.update'), {
+                preserveScroll: true,
+                onSuccess: (res) => { 
+                    toast.success('Account updated successfully!', {                          
+                        autoClose: 1000,
+                    });                     
+                                                                    
+                },
+            });
+                  
         };  
 
   return (
@@ -201,18 +208,6 @@ const Profile = () => {
                     </CCol>                 
                     <CCol xs={12}>
                        <CButton color="primary" type="submit" disabled={processing}>Save Changes</CButton>
-                     
-                                         <Transition
-                                             show={recentlySuccessful}
-                                             enter="transition ease-in-out"
-                                             enterFrom="opacity-0"
-                                             leave="transition ease-in-out"
-                                             leaveTo="opacity-0"
-                                         >
-                                             <p className="text-sm text-gray-600">
-                                                 Saved.
-                                             </p>
-                                         </Transition>
                     </CCol>
                 </CForm>
                 </CCardBody>

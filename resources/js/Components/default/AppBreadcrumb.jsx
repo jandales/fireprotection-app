@@ -37,16 +37,16 @@ const AppBreadcrumb = () => {
   return (
     <CBreadcrumb className="my-0">
       <li className='breadcrumb-item'>
-          <Link>
+          <Link className='nav-link' href={route('dashboard')}>    
             Home 
           </Link>
       </li>
       {breadcrumbs.map((breadcrumb, index) => {
         return (
           <li className='breadcrumb-item'>
-             <Link>  
+            <Link className='breadcrumb-item-a'>  
                {breadcrumb.name}
-            </Link>
+             </Link>
             </li>
         )
       })}

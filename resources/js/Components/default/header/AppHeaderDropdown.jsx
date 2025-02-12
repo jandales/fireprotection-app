@@ -1,23 +1,15 @@
 import React from 'react'
+import { Link } from '@inertiajs/react';
 import {
   CAvatar,
-  CBadge,
   CDropdown,
-  CDropdownDivider,
-  CDropdownHeader,
-  CDropdownItem,
+  CDropdownHeader, 
   CDropdownMenu,
   CDropdownToggle,
 } from '@coreui/react'
-import {
-  cilBell,
-  cilCreditCard,
-  cilCommentSquare,
-  cilEnvelopeOpen,
-  cilFile,
-  cilLockLocked,
+import {  
   cilSettings,
-  cilTask,
+  cilAccountLogout,
   cilUser,
 } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
@@ -32,14 +24,19 @@ const AppHeaderDropdown = () => {
       </CDropdownToggle>
       <CDropdownMenu className="pt-0" placement="bottom-end">       
         <CDropdownHeader className="bg-body-secondary fw-semibold my-2">Settings</CDropdownHeader>
-        <CDropdownItem href="#">
-          <CIcon icon={cilUser} className="me-2" />
-          Profile
-        </CDropdownItem>
-        <CDropdownItem href="#">
-          <CIcon icon={cilSettings} className="me-2" />
-          Settings
-        </CDropdownItem>
+           <Link  className='dropdown-item' href={route('account')} active={route().current('account')} >
+                <CIcon icon={cilUser} className='me-2' />Account  
+           </Link>
+           <Link  className='dropdown-item' href={route('settings.index')} active={route().current('settings.index')} >
+                <CIcon icon={cilSettings} className='me-2' />Settings
+           </Link> 
+           <Link  className='dropdown-item nav-link-btn'
+                        href={route('logout')}
+                        method="post"
+                        as="button"                    
+                     >
+                       <CIcon icon={cilAccountLogout} className='me-2' /> Logout
+                     </Link>      
       </CDropdownMenu>
     </CDropdown>
   )

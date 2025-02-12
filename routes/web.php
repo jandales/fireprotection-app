@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EmployeeController;
 use App\Http\Controllers\Admin\DeviceController as AdminDeviceController; 
 use App\Http\Controllers\Admin\DirectionsController;
+use App\Http\Controllers\Admin\SettingController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
@@ -50,6 +51,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/employees/show/{id}', [EmployeeController::Class, 'show'])->name('employees.show');
     Route::delete('/employees/destoy/{id}', [EmployeeController::Class, 'destroy'])->name('employees.destroy');
 
+    Route::get('/account', [UserController::class, 'index'])->name('account');
+ 
+    Route::get('/settings', [SettingController::Class, 'index'])->name('settings.index');
+    Route::patch('/settings/update/contact',  [SettingController::Class, 'updateContact'])->name('settings.update.contact');
+    Route::patch('/settings/update/location', [SettingController::Class, 'updateLocation'])->name('settings.update.location');
+    Route::patch('/settings/update/password', [SettingController::Class, 'updatePassword'])->name('settings.update.password');
 
     Route::get('/maps', [DirectionsController::class, 'index']);
     
