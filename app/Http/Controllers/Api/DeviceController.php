@@ -5,21 +5,36 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Device;
+use App\Models\UserSetting;
 
 class DeviceController extends Controller
 {
     public function store(Request $request)
-    {
+    {       
+       
+        
         $validated = $request->validate([
+            'code' => 'required',
             'macAddress' => 'required|unique:devices'          
-        ]);  
+        ]); 
+
+        $setting = UserSetting::where('code', $request->code)->firstOrFail();    
+
+        if (!$setting) {
+            return response()->json(['error' => 'User setting not found.'], 404);
+        }
+
 
 
         try {
-
-            $lastDeviceId = Device::orderBy('id', 'desc')->first()->id;
-
-            $device_name = 'Device-' . $lastDeviceId + 1; 
+        
+            if(Device::count() > 0){
+                $lastDeviceId = Device::orderBy('id', 'desc')->first()->id;
+                $device_name = 'Device-' . $lastDeviceId + 1; 
+            }else {
+                $device_name = 'Device-1';
+            }
+           
             
             $device = Device::create([
                 'name'        => $device_name,
@@ -28,9 +43,8 @@ class DeviceController extends Controller
                 'latitude'    => $request->latitude,
                 'longitude'   => $request->longitude,
                 'location'    => $request->location,
-                'ysnLocation' => $request->ysnLocation,
-                'user_id'     => 1,
-                // 'user_id'  => $request->user()->id,
+                'ysnLocation' => 0,
+                'user_id'     => $setting->user_id                
             ]);          
     
             return response()->json(['device' => $device], 200);

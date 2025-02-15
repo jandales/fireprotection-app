@@ -23,12 +23,17 @@ import {
     CFormInput,
     CFormCheck  
 } from '@coreui/react'
-import CIcon from '@coreui/icons-react'
-import {  cilPeople  } from '@coreui/icons'
+
 import user from  '@/assets/images/avatars/user.png';
 import Pagination from '@/Components/Pagination';
 import Search from '@/Components/Search';
 import { toast } from 'react-toastify';
+
+import CIcon from '@coreui/icons-react'; 
+import { 
+    cilMap,
+    cilList
+ } from '@coreui/icons'; 
 
 
 
@@ -61,9 +66,17 @@ const Index = (res, filter) => {
             <CCard className="mb-4">
                 <CCardHeader>
                     <CRow>
-                        <CCol md={10}>
+                        <CCol md={11}>
                             <Search route={route('devices')} filter={filter} />  
-                        </CCol>                        
+                        </CCol> 
+                        <CCol md={1} className='nav-list-icon'>                          
+                            <Link  className='nav-list-icon float-right' href={route('devices.maps')} >
+                                    <CIcon icon={cilMap} size='lg' />
+                            </Link>
+                            <Link  className='nav-list-icon  mx-2 float-right' href={route('devices')} >
+                                    <CIcon icon={cilList} size='lg' />
+                            </Link>
+                        </CCol>                       
                     </CRow>                    
                 </CCardHeader>        
                 <CTable align="middle" className="mb-0 border" hover responsive>

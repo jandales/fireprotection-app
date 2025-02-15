@@ -7,6 +7,7 @@ const DirectionsMap = ({ origin, destination }) => {
 
     useEffect(() => {
         if (origin && destination) {
+    
             const directionsService = new window.google.maps.DirectionsService();
             
             directionsService.route(

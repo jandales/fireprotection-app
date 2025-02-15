@@ -23,7 +23,7 @@ Route::get('/', function () {
         return redirect('/dashboard');
     }
     return redirect('/user'); 
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['auth', 'verified']);
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -65,7 +65,7 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware('auth')->group(function () {  
     Route::get('/devices',  [AdminDeviceController::Class, 'index'])->name('devices'); 
-   
+    Route::get('/devices/maps',  [AdminDeviceController::Class, 'maps'])->name('devices.maps'); 
 });
 
 Route::middleware('auth')->group(function () {

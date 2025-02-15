@@ -47,7 +47,7 @@ export const AppSidebarNav = ({ items }) => {
             </div> 
             <div className='nav-item'>
               <Link  
-                className={`nav-link ${route().current('devices') ? 'active' : ''}`}  
+                className={`nav-link ${route().current('devices')  || route().current('devices.maps')  ? 'active' : ''}`}  
                 href={route('devices')} >
                 <CIcon icon={cilDevices} className='nav-icon' /> Devices    
               </Link>

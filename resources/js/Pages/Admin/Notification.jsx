@@ -14,6 +14,7 @@ import {
   CTableHeaderCell,
   CTableRow,
   CAvatar,
+  CButton,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import {  cilPeople, cilFilterX  } from '@coreui/icons'
@@ -21,10 +22,15 @@ import user from  '@/assets/images/avatars/user.png';
 import Pagination from '@/Components/Pagination';
 import Search from '@/Components/Search';
 import echo from "../../../js/echo.js"
+import ViewAlert from '@/Pages/Admin/Notification/ViewAlert.jsx';
+
 const Notification = (res, filter) => { 
     
     const notifications  = res.notifications  
-  
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [alert, setAlert] = useState("");      
+    
     const onPageChange = (url) => {
         router.get(url, {}, { preserveScroll: true, preserveState: true });
     } 
@@ -38,6 +44,12 @@ const Notification = (res, filter) => {
             echo.leaveChannel("notification-channel"); 
         };
     }, []);
+
+    const handleOpenModal = (state, item) => {
+        setIsModalOpen(state);   
+        setAlert(item);
+        
+    }
 
   return (
       <DefaultLayout     
@@ -70,9 +82,9 @@ const Notification = (res, filter) => {
                         <CTableHeaderCell className="bg-body-tertiary">
                             Status
                         </CTableHeaderCell> 
-                        {/* <CTableHeaderCell className="bg-body-tertiary">
+                        <CTableHeaderCell className="bg-body-tertiary">
                             Action
-                        </CTableHeaderCell>  */}
+                        </CTableHeaderCell> 
                     </CTableRow>
                     </CTableHead>
                     <CTableBody>
@@ -101,12 +113,13 @@ const Notification = (res, filter) => {
                         <CTableDataCell >
                             <div className='text-capitalize small'>{item.status}</div>                       
                         </CTableDataCell> 
-                        {/* <CTableDataCell>
+                        <CTableDataCell>
                             <div className='btn-gap'>
-                                <Link color="info" variant="outline" size="sm" href={route('users.show', item)}>View</Link>   
+                                <CButton color="info" variant="outline" size="sm"  onClick={(e) => handleOpenModal(true, item)}>View</CButton> 
                             </div>                  
-                        </CTableDataCell>                                  */}
+                        </CTableDataCell>                            
                         </CTableRow>
+                        
                     ))}
                     </CTableBody>
                 </CTable> 
@@ -128,7 +141,7 @@ const Notification = (res, filter) => {
             </CCard>
             </CCol>
         </CRow>
-
+            <ViewAlert visible={isModalOpen} notification={alert} />
         </div>
      </DefaultLayout>
   )

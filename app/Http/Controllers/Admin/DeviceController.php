@@ -35,4 +35,14 @@ class DeviceController extends Controller
             'filter' => $request->search
         ]);
     }
+
+    public function maps(){
+
+        $devices = Device::all();
+
+        return Inertia::render('Admin/Device/Maps', [
+            'devices' => $devices        
+        ]);
+
+    }
 }
