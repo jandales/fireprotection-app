@@ -33,4 +33,14 @@ class DashboardController extends Controller
         }
         return redirect('/user'); 
     }
+
+    public function index1(){
+
+        if (Auth::check() && Auth::user()->role === 'administrator') {           
+
+            return Inertia::render('Admin/Dashboard');
+
+        }
+        return redirect('/user'); 
+    }
 }

@@ -20,7 +20,7 @@ import {
 const Locations = (data) => {  
     const locations = data.locations
 
-    console.log(locations)
+
   return (
       <DefaultLayout>
         <div className="py-12">

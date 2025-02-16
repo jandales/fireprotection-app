@@ -32,7 +32,6 @@ const Login = ({ status, canResetPassword }) => {
   
       const submit = (e) => {
           e.preventDefault();
-        console.log(3131)
           post(route('login'), {
               onFinish: () => reset('password'),
           });

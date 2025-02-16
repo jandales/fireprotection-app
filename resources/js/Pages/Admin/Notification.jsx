@@ -47,8 +47,11 @@ const Notification = (res, filter) => {
 
     const handleOpenModal = (state, item) => {
         setIsModalOpen(state);   
-        setAlert(item);
-        
+        setAlert(item);        
+    }
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false); 
     }
 
   return (
@@ -135,13 +138,12 @@ const Notification = (res, filter) => {
                         totalPage={notifications.last_page}
                         onPageChange={onPageChange}
                      />
-
                  )}
                 
             </CCard>
             </CCol>
         </CRow>
-            <ViewAlert visible={isModalOpen} notification={alert} />
+            <ViewAlert visible={isModalOpen} notification={alert} onClose={handleCloseModal} />
         </div>
      </DefaultLayout>
   )

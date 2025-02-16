@@ -32,8 +32,7 @@ const Edit = ({user}) => {
                       autoClose: 1000,
                     });
                   },
-                  onError: (errors) => {
-                    console.log(errors)
+                  onError: (errors) => {              
                        Object.keys(errors).forEach((field) => {                       
                         toast.error(errors[field], {                          
                             autoClose: 1000,

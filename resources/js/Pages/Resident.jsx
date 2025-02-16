@@ -25,7 +25,6 @@ const status = 'Active'
 const Resident = (data) => {
     const residents = data.residents
 
-     console.log(residents)
    
   return (
       <DefaultLayout     

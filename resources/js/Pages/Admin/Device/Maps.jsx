@@ -1,5 +1,6 @@
 import React, { useState,  useEffect } from 'react';
 import DefaultLayout from '@/Layouts/DefaultLayout';
+import HoverMarker from '@/Components/HoverMarker';
 import { Link } from '@inertiajs/react';
 import { useJsApiLoader, GoogleMap, LoadScript, DirectionsService, DirectionsRenderer, Marker, Circle } from "@react-google-maps/api";
 import CIcon from '@coreui/icons-react'; 
@@ -14,29 +15,39 @@ import {
     CCol,         
    
 } from '@coreui/react'
+import ClickMarker from '@/Components/ClickMarker';
 
-const Index = () => {      
+const Maps = (res) => { 
+
+    const devices = res.devices.map(device => ({
+        id: device.id,
+        name : device.user.name,
+        position: {
+          lat: device.latitude,
+          lng: device.longitude,
+        },
+        location : device.location,
+        icon: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png', 
+      }));
+  
     const [markerPosition, setMarkerPosition] = useState({ lat: 12.502073940630082, lng: 124.2888540898605 });
-    const [highlightedMarker, setHighlightedMarker] = useState(null);
-    const [markers, setMarkers] = useState(
-        [
-            { id: 1, position: { lat: 12.502073940630082, lng: 124.2888540898605 }, icon: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',  }, 
-            { id: 1, position: { lat: 12.510587, lng: 124.285195 }, icon: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png', }, 
-        ]
-        
-    );  
-    
-     // Handle marker click to highlight it
-     const handleMarkerClick = (marker) => {
-        setHighlightedMarker(marker.position);
-    };
-
 
 
    const { isLoaded } = useJsApiLoader({
          id: 'google-map-script',
          googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
    })
+
+    const [opacity, setOpacity] = useState(0.35);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setOpacity((prev) => (prev === 0.35 ? 0.1 : 0.35));
+    }, 500); // Toggle every 500ms
+
+    return () => clearInterval(interval);
+  }, []);
+
 
  
 
@@ -75,28 +86,28 @@ const Index = () => {
                                     fullscreenControl: false,
                                 }}
                             >         
-                                  {markers.map((marker) => (
+                                  {devices.map((marker) => (
                                         <>
-                                        <Marker 
-                                            key={marker.id} 
-                                            position={marker.position}
-                                            icon={{
-                                                url: marker.icon,
-                                                scaledSize: new window.google.maps.Size(40, 40), // Adjust icon size
+                                   
+                                       <ClickMarker
+                                            marker={{
+                                                name: marker.name,
+                                                location: marker.location,
+                                                position: marker.position
+                                            }} 
+                                        />
+                                         <Circle
+                                            center={marker.position}
+                                            radius={200} // Smaller radius (100 meters)
+                                            options={{
+                                                strokeColor: '#0000FF',    // Blue border
+                                                strokeOpacity: 0.8,
+                                                strokeWeight: 2,
+                                                fillColor: '#0000FF',      // Blue fill
+                                                fillOpacity: 0.35,
                                             }}
-                                            onClick={() => handleMarkerClick(marker)}
-                                         />
-                                         {/* <Circle
-                                         center={marker.position}
-                                         radius={500} // Radius in meters
-                                         options={{
-                                             strokeColor: '#FF0000',
-                                             strokeOpacity: 0.8,
-                                             strokeWeight: 2,
-                                             fillColor: '#FF0000',
-                                             fillOpacity: 0.35,
-                                         }}                                         
-                                     /> */}
+                                            />
+                                           
                                      </>
                                    ))}
 
@@ -110,4 +121,4 @@ const Index = () => {
   )
 }
 
-export default Index
+export default Maps

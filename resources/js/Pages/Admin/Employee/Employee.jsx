@@ -39,7 +39,6 @@ const User = (res, filter) => {
     } 
 
     const deleteDevice = () => { 
-        console.log(deleteId) 
         destroy(route('employees.destroy', {id : deleteId }), {
             preserveScroll: true,
             onSuccess: () => {
@@ -47,8 +46,7 @@ const User = (res, filter) => {
                 toast.success("Successfully Deleted", {
                     autoClose: 1000,
                 });
-            }      
-       
+            } 
         });
     };   
 

@@ -15,11 +15,10 @@ class DeviceController extends Controller
     public function index(Request $request)
     {
 
-        $query = Device::query();
+        $query = Device::query()->with('user');
    
         if ($request->has('search')) {
-            $query->with('user')
-                  ->where(function ($q) use ($request) {               
+            $query->where(function ($q) use ($request) {               
                       $q->where('name', 'like', '%' . $request->search . '%')
                         ->orWhere('macAddress', 'like', '%' . $request->search . '%');
                   })
@@ -38,7 +37,7 @@ class DeviceController extends Controller
 
     public function maps(){
 
-        $devices = Device::all();
+        $devices = Device::with('user')->get();
 
         return Inertia::render('Admin/Device/Maps', [
             'devices' => $devices        

@@ -16,25 +16,26 @@ import {
   cilWarning
  } from '@coreui/icons'; 
 
-const ViewAlert = ({visible, notification}) => { 
+const ViewAlert = ({visible, notification, onClose}) => { 
     const location = usePage().props.location;
 
     const [isModalOpen, setIsModalOpen] = useState(false); 
     const [origin, setOrigin] = useState("");
     const [destination, setDestination] = useState("Lagundi Allen Northern Samar");
- 
+  
     useEffect(() => {
         setIsModalOpen(visible)
         setOrigin(location.address)
         setDestination(notification.location)
-    }, [visible]);
+  
+    }, [visible, isModalOpen]);
 
     return (
         <div>           
              <CModal
                     size="lg"
-                    visible={visible}
-                    onClose={() => setIsModalOpen(isModalOpen)}
+                    visible={isModalOpen}
+                    onClose={() => onClose()}
                     aria-labelledby="LiveDemoExampleLabel"
                   >               
                     <CModalHeader>
@@ -61,7 +62,7 @@ const ViewAlert = ({visible, notification}) => {
                       <MapComponent origin={origin} destination={destination} />
                     </CModalBody>
                     <CModalFooter>
-                      <CButton color="secondary"  onClick={(e) => setIsModalOpen(isModalOpen)}>
+                      <CButton color="secondary"  onClick={(e) => onClose()}>
                         Close
                       </CButton>                     
                     </CModalFooter>

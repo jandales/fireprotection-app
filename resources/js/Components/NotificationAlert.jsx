@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { usePage } from '@inertiajs/react';
 import echo from "../echo.js"
 import {   
     CButton,
@@ -9,15 +10,24 @@ import {
     CModalTitle,
  
   } from '@coreui/react'
-import warningIcon from '@/assets/images/warning.png'
+import MapComponent from '@/Components/MapComponent';
+import CIcon from '@coreui/icons-react'; 
+import { 
+  cilWarning
+ } from '@coreui/icons'; 
 
 const NotificationAlert = () => {
+    const location = usePage().props.location;
     const [notification, setNotification] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [origin, setOrigin] = useState(location.address);
+    const [destination, setDestination] = useState("Lagundi Allen Northern Samar");
 
     useEffect(() => {
         echo.channel("notification-channel").listen("NotificationEvent", (e) => {  
-            setNotification(e.notification);     
+            setNotification(e.notification); 
+            setOrigin(location.address)
+            setDestination(e.notification.location)    
             setIsModalOpen(true);         
         });
 
@@ -35,24 +45,29 @@ const NotificationAlert = () => {
                     aria-labelledby="LiveDemoExampleLabel"
                   >               
                     <CModalHeader>
-                      <CModalTitle id="LiveDemoExampleLabel">Alerts</CModalTitle>
+                    <CModalTitle id="LiveDemoExampleLabel">
+                      <div className="alert-header">
+                          <CIcon icon={cilWarning} size="3xl" style={{'--ci-primary-color': 'red'}} />
+                          <div className="capitalize">{notification.message}</div>
+                      </div>
+                      </CModalTitle>
                     </CModalHeader>
                     <CModalBody>
-                            <div className="alert-wrapper">
-                                <div className="alert-icon">
+                            <div className="alert-wrapper mb-2">
+                                {/* <div className="alert-icon">
                                      <img src={warningIcon} width="120px" height="120px"  />
-                                </div>                                 
-                                <div className="alert-body">
-                                    <p>{notification.message}</p>
+                                </div>                                  */}
+                                <div className="alert-body">                                
                                     <p>Name     : {notification.user?.name && notification.user.name}</p> 
                                     <p>Contact  : {notification.user?.phonenumber}</p> 
                                     <p>Location : {notification.device?.ysnLocation == true ? notification.user?.location : notification.device?.location}</p>
                                     <p>Device   : {notification.device?.name}</p>
                                 </div>
                             </div> 
+                      
+                      <MapComponent origin={origin} destination={destination} />
                             
-                            
-                    </CModalBody>
+                    </CModalBody> 
                     <CModalFooter>
                       <CButton color="secondary" onClick={() => setIsModalOpen(false)}>
                         Close

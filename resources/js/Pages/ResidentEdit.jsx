@@ -2,7 +2,7 @@ import DefaultLayout from '@/Layouts/DefaultLayout';
 import {  CRow, CCard, CCardHeader, CButton, CCol, CForm, CFormCheck, CFormInput, CFormSelect, CCardBody } from '@coreui/react'
 
 const ResidentEdit = (data) => {  
-  console.log(data)   
+
   return (
       <DefaultLayout     
       >
