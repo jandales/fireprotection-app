@@ -16,22 +16,41 @@ import {
    
 } from '@coreui/react'
 import ClickMarker from '@/Components/ClickMarker';
+import { usePage } from '@inertiajs/react';
 
 const Maps = (res) => { 
 
-    const devices = res.devices.map(device => ({
+    const station = usePage().props.station;
+
+    let devices = res.devices.map(device => ({
         id: device.id,
         name : device.user.name,
+        contact  : device.user.phonenumber,
         position: {
           lat: device.latitude,
           lng: device.longitude,
         },
         location : device.location,
-        icon: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png', 
-      }));
-  
-    const [markerPosition, setMarkerPosition] = useState({ lat: 12.502073940630082, lng: 124.2888540898605 });
+        icon: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png', 
+        //icon: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png', 
+        origin : false
+    }));
 
+    const markerPosition  = { 
+      contact  : station.contact,
+      location : station.address,
+      position : { lat: station.latitude, lng:  station.longitude} 
+    }
+
+    devices.push({
+        id       : -999,
+        name     : 'Fire Station',
+        contact  : markerPosition.contact,
+        position : markerPosition.position,
+        location : markerPosition.location,
+        icon     : 'https://maps.google.com/mapfiles/ms/icons/red-dot.png', 
+        origin   : true
+    })  
 
    const { isLoaded } = useJsApiLoader({
          id: 'google-map-script',
@@ -76,7 +95,7 @@ const Maps = (res) => {
                     </CRow>                      
                 </CCardHeader>        
                  {isLoaded && <GoogleMap
-                                center={markerPosition} // Default center
+                                center={markerPosition.position} // Default center
                                 zoom={15}
                                 mapContainerStyle={{ width: "100%", height: "700px" }}
                                 options={{
@@ -92,18 +111,19 @@ const Maps = (res) => {
                                        <ClickMarker
                                             marker={{
                                                 name: marker.name,
+                                                contact: marker.contact,
                                                 location: marker.location,
                                                 position: marker.position
                                             }} 
                                         />
                                          <Circle
                                             center={marker.position}
-                                            radius={200} // Smaller radius (100 meters)
+                                            radius={150} // Smaller radius (100 meters)
                                             options={{
-                                                strokeColor: '#0000FF',    // Blue border
+                                                strokeColor: marker.origin ? '#0000FF' : '#008000',  
                                                 strokeOpacity: 0.8,
                                                 strokeWeight: 2,
-                                                fillColor: '#0000FF',      // Blue fill
+                                                fillColor: marker.origin ? '#0000FF' : '#008000', 
                                                 fillOpacity: 0.35,
                                             }}
                                             />

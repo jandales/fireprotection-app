@@ -26,18 +26,18 @@ import {
 
 const Dashboard = () => { 
 
-    const location = usePage().props.location;
+    const station = usePage().props.station;
   
     const [markerPosition, setMarkerPosition] = useState({ lat: 12.512838007591398 , lng: 124.28890301755825 });
     const [origin, setOrigin] = useState(
       {
         id: 1,
-        name : "Allen Fire Station" ,      
+        name : station.name,      
         position: {
-          lat: location.latitude,
-          lng: location.longitude,
+          lat: station.latitude,
+          lng: station.longitude,
         },
-        location : location.address,
+        location : station.address,
         icon: FireStationIcon 
       }
     );

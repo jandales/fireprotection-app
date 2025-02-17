@@ -142,7 +142,7 @@ const Notification = (res, filter) => {
                 
             </CCard>
             </CCol>
-        </CRow>
+        </CRow>             
             <ViewAlert visible={isModalOpen} notification={alert} onClose={handleCloseModal} />
         </div>
      </DefaultLayout>

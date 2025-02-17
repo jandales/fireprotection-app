@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from 'react';
 import { usePage } from '@inertiajs/react';
 import echo from "../echo.js"
 import {   
@@ -15,26 +15,49 @@ import CIcon from '@coreui/icons-react';
 import { 
   cilWarning
  } from '@coreui/icons'; 
+import { compileString } from 'sass';
 
 const NotificationAlert = () => {
-    const location = usePage().props.location;
+    const station= usePage().props.station;
+   
     const [notification, setNotification] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [origin, setOrigin] = useState(location.address);
-    const [destination, setDestination] = useState("Lagundi Allen Northern Samar");
+    const [destination, setDestination] = useState("");
+    const childRef = useRef();
+
+    const origin = {
+       location : station.address,
+       position : { 
+            lat : station.latitude,
+            lng : station.longitude 
+        } 
+    };
+ 
 
     useEffect(() => {
-        echo.channel("notification-channel").listen("NotificationEvent", (e) => {  
-            setNotification(e.notification); 
-            setOrigin(location.address)
-            setDestination(e.notification.location)    
-            setIsModalOpen(true);         
+        echo.channel("notification-channel").listen("NotificationEvent", (e) => {
+            const device = e.notification.device; 
+
+            const coordinates = { 
+              location : device.location,
+              position : {lat : device.latitude, lng : device.longitude }
+            } 
+            
+            setNotification(null); 
+            setDestination(null);
+            
+            setDestination({ ...coordinates });   
+            setNotification(e.notification);  
+            setIsModalOpen(true);             
+            childRef.current?.rerenderDirection();     
         });
 
         return () => {
             echo.leaveChannel("notification-channel"); 
         };
     }, []);
+
+    
 
     return (
         <div>           
@@ -64,8 +87,8 @@ const NotificationAlert = () => {
                                     <p>Device   : {notification.device?.name}</p>
                                 </div>
                             </div> 
-                      
-                      <MapComponent origin={origin} destination={destination} />
+                 
+                      <MapComponent origin={origin} destination={destination} ref={childRef}  />
                             
                     </CModalBody> 
                     <CModalFooter>

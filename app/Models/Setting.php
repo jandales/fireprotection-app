@@ -12,6 +12,7 @@ class Setting extends Model
         'mobilenumber',  
         'latitude',
         'longitude',
-        'location',      
+        'location', 
+        'stationName'     
     ];
 }

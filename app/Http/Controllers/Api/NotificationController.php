@@ -16,8 +16,7 @@ class NotificationController extends Controller
     {
         $validated = $request->validate([
             'macAddress' => 'required'          
-        ]);  
-
+        ]); 
 
         try {
 
@@ -27,10 +26,7 @@ class NotificationController extends Controller
 
             $notification = Notification::create([
                 'user_id'   => $device->user->id,    
-                'device_id' => $device->id,    
-                'latitude'  => $request->latitude,
-                'longitude' => $request->longitude,     
-                'location'  => $request->location, 
+                'device_id' => $device->id, 
                 'message'   => $request->message,
             ]);
 

@@ -38,8 +38,7 @@ const MapDirectionsRenderer = ({ origin, destination }) => {
 
     return (
        <>
-            {isLoaded &&  directionsResponse && <DirectionsRenderer directions={directionsResponse} />}
-            {console.log(destination)}
+            {isLoaded &&  directionsResponse && <DirectionsRenderer directions={directionsResponse} />}       
        </>
     );
 };

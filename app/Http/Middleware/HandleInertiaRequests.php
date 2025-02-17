@@ -37,7 +37,9 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
-            'location' => [
+            'station' => [
+                'name'  => $setting->stationName,
+                'contact'  => $setting->phonenumber,
                 'latitude'  => $setting->latitude,
                 'longitude' => $setting->longitude,
                 'address'  => $setting->location,  

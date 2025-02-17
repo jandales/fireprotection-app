@@ -17,16 +17,29 @@ import {
  } from '@coreui/icons'; 
 
 const ViewAlert = ({visible, notification, onClose}) => { 
-    const location = usePage().props.location;
+    const station = usePage().props.station;
 
     const [isModalOpen, setIsModalOpen] = useState(false); 
-    const [origin, setOrigin] = useState("");
-    const [destination, setDestination] = useState("Lagundi Allen Northern Samar");
-  
-    useEffect(() => {
-        setIsModalOpen(visible)
-        setOrigin(location.address)
-        setDestination(notification.location)
+
+    const origin = {
+      location : station.address,
+      position : { 
+           lat : station.latitude,
+           lng : station.longitude 
+      } 
+    };
+    
+    const [destination, setDestination] = useState();
+
+    useEffect(() => {   
+        setIsModalOpen(visible)       
+        setDestination({
+          location : notification?.device?.location,
+          position : { 
+                lat : notification?.device?.latitude,
+                lng : notification?.device?.longitude 
+          } 
+    })
   
     }, [visible, isModalOpen]);
 
