@@ -25,6 +25,7 @@ class SettingController extends Controller
     public function updateContact(Request $request)
     {
         $setting = Setting::first();
+        $setting->stationName  = $request->station;
         $setting->email        = $request->email;
         $setting->phonenumber  = $request->phonenumber;
         $setting->mobilenumber = $request->mobilenumber;
@@ -41,7 +42,7 @@ class SettingController extends Controller
         
         $setting = Setting::first();
         $setting->latitude   = $request->latitude;
-        $setting->longitude = $request->longitude;
+        $setting->longitude  = $request->longitude;
         $setting->location   = $request->location;
         $setting->save();
 

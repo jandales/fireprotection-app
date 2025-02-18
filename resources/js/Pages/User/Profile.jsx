@@ -1,12 +1,15 @@
+import React, { useEffect, useState } from 'react';
 import DefaultLayout from '@/Layouts/DefaultLayout';
-import InputError from '@/Components/InputError';
 import {  CAvatar, CRow, CCard, CFormLabel, CButton, CCol, CForm, CFormInput, CFormSelect, CCardBody } from '@coreui/react'
 import { usePage, useForm} from '@inertiajs/react';
-import avatar8 from '@/assets/images/avatars/8.jpg'
+import avatar from '@/assets/images/avatars/user.png'
 import { toast } from 'react-toastify';
 const Profile = () => {  
       const user = usePage().props.auth.user;   
-      const { data, setData, patch, errors, processing, recentlySuccessful } =
+      const [provinces, setProvince] = useState([]);
+      const [municipalities, setMunicipalities] = useState([]);
+      const [barangays, setBarangays] = useState([]);
+      const { data, setData, post } =
             useForm({
                 name: user.name,
                 email: user.email,
@@ -16,12 +19,12 @@ const Profile = () => {
                 address2: user.address2,
                 city: user.city,
                 province: user.province,
-                zipcode : user.zipcode,
+                zipcode : user.zipcode,                
             });   
     
         const submit = (e) => {
             e.preventDefault();          
-            patch(route('user.update'), {
+            post(route('user.update'), {
                 preserveScroll: true,
                 onSuccess: (res) => { 
                     toast.success('Account updated successfully!', {                          
@@ -29,9 +32,89 @@ const Profile = () => {
                     });                     
                                                                     
                 },
-            });
-                  
-        };  
+            });                  
+        }; 
+        
+        const getProvinces = async () => {
+            try {
+                const response = await fetch('https://psgc.gitlab.io/api/provinces');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch provinces');
+                }
+                const data = await response.json();
+                setProvince(data);                
+            } catch (error) {
+                console.error('Error fetching provinces:', error);
+            }
+        };
+
+        const getMunicipalities = async (name) => {
+            try { 
+                
+                if (provinces.length === 0) {
+                    getProvinces();
+                    console.log(provinces)
+                }
+        
+                // Find the province by name
+                let province = provinces.find(province => province.name === name);
+          
+
+                if (!province) {                
+                    const res = await fetch('https://psgc.gitlab.io/api/provinces');
+                    const provincesdata = await res.json();   
+                    province = provincesdata.find(province => province.name === name);                        
+                }
+
+                const response = await fetch(`https://psgc.gitlab.io/api/provinces/${province.code}/municipalities`);
+        
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch municipalities');
+                }
+        
+                const data = await response.json();
+                setMunicipalities(data);     
+                   
+                
+                const municipality = data.find(municipality => municipality.name === user.city);              
+                await getBarangays(municipality.psgc10DigitCode)
+        
+            } catch (error) {
+                console.error('Error fetching municipalities:', error);
+            }
+        };
+        
+        const getBarangays= async (code) => {
+            try {                               
+                
+                const response = await fetch(`https://psgc.cloud/api/cities-municipalities/${code}/barangays`);        
+           
+                if (!response.ok) {
+                    throw new Error('Failed to fetch barangays');
+                }
+
+                const data = await response.json();
+                setBarangays(data);  
+        
+            } catch (error) {
+                console.error('Error fetching barangays:', error);
+            }
+        };        
+        
+
+         // Fetch provinces when the component mounts
+        useEffect(() => {      
+                getProvinces(); 
+                console.log(data.province) 
+                getMunicipalities(data.province); 
+        }, [])  
+
+        useEffect(() => {      
+            getMunicipalities(data.province);
+        }, [data.province]) 
+       
+      
 
   return (
       <DefaultLayout     
@@ -41,11 +124,11 @@ const Profile = () => {
             <CCol xs>
             <CCard className="mb-4">          
                 <CCardBody>
-                <CForm className="row g-3" onSubmit={submit}>
+                <CForm className="row g-3" onSubmit={submit} encType="multipart/form-data">
                     <CCol md={12}> 
                         <CRow className="mb-3"> 
                         <CCol md={1}>
-                            <CAvatar src={user.avatar ?? avatar8} size="xl"  />
+                            <CAvatar src={user.avatar ?? avatar} size="xl"  />
                         </CCol>
                         <CCol md={11}>
                             <label className='avatar-name'>{user.name}</label>                            
@@ -110,10 +193,77 @@ const Profile = () => {
                         </CRow>
                     </CCol> 
 
+                  
+                    <CCol md={12}>
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="province" className="col-sm-2 col-form-label">
+                                    Province
+                                </CFormLabel>
+                                <CCol sm={10}>
+                                <CFormSelect 
+                                    id="province"
+                                    value={data.province}
+                                    onChange={(e) => setData('province', e.target.value)}                         
+                                    >
+                                    { user.province ?? <option>Choose...</option>}
+                                    {
+                                        provinces.map((province, index) => (
+                                            <option key={index} value={province.name}>{province.name}</option>
+                                        ))
+                                    } 
+                                </CFormSelect>
+                                </CCol>
+                            </CRow>
+                    </CCol>    
+
+                    <CCol md={12}>
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="city" className="col-sm-2 col-form-label">
+                                    Municipality
+                                </CFormLabel>
+                                <CCol sm={10}>                              
+                                   <CFormSelect 
+                                    id="city"
+                                    value={data.city}
+                                    onChange={(e) => setData('city', e.target.value)}                           
+                                    >
+                                    { user.province ?? <option>Choose...</option>}
+                                    {
+                                        municipalities.map((municipality, index) => (
+                                            <option key={index} value={municipality.name}>{municipality.name}</option>
+                                        ))
+                                    }  
+                                </CFormSelect>
+                                </CCol>
+                            </CRow>
+                    </CCol>
+
+                    <CCol md={12}>
+                        <CRow className="mb-3">
+                            <CFormLabel htmlFor="address" className="col-sm-2 col-form-label">
+                                Baranggay
+                            </CFormLabel>
+                            <CCol sm={10}>                            
+                             <CFormSelect 
+                                   id="address2" 
+                                   value={data.address2}
+                                   onChange={(e) => setData('address2', e.target.value)}                         
+                                    >
+                                    { user.address2 ?? <option>Choose...</option>}
+                                    {
+                                        barangays.map((barangay, index) => (
+                                            <option key={index} value={barangay.name}>{barangay.name}</option>
+                                        ))
+                                    }  
+                            </CFormSelect>
+                            </CCol>
+                        </CRow>
+                    </CCol> 
+
                     <CCol md={12}>
                         <CRow className="mb-3">
                             <CFormLabel htmlFor="address1" className="col-sm-2 col-form-label">
-                                Address 1
+                                Steet Name
                             </CFormLabel>
                             <CCol sm={10}>
                             <CFormInput 
@@ -124,58 +274,9 @@ const Profile = () => {
                                  />
                             </CCol>
                         </CRow>
-                    </CCol>
-                    <CCol md={12}>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="address" className="col-sm-2 col-form-label">
-                                Address 2
-                            </CFormLabel>
-                            <CCol sm={10}>
-                            <CFormInput 
-                                type="text" 
-                                id="address2" 
-                                value={data.address2}
-                                onChange={(e) => setData('address2', e.target.value)}
-                                 />
-                            </CCol>
-                        </CRow>
-                    </CCol> 
-               
-                    <CCol md={12}>
-                            <CRow className="mb-3">
-                                <CFormLabel htmlFor="city" className="col-sm-2 col-form-label">
-                                    City
-                                </CFormLabel>
-                                <CCol sm={10}>
-                                <CFormInput 
-                                    type="text" 
-                                    id="city" 
-                                    value={data.city}
-                                    onChange={(e) => setData('city', e.target.value)}
-                                     />
-                                </CCol>
-                            </CRow>
-                    </CCol>
+                    </CCol>  
 
-                    <CCol md={12}>
-                            <CRow className="mb-3">
-                                <CFormLabel htmlFor="province" className="col-sm-2 col-form-label">
-                                    Province
-                                </CFormLabel>
-                                <CCol sm={10}>
-                                <CFormSelect 
-                                    id="province"
-                                    value={data.province}
-                                    onChange={(e) => setData('province', e.target.value)}
-                                    >
-                                    { user.province ?? <option>Choose...</option>}
-                                    <option value='Northern Samar'>Samar</option>
-                                    <option value='Northern Samar'>Northern Samar</option>
-                                    <option value='Northern Samar'>Eastern Samar</option>
-                                </CFormSelect>
-                                </CCol>
-                            </CRow>
-                    </CCol>                    
+                                   
                     <CCol md={12}>
                             <CRow className="mb-3">
                                 <CFormLabel htmlFor="zipcode" className="col-sm-2 col-form-label">
@@ -198,16 +299,17 @@ const Profile = () => {
                                 </CFormLabel>
                                 <CCol sm={10}>
                                 <CFormInput 
-                                    type="file"
+                                     type="file"
                                      id="avatar" 
+                                     accept="image/*"
                                      onChange={(e) => setData('avatar', e.target.files[0])} 
                                      />                              
                                 </CCol>
-                        </CRow>   
-                        <InputError message={errors.avatar} className="mt-1" />                     
-                    </CCol>                 
+                        </CRow>  
+                               
+                    </CCol>                                  
                     <CCol xs={12}>
-                       <CButton color="primary" type="submit" disabled={processing}>Save Changes</CButton>
+                       <CButton color="primary" type="submit">Save Changes</CButton>
                     </CCol>
                 </CForm>
                 </CCardBody>

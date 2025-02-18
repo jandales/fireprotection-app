@@ -18,7 +18,7 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import {  cilPeople, cilFilterX  } from '@coreui/icons'
-import user from  '@/assets/images/avatars/user.png';
+import DefaultAvatar from  '@/assets/images/avatars/user.png';
 import Pagination from '@/Components/Pagination';
 import Search from '@/Components/Search';
 import echo from "../../../js/echo.js"
@@ -94,7 +94,7 @@ const Notification = (res, filter) => {
                     {notifications.data.map((item, index) => (
                         <CTableRow v-for="item in tableItems" key={index}>
                         <CTableDataCell className="text-center">
-                            <CAvatar size="md" src={user} />
+                            <CAvatar size="md" src={item.user.avatar ? item.user.avatar : DefaultAvatar} />
                         </CTableDataCell>
                         <CTableDataCell>
                             <div>{item.name}</div>

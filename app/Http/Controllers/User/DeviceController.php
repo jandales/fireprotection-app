@@ -32,7 +32,8 @@ class DeviceController extends Controller
     }
 
     public function store(DeviceRequest $request)
-    {
+    {        
+
         $lastDeviceId = optional(Device::orderBy('id', 'desc')->first())->id;
         $device_name = 'Device-' . ($lastDeviceId ? $lastDeviceId + 1 : 1);
         
@@ -43,7 +44,7 @@ class DeviceController extends Controller
             'latitude'   => $request->latitude,
             'longitude'  => $request->longitude,
             'location'   => $request->location,
-            'ysnLocation' => $request->ysnLocation,
+            'ysnLocation' => 0,
             'user_id'  => $request->user()->id,
         ]);
     }
@@ -51,13 +52,12 @@ class DeviceController extends Controller
     public function update(DeviceRequest $request)
     {          
         $device = Device::find($request->id);               
-        $device->macAddress = $request->macAddress;
-        $device->ipAddress = $request->ipAddress;
-        $device->latitude  = $request->latitude;
-        $device->longitude =  $request->longitude;
-        $device->location = $request->location;
+        $device->macAddress  = $request->macAddress;
+        $device->ipAddress   = $request->ipAddress;
+        $device->latitude    = $request->latitude;
+        $device->longitude   =  $request->longitude;
+        $device->location    = $request->location;
         $device->ysnLocation = $request->ysnLocation;
-        $device->user_id  = $request->user()->id;
         $device->save();
       
     }

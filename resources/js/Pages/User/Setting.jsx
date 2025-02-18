@@ -71,60 +71,7 @@ const Setting = (response) => {
   return (
       <DefaultLayout     
       >
-        <div className="py-12">           
-        <CRow>
-            <CCol xs>
-            <CCard className="mb-4">          
-                <CCardBody>
-                <CForm className="row g-3" onSubmit={onSettingSubmit} enctype="multipart/form-data">
-                    <CCol md={12}>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="Address" className="col-sm-2 col-form-label">
-                             Settings
-                            </CFormLabel>  
-                        </CRow>
-                    </CCol> 
-            
-                              
-                    <CCol md={12}>
-                            <CRow className="mb-3">
-                                <CFormLabel htmlFor="perpage" className="col-sm-2 col-form-label">
-                                   Pagination
-                                </CFormLabel>
-                                <CCol sm={10}>
-                                <CFormInput 
-                                    type="text" 
-                                    id="perpage" 
-                                    value={data.perpage} 
-                                    onChange={(e) => setData('perpage', e.target.value)}
-                                />
-                                </CCol>
-                            </CRow>                          
-                    </CCol> 
-
-                    <CCol md={12}>
-                            <CRow className="mb-3">
-                                <CFormLabel htmlFor="ysnHomeLocationAsDefault" className="col-sm-2 col-form-label">
-                                   Use home location as default Location Notification
-                                </CFormLabel>
-                                <CCol sm={10}>
-                                <CFormCheck                                  
-                                    id="ysnHomeLocationAsDefault" 
-                                    checked={data.ysnHomeLocationAsDefault}
-                                    onChange={(e) => setData('ysnHomeLocationAsDefault', e.target.checked)}
-                                />
-                                </CCol>
-                            </CRow>                            
-                    </CCol> 
-                       
-                    <CCol xs={12}>
-                       <CButton color="primary" type="submit" disabled={processing}>Save Changes</CButton>
-                    </CCol>
-                </CForm>
-                </CCardBody>
-            </CCard>            
-            </CCol>          
-        </CRow>
+        <div className="py-12">  
         <CRow>
             <CCol xs>
             <CCard className="mb-4">          

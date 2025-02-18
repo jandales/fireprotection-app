@@ -25,7 +25,7 @@ class UserUpdateRequest extends FormRequest
         return [
             'name' => 'nullable|string|max:255', 
             'phonenumber' => 'nullable|string|max:15',
-            'avatar' => 'nullable|image|max:2048', 
+            // 'avatar' => 'nullable|image|max:2048', 
             'address1' => 'nullable|string|max:255',
             'address2' => 'nullable|string|max:255',
             'city' => 'nullable|string|max:255',

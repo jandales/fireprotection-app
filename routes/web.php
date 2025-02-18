@@ -32,10 +32,6 @@ Route::get('/alerts', function () {
     return Inertia::render('Alerts');
 })->middleware(['auth', 'verified'])->name('alerts');
 
-Route::get('/admin', function () {
-    return Inertia::render('Admin');
-})->middleware(['auth', 'verified'])->name('admin');
-
 
 Route::middleware('auth')->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications');
@@ -83,7 +79,7 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware('auth')->group(function () { 
     Route::get('/user', [UserController::class, 'index'])->name('user');
-    Route::patch('/user/update', [UserController::class, 'update'])->name('user.update');
+    Route::post('/user/update', [UserController::class, 'update'])->name('user.update');
     Route::delete('/user', [UserController::class, 'destroy'])->name('user.destroy');
 
     Route::get('/user/devices', [DeviceController::class, 'index'])->name('user.devices');

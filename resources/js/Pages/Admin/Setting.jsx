@@ -9,6 +9,7 @@ const Setting = (response) => {
       const { data, setData, patch } =
 
             useForm({
+                station : setting.stationName,
                 email : setting.email,
                 phonenumber : setting.phonenumber,
                 mobilenumber : setting.mobilenumber,
@@ -26,7 +27,7 @@ const Setting = (response) => {
                 patch(route('settings.update.contact'), {
                     preserveScroll: true,
                     onSuccess: (res) => {
-                        toast.success('Contact saved successfully!', {                          
+                        toast.success('Setting updated successfully!', {                          
                             autoClose: 1000,
                         });                
                     }
@@ -80,7 +81,32 @@ const Setting = (response) => {
             <CCol xs>
             <CCard className="mb-4">          
                 <CCardBody>
-                <CForm className="row g-3" onSubmit={onSaveContact} enctype="multipart/form-data">   
+                <CForm className="row g-3" onSubmit={onSaveContact} enctype="multipart/form-data"> 
+
+                    <CCol md={12}>
+                        <CRow className="mb-3">
+                            <CFormLabel htmlFor="Address" className="col-sm-2 col-form-label">
+                             Station
+                            </CFormLabel>         
+                        </CRow>
+                    </CCol>
+
+                     <CCol md={12}>
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="station" className="col-sm-2 col-form-label">
+                                  Name
+                                </CFormLabel>
+                                <CCol sm={10}>
+                                <CFormInput 
+                                    type="text" 
+                                    id="station" 
+                                    value={data.station}                            
+                                    onChange={(e) => setData('station', e.target.value)}
+                                />
+                                </CCol>
+                            </CRow>                             
+                    </CCol>  
+
                     <CCol md={12}>
                         <CRow className="mb-3">
                             <CFormLabel htmlFor="Address" className="col-sm-2 col-form-label">

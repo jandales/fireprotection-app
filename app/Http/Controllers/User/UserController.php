@@ -29,20 +29,21 @@ class UserController extends Controller
    }
 
  
-   public function update(UserUpdateRequest $request): RedirectResponse
+   public function update(UserUpdateRequest $request)
    {    
-       
-       $request->user()->fill($request->validated());           
-   
-       if ($request->hasFile('avatar')) {
-             $path = $request->file('avatar')->store('avatars', 'public');            
-             $request->avatar = $path;
-       } 
+        $user = $request->user();
+        $user->fill($request->validated());
+        
+         // Handle avatar upload
+        if ($request->hasFile('avatar')) {
+            $path = $request->file('avatar')->store('avatars', 'public');            
+            $user->avatar = '/storage/' . $path; 
+        }
 
-       $request->user()->save(); 
+        $user->save(); 
 
-       return Redirect::route('user');
-   }
+        // return Redirect::route('user');
+    }
 
    /**
     * Delete the user's account.

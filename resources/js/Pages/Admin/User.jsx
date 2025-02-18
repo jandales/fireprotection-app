@@ -16,18 +16,34 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import {  cilPeople  } from '@coreui/icons'
-import user from  '@/assets/images/avatars/user.png';
+import DefaultAvatar from  '@/assets/images/avatars/user.png';
 import Pagination from '@/Components/Pagination';
 import Search from '@/Components/Search';
 
 
 const User = (res, filter) => {    
    
-    const users = res.users  
+    const users = res.users 
+    const [provinces, setProvince] = useState([]);
   
     const onPageChange = (url) => {
         router.get(url, {}, { preserveScroll: true, preserveState: true });
     } 
+
+    const getProvinces = async () => {
+        try {
+            const response = await fetch('https://psgc.gitlab.io/api/provinces');
+            if (!response.ok) {
+                throw new Error('Failed to fetch provinces');
+            }
+            const data = await response.json();
+            setProvince(data);
+            console.log(provinces)
+        } catch (error) {
+            console.error('Error fetching provinces:', error);
+        }
+    };
+    
 
   return (
       <DefaultLayout     
@@ -66,7 +82,7 @@ const User = (res, filter) => {
                     {users.data.map((item, index) => (
                         <CTableRow v-for="item in tableItems" key={index}>
                         <CTableDataCell className="text-center">
-                            <CAvatar size="md" src={user} />
+                            <CAvatar size="md" src={item.avatar ? item.avatar : DefaultAvatar} />
                         </CTableDataCell>
                         <CTableDataCell>
                             <div>{item.name}</div>

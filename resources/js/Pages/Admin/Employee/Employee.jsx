@@ -19,7 +19,7 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import {  cilPeople  } from '@coreui/icons'
-import user from  '@/assets/images/avatars/user.png';
+import DefaultAvatar from  '@/assets/images/avatars/user.png';
 import Pagination from '@/Components/Pagination';
 import Search from '@/Components/Search';
 import { toast } from 'react-toastify';
@@ -121,7 +121,7 @@ const User = (res, filter) => {
                     {users.data.map((item, index) => (
                         <CTableRow v-for="item in tableItems" key={index}>
                         <CTableDataCell className="text-center">
-                            <CAvatar size="md" src={user} />
+                            <CAvatar size="md" src={item.avatar ? item.avatar : DefaultAvatar} />
                         </CTableDataCell>
                         <CTableDataCell>
                             <div>{item.name}</div>

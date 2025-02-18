@@ -10,9 +10,8 @@ use App\Models\UserSetting;
 class DeviceController extends Controller
 {
     public function store(Request $request)
-    {       
-       
-        
+    {  
+
         $validated = $request->validate([
             'code' => 'required',
             'macAddress' => 'required|unique:devices'          
@@ -24,8 +23,6 @@ class DeviceController extends Controller
             return response()->json(['error' => 'User setting not found.'], 404);
         }
 
-
-
         try {
         
             if(Device::count() > 0){
@@ -33,8 +30,7 @@ class DeviceController extends Controller
                 $device_name = 'Device-' . $lastDeviceId + 1; 
             }else {
                 $device_name = 'Device-1';
-            }
-           
+            }           
             
             $device = Device::create([
                 'name'        => $device_name,

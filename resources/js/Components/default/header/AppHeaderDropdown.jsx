@@ -13,14 +13,19 @@ import {
   cilUser,
 } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
-
+import { usePage, useForm} from '@inertiajs/react';
 import avatar8 from '@/assets/images/avatars/8.jpg'
 
 const AppHeaderDropdown = () => {
+
+  const user = usePage().props.auth.user; 
+
+  const avatar = user.avatar ? user.avatar : avatar8
+
   return (
     <CDropdown variant="nav-item">
       <CDropdownToggle placement="bottom-end" className="py-0 pe-0" caret={false}>
-        <CAvatar src={avatar8} size="md" />
+        <CAvatar src={avatar} size="md" />
       </CDropdownToggle>
       <CDropdownMenu className="pt-0" placement="bottom-end">       
         <CDropdownHeader className="bg-body-secondary fw-semibold my-2">Settings</CDropdownHeader>

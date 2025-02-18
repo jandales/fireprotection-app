@@ -22,8 +22,10 @@ class DeviceRequest extends FormRequest
      */
     public function rules(): array
     {
+      
         return [
-            'macAddress' => 'required|string|max:255|unique:devices,id,' . $this->id,           
+            //'macAddress' => 'required|string|max:255|unique:devices,id,' . $this->id,  
+            'macAddress' => 'required|string|max:255|unique:devices,macAddress,' . $this->route('user.device.update'),            
             'ipAddress' => 'nullable|string',
             'latitude' => 'nullable|numeric',
             'longitude' => 'nullable|numeric', 

@@ -1,9 +1,8 @@
 import DefaultLayout from '@/Layouts/DefaultLayout';
-import InputError from '@/Components/InputError';
 import { router, useForm} from '@inertiajs/react';
 import React, { useState } from 'react'
 import Pagination from '@/Components/Pagination';
-
+import { toast } from 'react-toastify';
 
 import {
   CCard,
@@ -23,25 +22,21 @@ import {
   CModalBody,
   CModalFooter,
   CModalHeader,
-  CModalTitle,
-  CPagination,
-  CPaginationItem
+  CModalTitle
 } from '@coreui/react'
 import Search from '@/Components/Search';
 
 const Device = (response, filter) => {
-    const devices = response.devices
-    const [search, setSearch] = useState(filter || "");
-    const { data, setData, post, get, patch, delete: destroy, errors, processing, recentlySuccessful, reset } =
-                useForm({
-                    id : '',
-                    macAddress: '',
-                    ipAddress: '',
-                    latitude: '',
-                    longitude: '',
-                    ysnLocation: false,
-                    location: ''                   
-                });
+    const devices = response.devices  
+    const { data, setData, post,  patch, delete: destroy, processing, reset } = useForm({
+            id : '',
+            macAddress: '',
+            ipAddress: '',
+            latitude: '',
+            longitude: '',
+            ysnLocation: false,
+            location: ''                   
+    });
         
     const [visible, setVisible] = useState(false)
     const [override, setOverride] = useState(false)
@@ -67,22 +62,52 @@ const Device = (response, filter) => {
             data.ysnLocation = device.ysnLocation
             data.location =  device.location
         } else {
-            data.macAddress = null
-            data.ipAddress = null
-            data.latitude = null
-            data.longitude = null
-            data.ysnLocation = false
-            data.location = null
+            setData('macAddress', null)
+            setData('ipAddress' , null)
+            setData('latitude' , null)
+            setData('longitude' , null)
+            setData('ysnLocation', null)
+            setData('location', null)
         }
     }
 
     const submit = (e) => {
         e.preventDefault();        
         if (!isEdit) {           
-            post(route('user.device.store'))
+            post(route('user.device.store'), {
+                onSuccess: (res) => { 
+                    toast.success('Device saved successfully!', {                          
+                        autoClose: 1000,
+                    });
+                    setVisible(false)  
+                    reset();                              
+                }, 
+                onError: (errors) => {              
+                    Object.keys(errors).forEach((field) => {                       
+                    toast.error(errors[field], {                          
+                        autoClose: 1000,
+                        });                      
+                    });
+                }               
+            })
             return;
         }          
-        patch(route('user.device.update'))
+        patch(route('user.device.update'),{
+            onSuccess: (res) => { 
+                toast.success('Device updated successfully!', {                          
+                    autoClose: 1000,
+                });
+                setVisible(false)  
+                reset();                            
+            },
+            onError: (errors) => {              
+                Object.keys(errors).forEach((field) => {                       
+                toast.error(errors[field], {                          
+                    autoClose: 1000,
+                    });                      
+                });
+            }
+        })
        
           
     };  
@@ -99,7 +124,12 @@ const Device = (response, filter) => {
     const deleteDevice = () => {  
         destroy(route('user.device.destroy', {id : data.id }), {
             preserveScroll: true,
-            onSuccess: () => handleCloseDeleteModal(),         
+            onSuccess: () => {
+                toast.success('Device deleted successfully!', {                          
+                    autoClose: 1000,
+                });
+                handleCloseDeleteModal()
+            },         
             onFinish: () => reset(),
         });
     };
@@ -213,13 +243,7 @@ const Device = (response, filter) => {
         <CModalTitle id="LiveDemoExampleLabel"> {isEdit == true ? 'Edit Device' : 'Add Device'}</CModalTitle>
         </CModalHeader>
         <CModalBody>
-            <div className="row g-3"> 
-                <CCol md={12}>
-                {recentlySuccessful && (<div class="alert alert-success" role="alert">
-                    Successfully Saved
-                </div>)
-                }   
-                </CCol>                       
+            <div className="row g-3">                                    
                     <CCol md={12}>
                         <CFormInput 
                             type="text" 
@@ -227,19 +251,17 @@ const Device = (response, filter) => {
                             label="Mac Address"
                             value={data.macAddress}
                             onChange={(e) => setData('macAddress', e.target.value)}      
-                             />
-                        <InputError message={errors.macAddress} className="mt-1" />    
+                             />                       
                     </CCol>
-                    <CCol md={12}>
+                    { isEdit == true && <CCol md={12}>
                         <CFormInput 
                             type="text" 
                             id="ipAddress" 
                             label="IP Address"
                             value={data.ipAddress}
                             onChange={(e) => setData('ipAddress', e.target.value)}
-                         />
-                        <InputError message={errors.ipAddress} className="mt-1" />    
-                    </CCol>
+                         />                        
+                    </CCol> }
                     <CCol md={12}>
                         <CFormInput 
                             type="text" 
@@ -247,8 +269,7 @@ const Device = (response, filter) => {
                             label="Latitude" 
                             value={data.latitude}
                             onChange={(e) => setData('latitude', e.target.value)}
-                        />
-                          <InputError message={errors.latitude} className="mt-1" />    
+                        />                        
                     </CCol> 
                     <CCol md={12}>
                         <CFormInput 
@@ -257,8 +278,7 @@ const Device = (response, filter) => {
                             label="Longitude"
                             value={data.longitude}
                             onChange={(e) => setData('longitude', e.target.value)} 
-                            />
-                            <InputError message={errors.longitude} className="mt-1" />    
+                            />                           
                     </CCol>  
                     <CCol xs={12}>
                         <CFormInput 
@@ -267,20 +287,8 @@ const Device = (response, filter) => {
                             placeholder="1234 Main St" 
                             value={data.location}
                             onChange={(e) => setData('location', e.target.value)}                           
-                         />
-                        <InputError message={errors.location} className="mt-1" />    
-                    </CCol> 
-                    <CCol xs={12}>
-                        <CFormCheck 
-                                id="flexCheckDefault" 
-                                label="Use the main address"
-                                name="override"
-                                checked={data.ysnLocation}
-                                onChange={(e) =>                                   
-                                    onCheckChange(e.target.checked)                                                                   
-                                }
-                            />   
-                    </CCol>  
+                         />                        
+                    </CCol>                    
                     </div>                     
                 
         </CModalBody>
