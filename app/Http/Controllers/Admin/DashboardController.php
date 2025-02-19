@@ -18,7 +18,7 @@ class DashboardController extends Controller
 
             $userCount     = User::where('role', 'user')->count();
             $deviceCount   = Device::count();
-            $employeeCount = User::where('role', 'admin')->count();
+            $employeeCount = User::where('role', '<>', 'user')->count();
             $notifitionCount = Notification::where('status', 'active')->count();
             $activities    = Activity::with('user')->orderBy('created_at', 'desc')->limit(10)->get();
 

@@ -52,19 +52,18 @@ const Profile = () => {
             try { 
                 
                 if (provinces.length === 0) {
-                    getProvinces();
-                    console.log(provinces)
+                    getProvinces();                 
                 }
         
                 // Find the province by name
                 let province = provinces.find(province => province.name === name);
           
 
-                if (!province) {                
-                    const res = await fetch('https://psgc.gitlab.io/api/provinces');
-                    const provincesdata = await res.json();   
-                    province = provincesdata.find(province => province.name === name);                        
-                }
+                // if (!province) {                
+                //     const res = await fetch('https://psgc.gitlab.io/api/provinces');
+                //     const provincesdata = await res.json();   
+                //     province = provincesdata.find(province => province.name === name);                        
+                // }
 
                 const response = await fetch(`https://psgc.gitlab.io/api/provinces/${province.code}/municipalities`);
         
@@ -73,12 +72,9 @@ const Profile = () => {
                     throw new Error('Failed to fetch municipalities');
                 }
         
-                const data = await response.json();
-                setMunicipalities(data);     
-                   
-                
-                const municipality = data.find(municipality => municipality.name === user.city);              
-                await getBarangays(municipality.psgc10DigitCode)
+                const resData = await response.json();
+                setMunicipalities(resData);              
+               
         
             } catch (error) {
                 console.error('Error fetching municipalities:', error);
@@ -100,19 +96,44 @@ const Profile = () => {
             } catch (error) {
                 console.error('Error fetching barangays:', error);
             }
-        };        
+        }; 
+        
+        const onBaranggayClick =  async () => {
+            const municipality = municipalities.find(municipality => municipality.name === data.city);
+            await getBarangays(municipality.psgc10DigitCode)
+        }
+
+        const onMunicipalityClick = () => {      
+            getMunicipalities(data.province);
+            if(data.city != user.city) {
+                setData('address2', null)
+                setBarangays([])
+            } 
+
+        }
+
+        const onProviceClick  = () => {
+            if(municipalities.length === 0){
+                getProvinces();
+                if(data.province != user.province) {
+                    setData('city', null)
+                    setData('address2', null)
+                    setMunicipalities([])
+                    setBarangays([])
+                }              
+            }        
+        }
         
 
-         // Fetch provinces when the component mounts
-        useEffect(() => {      
-                getProvinces(); 
-                console.log(data.province) 
-                getMunicipalities(data.province); 
-        }, [])  
+        //  // Fetch provinces when the component mounts
+        // useEffect(() => {      
+        //         getProvinces();          
+        //         getMunicipalities(data.province); 
+        // }, [])  
 
-        useEffect(() => {      
-            getMunicipalities(data.province);
-        }, [data.province]) 
+        // useEffect(() => {      
+        //     getMunicipalities(data.province);
+        // }, [data.province]) 
        
       
 
@@ -203,9 +224,11 @@ const Profile = () => {
                                 <CFormSelect 
                                     id="province"
                                     value={data.province}
-                                    onChange={(e) => setData('province', e.target.value)}                         
+                                    onChange={(e) => setData('province', e.target.value)}
+                                    onClick={(e) => onProviceClick()}
                                     >
                                     { user.province ?? <option>Choose...</option>}
+                                    {provinces.length === 0 &&  <option value={data.province}>{data.province}</option> }
                                     {
                                         provinces.map((province, index) => (
                                             <option key={index} value={province.name}>{province.name}</option>
@@ -225,9 +248,11 @@ const Profile = () => {
                                    <CFormSelect 
                                     id="city"
                                     value={data.city}
-                                    onChange={(e) => setData('city', e.target.value)}                           
+                                    onChange={(e) => setData('city', e.target.value)}  
+                                    onClick={() => onMunicipalityClick()}                         
                                     >
-                                    { user.province ?? <option>Choose...</option>}
+                                    { user.city ?? <option>Choose...</option>}
+                                    { municipalities.length === 0 &&  <option value={data.city}>{data.city}</option> }
                                     {
                                         municipalities.map((municipality, index) => (
                                             <option key={index} value={municipality.name}>{municipality.name}</option>
@@ -247,9 +272,11 @@ const Profile = () => {
                              <CFormSelect 
                                    id="address2" 
                                    value={data.address2}
-                                   onChange={(e) => setData('address2', e.target.value)}                         
+                                   onChange={(e) => setData('address2', e.target.value)}  
+                                   onClick={() => onBaranggayClick(data.city)}                       
                                     >
                                     { user.address2 ?? <option>Choose...</option>}
+                                    { barangays.length === 0 &&  <option value={data.address2}>{data.address2}</option> }
                                     {
                                         barangays.map((barangay, index) => (
                                             <option key={index} value={barangay.name}>{barangay.name}</option>

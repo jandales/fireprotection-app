@@ -122,10 +122,7 @@ const Show = (res) => {
                                 <CTableRow>                                        
                                     <CTableHeaderCell className="bg-body-tertiary">
                                         Device
-                                    </CTableHeaderCell> 
-                                    <CTableHeaderCell className="bg-body-tertiary">
-                                        IP Address
-                                    </CTableHeaderCell> 
+                                    </CTableHeaderCell>                                    
                                     <CTableHeaderCell className="bg-body-tertiary">
                                         Latitude
                                     </CTableHeaderCell> 
@@ -145,9 +142,6 @@ const Show = (res) => {
                                     <CTableRow v-for="item in tableItems" key={index}>                        
                                     <CTableDataCell>
                                         <div>{item.macAddress}</div>
-                                    </CTableDataCell>                                           
-                                    <CTableDataCell>
-                                        <div>{item.ipAddress}</div>                       
                                     </CTableDataCell> 
                                     <CTableDataCell>
                                         <div>{item.latitude}</div>                       
@@ -204,16 +198,7 @@ const Show = (res) => {
                                     value={device.macAddress}
                                     readOnly={true}                                     
                                      />
-                            </CCol>
-                            <CCol md={12}>
-                                <CFormInput 
-                                    type="text" 
-                                    id="ipAddress" 
-                                    label="IP Address"
-                                    value={device.ipAddress}
-                                    readOnly={true}                           
-                                 />                               
-                            </CCol>
+                            </CCol>                           
                             <CCol md={12}>
                                 <CFormInput 
                                     type="text" 
@@ -241,16 +226,6 @@ const Show = (res) => {
                                     readOnly={true}  
                                      />
                             </CCol> 
-                            <CCol xs={12}>
-                                <CFormCheck 
-                                        id="flexCheckDefault" 
-                                        label="Use the main address"
-                                        name="override"
-                                        checked={device.ysnLocation} 
-                                        readOnly={true}                                      
-                                    />   
-                            </CCol>                   
-                      
                             </div>                     
                         
                 </CModalBody>

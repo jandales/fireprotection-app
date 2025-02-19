@@ -73,9 +73,9 @@ const Notification = (res, filter) => {
                         <CTableHeaderCell className="bg-body-tertiary">
                             Name
                         </CTableHeaderCell> 
-                        <CTableHeaderCell className="bg-body-tertiary">
+                        {/* <CTableHeaderCell className="bg-body-tertiary">
                             Device 
-                        </CTableHeaderCell>                  
+                        </CTableHeaderCell>                   */}
                         <CTableHeaderCell className="bg-body-tertiary">
                             Location
                         </CTableHeaderCell>                      
@@ -104,9 +104,9 @@ const Notification = (res, filter) => {
                                 <small>{item.user.phonenumber}</small>
                             </div>
                         </CTableDataCell>
-                        <CTableDataCell>
+                        {/* <CTableDataCell>
                             <div>{item.deviceName + ':' + item.macAddress}</div>                       
-                        </CTableDataCell>                     
+                        </CTableDataCell>                      */}
                         <CTableDataCell>
                             <div>{item.deviceLocation}</div>                       
                         </CTableDataCell> 

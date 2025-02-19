@@ -154,21 +154,21 @@ const Index = (res, filter) => {
                                     <CCol md={12}>
                                         <CFormInput 
                                             type="text" 
+                                            id="name" 
+                                            label="Name"
+                                            value={device.name}
+                                            readOnly={true}                                     
+                                             />
+                                    </CCol>  
+                                    <CCol md={12}>
+                                        <CFormInput 
+                                            type="text" 
                                             id="macAddress" 
                                             label="Mac Address"
                                             value={device.macAddress}
                                             readOnly={true}                                     
                                              />
-                                    </CCol>
-                                    <CCol md={12}>
-                                        <CFormInput 
-                                            type="text" 
-                                            id="ipAddress" 
-                                            label="IP Address"
-                                            value={device.ipAddress}
-                                            readOnly={true}                           
-                                         />                               
-                                    </CCol>
+                                    </CCol>                                   
                                     <CCol md={12}>
                                         <CFormInput 
                                             type="text" 
@@ -195,17 +195,7 @@ const Index = (res, filter) => {
                                             value={device.location} 
                                             readOnly={true}  
                                              />
-                                    </CCol> 
-                                    <CCol xs={12}>
-                                        <CFormCheck 
-                                                id="flexCheckDefault" 
-                                                label="Use the main address"
-                                                name="override"
-                                                checked={device.ysnLocation} 
-                                                readOnly={true}                                      
-                                            />   
-                                    </CCol>                   
-                              
+                                    </CCol>                                   
                                     </div>                     
                                 
                         </CModalBody>

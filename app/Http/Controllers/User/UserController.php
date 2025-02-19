@@ -34,7 +34,7 @@ class UserController extends Controller
         $user = $request->user();
         $user->fill($request->validated());
         
-         // Handle avatar upload
+       
         if ($request->hasFile('avatar')) {
             $path = $request->file('avatar')->store('avatars', 'public');            
             $user->avatar = '/storage/' . $path; 
