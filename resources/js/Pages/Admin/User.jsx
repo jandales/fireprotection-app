@@ -24,25 +24,11 @@ import Search from '@/Components/Search';
 const User = (res, filter) => {    
    
     const users = res.users 
-    const [provinces, setProvince] = useState([]);
+
   
     const onPageChange = (url) => {
         router.get(url, {}, { preserveScroll: true, preserveState: true });
-    } 
-
-    const getProvinces = async () => {
-        try {
-            const response = await fetch('https://psgc.gitlab.io/api/provinces');
-            if (!response.ok) {
-                throw new Error('Failed to fetch provinces');
-            }
-            const data = await response.json();
-            setProvince(data);
-            console.log(provinces)
-        } catch (error) {
-            console.error('Error fetching provinces:', error);
-        }
-    };
+    }  
     
 
   return (
