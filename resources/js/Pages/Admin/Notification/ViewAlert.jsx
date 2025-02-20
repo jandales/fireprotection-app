@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react";
+import {  useForm } from '@inertiajs/react';
+import {  toast } from 'react-toastify';
+
 import {   
     CButton,
     CModal,
@@ -8,7 +11,6 @@ import {
     CModalTitle,
  
   } from '@coreui/react'
-import warningIcon from '@/assets/images/warning.png'
 import MapComponent from '@/Components/MapComponent';
 import { usePage } from '@inertiajs/react';
 import CIcon from '@coreui/icons-react'; 
@@ -19,14 +21,44 @@ import {
 const ViewAlert = ({visible, notification, onClose}) => { 
     const station = usePage().props.station;
 
+    const { patch } =
+            useForm({              
+                status : null,            
+    }); 
+    
+    const onUpdateStatus = (status) => { 
+    
+        if(status == 'dispatch') {
+            patch(route('notifications.update.status.dispatch', {id : notification.id}), {
+                preserveScroll: true,
+                onSuccess: () => {                        
+                    toast.success("Successfully Update status", {
+                        autoClose: 1000,
+                    });
+                }                        
+            });
+            return;
+        }          
+
+        patch(route('notifications.update.status.close', {id : notification.id}), {
+            preserveScroll: true,
+            onSuccess: () => {                        
+                toast.success("Successfully Update status", {
+                    autoClose: 1000,
+                });
+            }                        
+        });
+
+    } 
+
     const [isModalOpen, setIsModalOpen] = useState(false); 
 
     const origin = {
-      location : station.address,
-      position : { 
-           lat : station.latitude,
-           lng : station.longitude 
-      } 
+        location : station.address,
+        position : { 
+            lat : station.latitude,
+            lng : station.longitude 
+        } 
     };
     
     const [destination, setDestination] = useState();
@@ -42,14 +74,7 @@ const ViewAlert = ({visible, notification, onClose}) => {
     })
   
     }, [visible, isModalOpen]);
-
-    const onDispatch = () => {
-
-    }
-
-    const onClosed = () => {
-
-    }
+  
 
     return (
         <div>           
@@ -80,12 +105,16 @@ const ViewAlert = ({visible, notification, onClose}) => {
                                 </div>
 
                                <div className="alert-button-wrapper">
-                                <CButton color="warning" variant="outline" size="sm"  onClick={(e) => onDispatch(notification)}>
-                                        Dispatch
-                                 </CButton>  
-                                 <CButton color="success" variant="outline" size="sm"  onClick={(e) => onClosed(notification)}>
-                                        Close
-                                 </CButton>  
+                                 { !['dispatched', 'dispatch', 'closed'].includes(notification.status) &&
+                                  <CButton color="warning" variant="outline" size="sm"  onClick={onUpdateStatus}>
+                                          Dispatch
+                                  </CButton>
+                                  } 
+                                  { !['closed'].includes(notification.status) &&
+                                    <CButton color="success" variant="outline" size="sm"  onClick={onUpdateStatus}>
+                                            Close
+                                    </CButton>  
+                                  }
                                </div>
 
                             </div> 
@@ -98,7 +127,7 @@ const ViewAlert = ({visible, notification, onClose}) => {
                       </CButton>                     
                     </CModalFooter>
                 
-                    </CModal>           
+                    </CModal> 
         </div>
     );
 };

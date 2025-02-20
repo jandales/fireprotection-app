@@ -119,7 +119,7 @@ const Notification = (res, filter) => {
                         </CTableDataCell> 
                         <CTableDataCell>
                             <div className='btn-gap'>
-                                <CButton color="info" variant="outline" size="sm"  onClick={(e) => handleOpenModal(true, item)}>View</CButton> 
+                                <CButton color="info" variant="outline" size="sm"  onClick={(e) => handleOpenModal(true, item)}>Action</CButton> 
                             </div>                  
                         </CTableDataCell>                            
                         </CTableRow>

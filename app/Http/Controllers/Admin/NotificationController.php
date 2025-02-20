@@ -29,4 +29,22 @@ class NotificationController extends Controller
             'filter' => $search,
         ]);
     }
+
+    public function dispatch($id) {
+
+        $notification = Notification::find($id);
+        $notification->status = 'dispatched';
+        $notification->save();
+
+        return redirect()->back()->with('success', 'Status updated successfully!');
+    }
+
+    public function close($id) {
+        
+        $notification = Notification::find($id);
+        $notification->status = 'closed';
+        $notification->save();
+
+        return redirect()->back()->with('success', 'Status updated successfully!');
+    }
 }
