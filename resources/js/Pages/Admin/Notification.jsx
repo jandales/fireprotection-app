@@ -1,7 +1,8 @@
 import DefaultLayout from '@/Layouts/DefaultLayout';
 import { Link, router } from '@inertiajs/react';
 import React, { useEffect,useState } from "react";
-
+import {  useForm } from '@inertiajs/react';
+import {  toast } from 'react-toastify';
 import {
   CCard,
   CCardHeader,
@@ -23,13 +24,19 @@ import Pagination from '@/Components/Pagination';
 import Search from '@/Components/Search';
 import echo from "../../../js/echo.js"
 import ViewAlert from '@/Pages/Admin/Notification/ViewAlert.jsx';
+import ConfirmDelete from '@/Components/ConfirmDelete';
 
 const Notification = (res, filter) => { 
     
     const notifications  = res.notifications  
 
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [alert, setAlert] = useState("");      
+    const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
+    const [deleteId, setDeleteId] = useState("");
+
+    const [alert, setAlert] = useState("");  
+    
+        const { delete: destroy } =  useForm(); 
     
     const onPageChange = (url) => {
         router.get(url, {}, { preserveScroll: true, preserveState: true });
@@ -54,6 +61,42 @@ const Notification = (res, filter) => {
     const handleCloseModal = () => {
         setIsModalOpen(false); 
     }
+
+    const handleOpenDeleteModal = (state, id) => {
+        setIsModalDeleteOpen(state)
+        setDeleteId(id);
+    }
+    const handlecloseDeleteModal = () => {
+        setIsModalDeleteOpen(false)
+    }
+
+    const handleConfirm = () => {
+       
+        destroy(route('notifications.destroy', {id : deleteId}), {
+            preserveScroll: true,
+            onSuccess: () => {                        
+                toast.success("Successfully Deleted", {
+                    autoClose: 1000,
+                });               
+                handlecloseDeleteModal()
+            }                        
+        });
+      
+        
+    };
+
+    const getStatus = (status) => {
+        switch (status) {
+          case 'active':
+            return 'alert-status-active';
+          case 'dispatched':
+            return 'alert-status-dispatched';
+          case 'closed':
+            return 'alert-status-closed';
+          default:
+            return 'alert-status-active';
+        }
+      };
 
   return (
       <DefaultLayout     
@@ -115,14 +158,17 @@ const Notification = (res, filter) => {
                             <div>{item.created_at}</div>                       
                         </CTableDataCell> 
                         <CTableDataCell >
-                            <div className='text-capitalize small'>{item.status}</div>                       
+                            {/* <div className='capitalize small status status-active'>{item.status}</div> */}
+                            <span className={`alert-status ${getStatus(item.status)}`}>{item.status}</span>                         
                         </CTableDataCell> 
                         <CTableDataCell>
                             <div className='btn-gap'>
-                                <CButton color="info" variant="outline" size="sm"  onClick={(e) => handleOpenModal(true, item)}>Action</CButton> 
+                                <CButton color="info" variant="outline" size="sm"  onClick={(e) => handleOpenModal(true, item)}>View</CButton> 
+                                <CButton color="danger" variant="outline" size="sm"  onClick={(e) => handleOpenDeleteModal(true, item.id)}>Delete</CButton> 
                             </div>                  
-                        </CTableDataCell>                            
+                        </CTableDataCell>       
                         </CTableRow>
+                        
                         
                     ))}
                     </CTableBody>
@@ -140,6 +186,13 @@ const Notification = (res, filter) => {
                         onPageChange={onPageChange}
                      />
                  )}
+
+                    <ConfirmDelete
+                            isOpen={isModalDeleteOpen}
+                            onClose={handlecloseDeleteModal}
+                            onConfirm={handleConfirm}
+                            message="Are you sure you want to delete this?"
+                        />  
                 
             </CCard>
             </CCol>

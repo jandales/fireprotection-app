@@ -28,12 +28,13 @@ class NotificationController extends Controller
                 'user_id'   => $device->user->id,    
                 'device_id' => $device->id, 
                 'message'   => $request->message,
+                'type'      => $request->type,
             ]);
 
             $notification->load('device');
     
             $user  = User::where('id', $notification->user_id)->first();  
-
+        
             event(new NotificationEvent($notification));
 
             return response()->json(['message' => $notification->message], 200);
@@ -47,3 +48,4 @@ class NotificationController extends Controller
         
     }
 }
+

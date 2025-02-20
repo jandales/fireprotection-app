@@ -87,8 +87,7 @@ const Edit = ({user}) => {
     };
             
     const getBarangays= async (code) => {
-        try {                               
-            
+        try {  
             const response = await fetch(`https://psgc.cloud/api/cities-municipalities/${code}/barangays`);        
         
             if (!response.ok) {
@@ -115,14 +114,12 @@ const Edit = ({user}) => {
 
     const onMunicipalityClick = () => {      
         getMunicipalities(data.province);
-    }
+    }  
 
-    const onMunicipalityChange = (value) => {
-        setData('city', value)
-    }
-
-    const onBarangaysClick = () => {
-        getBarangays(data.city)
+    const onBarangaysClick =  async ()  => {
+        console.log(data.city)
+        const municipality = municipalities.find(municipality => municipality.name === data.city);
+        await getBarangays(municipality.psgc10DigitCode)
     }
 
   return (
@@ -247,7 +244,7 @@ const Edit = ({user}) => {
                                                     <CFormSelect 
                                                         id="city"
                                                         value={data.city}
-                                                        onChange={(e) => onMunicipalityChange(e.target.value)}
+                                                        onChange={(e) => setData('city', e.target.value)}
                                                         onClick={(e) => onMunicipalityClick()}
                                                         >
                                                          { data.city ?? <option>Choose...</option>}

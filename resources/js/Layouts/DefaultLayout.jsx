@@ -30,7 +30,7 @@ export default function DefaultLayout({ header, children }) {
         {/* <AppFooter /> */}
       </div>
        <ToastContainer />
-       {user.role != 'user' && <NotificationAlert /> } 
+       { <NotificationAlert /> } 
     </div>
   )
 }

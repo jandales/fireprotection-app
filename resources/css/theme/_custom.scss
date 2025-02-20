@@ -75,7 +75,7 @@ input[type=number] {
     margin-right: 20px;
 }
 .alert-body{
-    width: 300px;
+    width: 500px;
 }
 .alert-body p {
     margin-bottom: 0 !important;
@@ -98,6 +98,7 @@ input[type=number] {
 }
 
 .status {
+    width: auto;
     background-color: #3498db; /* Change to your desired color */
     border-radius: 5px; /* Adjust for more or less rounding */
     padding: 3px 10px; 

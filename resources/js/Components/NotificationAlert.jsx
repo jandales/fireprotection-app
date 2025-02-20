@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { usePage } from '@inertiajs/react';
+import {  useForm, usePage  } from '@inertiajs/react';
 import echo from "../echo.js"
+import {  toast } from 'react-toastify';
 import {   
     CButton,
     CModal,
@@ -15,7 +16,6 @@ import CIcon from '@coreui/icons-react';
 import { 
   cilWarning
  } from '@coreui/icons'; 
-import { compileString } from 'sass';
 
 const NotificationAlert = () => {
     const station= usePage().props.station;
@@ -24,7 +24,7 @@ const NotificationAlert = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [destination, setDestination] = useState("");
     const childRef = useRef();
-
+    const { patch } = useForm(); 
     const origin = {
        location : station.address,
        position : { 
@@ -35,9 +35,10 @@ const NotificationAlert = () => {
  
 
     useEffect(() => {
+     
         echo.channel("notification-channel").listen("NotificationEvent", (e) => {
             const device = e.notification.device; 
-
+          
             const coordinates = { 
               location : device.location,
               position : {lat : device.latitude, lng : device.longitude }
@@ -56,6 +57,39 @@ const NotificationAlert = () => {
             echo.leaveChannel("notification-channel"); 
         };
     }, []);
+
+       const onUpdateStatus = (status) => { 
+    
+          if (!notification || !notification.id) return;
+
+          const alert = notification;
+        
+            if(status == 'dispatch') {        
+                patch(route('notifications.update.status.dispatch', {id : notification.id}), {
+                    preserveScroll: true,
+                    onSuccess: () => {                        
+                        toast.success("Successfully Update status", {
+                            autoClose: 1000,
+                        });     
+                        alert.status = 'dispatched'
+                        setNotification(alert)              
+                    }                        
+                });
+                return;
+            }          
+    
+            patch(route('notifications.update.status.close', {id : notification.id}), {
+                preserveScroll: true,
+                onSuccess: () => {                        
+                    toast.success("Successfully Update status", {
+                        autoClose: 1000,
+                    });   
+                    alert.status = 'closed'
+                    setNotification(alert)               
+                }                        
+            });
+    
+        } 
 
     
 
@@ -85,7 +119,21 @@ const NotificationAlert = () => {
                                     <p>Contact  : {notification.user?.phonenumber}</p> 
                                     <p>Location : {notification.device?.ysnLocation == true ? notification.user?.location : notification.device?.location}</p>
                                     <p>Device   : {notification.device?.name}</p>
+                                    <p className="capitalize">Status   : {notification.status}</p>
                                 </div>
+                                <div className="alert-button-wrapper">
+                                  { !['dispatched', 'dispatch', 'closed'].includes(notification.status) &&
+                                    <CButton color="warning" variant="outline" size="sm"  onClick={() => onUpdateStatus("dispatch")}>
+                                            Dispatch
+                                    </CButton>
+                                  } 
+                                  { !['closed'].includes(notification.status) &&
+                                    <CButton color="success" variant="outline" size="sm"  onClick={() => onUpdateStatus("close")}>
+                                            Close
+                                    </CButton>  
+                                  }
+                               </div>
+
                             </div> 
                  
                       <MapComponent origin={origin} destination={destination} ref={childRef}  />

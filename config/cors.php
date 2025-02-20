@@ -19,11 +19,11 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['http://192.168.254.109'],
+    'allowed_origins' => ['*'],
 
     'allowed_origins_patterns' => ['*'],
 
-    'allowed_headers' => ['*'],
+    'allowed_headers' => ['Content-Type', 'X-Requested-With', 'Authorization'],
 
     'exposed_headers' => [],
 

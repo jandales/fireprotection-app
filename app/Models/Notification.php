@@ -14,7 +14,8 @@ class Notification extends Model
        'longitude',          
        'location',
        'message',
-       'status'      
+       'status',
+       'type',    
     ];
 
     protected $appends = [

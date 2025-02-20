@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import {  useForm } from '@inertiajs/react';
+import {  useForm, usePage  } from '@inertiajs/react';
 import {  toast } from 'react-toastify';
 
 import {   
@@ -12,7 +12,6 @@ import {
  
   } from '@coreui/react'
 import MapComponent from '@/Components/MapComponent';
-import { usePage } from '@inertiajs/react';
 import CIcon from '@coreui/icons-react'; 
 import { 
   cilWarning
@@ -21,20 +20,20 @@ import {
 const ViewAlert = ({visible, notification, onClose}) => { 
     const station = usePage().props.station;
 
-    const { patch } =
-            useForm({              
-                status : null,            
-    }); 
+    const { patch } = useForm(); 
     
     const onUpdateStatus = (status) => { 
+
+      if (!notification || !notification.id) return;
     
-        if(status == 'dispatch') {
+        if(status == 'dispatch') {        
             patch(route('notifications.update.status.dispatch', {id : notification.id}), {
                 preserveScroll: true,
                 onSuccess: () => {                        
                     toast.success("Successfully Update status", {
                         autoClose: 1000,
                     });
+                    onClose()
                 }                        
             });
             return;
@@ -46,10 +45,14 @@ const ViewAlert = ({visible, notification, onClose}) => {
                 toast.success("Successfully Update status", {
                     autoClose: 1000,
                 });
+                onClose()
             }                        
         });
 
     } 
+
+
+
 
     const [isModalOpen, setIsModalOpen] = useState(false); 
 
@@ -102,16 +105,18 @@ const ViewAlert = ({visible, notification, onClose}) => {
                                     <p>Contact  : {notification.user?.phonenumber}</p> 
                                     <p>Location : {notification.device?.ysnLocation == true ? notification.user?.location : notification.device?.location}</p>
                                     <p>Device   : {notification.device?.name}</p>
+                                    <p className="capitalize">Status   : {notification.status}</p>
                                 </div>
 
                                <div className="alert-button-wrapper">
-                                 { !['dispatched', 'dispatch', 'closed'].includes(notification.status) &&
-                                  <CButton color="warning" variant="outline" size="sm"  onClick={onUpdateStatus}>
-                                          Dispatch
-                                  </CButton>
+                             
+                                  { !['dispatched', 'dispatch', 'closed'].includes(notification.status) &&
+                                    <CButton color="warning" variant="outline" size="sm"  onClick={() => onUpdateStatus("dispatch")}>
+                                            Dispatch
+                                    </CButton>
                                   } 
                                   { !['closed'].includes(notification.status) &&
-                                    <CButton color="success" variant="outline" size="sm"  onClick={onUpdateStatus}>
+                                    <CButton color="success" variant="outline" size="sm"  onClick={() => onUpdateStatus("close")}>
                                             Close
                                     </CButton>  
                                   }

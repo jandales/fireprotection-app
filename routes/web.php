@@ -36,7 +36,8 @@ Route::get('/alerts', function () {
 Route::middleware('auth')->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications');
     Route::patch('/notifications/update/{id}/dispatch', [NotificationController::class, 'dispatch'])->name('notifications.update.status.dispatch');
-    Route::patch('/notifications/update/{id}/close', [NotificationController::class, 'close'])->name('notifications.update.status.close');
+    Route::patch('/notifications/update/close/{id}', [NotificationController::class, 'close'])->name('notifications.update.status.close');
+    Route::delete('/notifications/{id}/destroy', [NotificationController::class, 'destroy'])->name('notifications.destroy');
     Route::get('/users', [AdminUserController::Class, 'index'])->name('users');
     Route::get('/users/{user}', [AdminUserController::Class, 'show'])->name('users.show'); 
 });

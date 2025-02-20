@@ -47,4 +47,12 @@ class NotificationController extends Controller
 
         return redirect()->back()->with('success', 'Status updated successfully!');
     }
+
+    public function destroy($id) {
+        
+        $notification = Notification::find($id);      
+        $notification->delete();
+
+        return redirect()->back()->with('success', 'Successfully Deleted!');
+    }
 }
