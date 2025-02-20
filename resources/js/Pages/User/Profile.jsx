@@ -105,6 +105,24 @@ const Profile = () => {
                         </CRow>
                     </CCol>  
 
+                   { user.role != 'user' &&
+                    <CCol md={12}>
+                        <CRow className="mb-3">
+                            <CFormLabel htmlFor="contactnumber" className="col-sm-2 col-form-label">
+                            Role
+                            </CFormLabel>
+                            <CCol sm={10}>
+                            <CFormInput 
+                                type="text" 
+                                id="contactnumber" 
+                                value={user.role}
+                                readOnly                              
+                                />
+                            </CCol>
+                        </CRow>
+                    </CCol>  
+                    }
+
                     <CCol md={12}>
                         <CRow className="mb-3">
                             <CFormLabel htmlFor="Address" className="col-sm-2 col-form-label">

@@ -22,8 +22,9 @@ export const AppSidebarNav = ({ items }) => {
   return (
     <CSidebarNav as={SimpleBar}>    
         {
-          user.role === 'administrator' && (
+          user.role != 'user' && (
             <>
+            {user.role == 'administrator' &&
             <div className='nav-item'>
               <Link 
                 className={`nav-link ${route().current('dashboard') ? 'active' : ''}`}  
@@ -31,6 +32,7 @@ export const AppSidebarNav = ({ items }) => {
                 <CIcon icon={cilSpeedometer} className='nav-icon'/> Dashboard   
               </Link>
             </div>
+            }
             <div className='nav-item'>
               <Link            
                  className={`nav-link ${route().current('notifications') ? 'active' : ''}`}  
@@ -45,6 +47,7 @@ export const AppSidebarNav = ({ items }) => {
                 <CIcon icon={cilGroup} className='nav-icon' /> Users    
               </Link>
             </div> 
+            {user.role == 'administrator' &&
             <div className='nav-item'>
               <Link  
                 className={`nav-link ${route().current('devices')  || route().current('devices.maps')  ? 'active' : ''}`}  
@@ -52,13 +55,16 @@ export const AppSidebarNav = ({ items }) => {
                 <CIcon icon={cilDevices} className='nav-icon' /> Devices    
               </Link>
             </div> 
-            <div className='nav-item'>
-              <Link  
-                className={`nav-link ${route().current('employees') ? 'active' : ''}`} 
-                href={route('employees')} >
-                <CIcon icon={cilGroup} className='nav-icon' /> Employee    
-              </Link>
-            </div> 
+            }
+            {user.role == 'administrator' &&
+              <div className='nav-item'>
+                <Link  
+                  className={`nav-link ${route().current('employees') ? 'active' : ''}`} 
+                  href={route('employees')} >
+                  <CIcon icon={cilGroup} className='nav-icon' /> Employee    
+                </Link>
+              </div> 
+            }
             <div className='nav-item'>
               <Link  
                  className={`nav-link ${route().current('account') ? 'active' : ''}`} 
@@ -66,13 +72,15 @@ export const AppSidebarNav = ({ items }) => {
                 <CIcon icon={cilUser} className='nav-icon' />  Account  
               </Link>
             </div> 
-            <div className='nav-item'>
-              <Link  
-                className={`nav-link ${route().current('settings.index') ? 'active' : ''}`} 
-                href={route('settings.index')}>
-                <CIcon icon={cilSettings} className='nav-icon' /> Settings    
-              </Link>
-            </div>               
+            {user.role == 'administrator' &&
+              <div className='nav-item'>
+                <Link  
+                  className={`nav-link ${route().current('settings.index') ? 'active' : ''}`} 
+                  href={route('settings.index')}>
+                  <CIcon icon={cilSettings} className='nav-icon' /> Settings    
+                </Link>
+              </div> 
+            }              
             </>
           )
         }       

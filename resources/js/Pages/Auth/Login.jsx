@@ -95,7 +95,7 @@ const Login = ({ status, canResetPassword }) => {
                                        Log in
                           </PrimaryButton>
                       </CCol>
-                      <CCol xs={6} className="text-right">
+                      {/* <CCol xs={6} className="text-right">
                             {canResetPassword && (
                               <Link
                                   href={route('password.request')}
@@ -104,7 +104,7 @@ const Login = ({ status, canResetPassword }) => {
                                   Forgot your password?
                               </Link>
                           )}
-                      </CCol>
+                      </CCol> */}
                     </CRow>
                     </CForm>                
                 </CCardBody>
