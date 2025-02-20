@@ -38,9 +38,12 @@ class DashboardController extends Controller
 
         if (Auth::check() && Auth::user()->role === 'administrator') {           
 
-            return Inertia::render('Admin/Dashboard');
+            return Inertia::render('Admin/Dashboard', [
+                'notifications' =>  Notification::paginate(10)
+            ]);
 
         }
+
         return redirect('/user'); 
     }
 }

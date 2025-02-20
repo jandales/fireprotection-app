@@ -74,7 +74,9 @@ input[type=number] {
 .alert-icon {
     margin-right: 20px;
 }
-
+.alert-body{
+    width: 300px;
+}
 .alert-body p {
     margin-bottom: 0 !important;
 }
@@ -155,3 +157,59 @@ input[type=number] {
 .text-black-a {
     color: #000;
 }
+
+.alert-container{
+    display: flex;
+    align-items: center; 
+    padding: 10px;   
+}
+
+.alert-container:hover{
+    background-color: #f0ad4e;
+    cursor: pointer;
+}
+
+
+
+.alert-content{
+    display: flex;
+    align-items: center;  
+    justify-content: space-between;
+}
+
+.alert-content span{
+    font-size: 12px;
+}
+
+.alert-status { 
+    border-radius: 5px;
+    padding: 2px 6px; 
+    text-align: center;  
+    font-size: 12px;
+    text-transform: capitalize;
+}
+
+.alert-status-active{
+    background-color: #f37272; 
+    color: #fff;  
+}
+
+.alert-status-dispatched{
+    background-color: #f0ad4e;
+    color: #fff;
+}
+
+.alert-status-closed {
+    background-color: #5cb85c;
+    color: #fff;
+}
+
+
+.alert-button-wrapper{
+    width: 100%;
+    display: flex;
+    align-items: flex-end; 
+    justify-content: flex-end;
+    gap: 10px;
+}
+

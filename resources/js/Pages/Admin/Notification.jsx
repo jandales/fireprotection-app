@@ -43,6 +43,7 @@ const Notification = (res, filter) => {
         return () => {
             echo.leaveChannel("notification-channel"); 
         };
+        
     }, []);
 
     const handleOpenModal = (state, item) => {

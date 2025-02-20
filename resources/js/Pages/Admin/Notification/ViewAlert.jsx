@@ -43,6 +43,14 @@ const ViewAlert = ({visible, notification, onClose}) => {
   
     }, [visible, isModalOpen]);
 
+    const onDispatch = () => {
+
+    }
+
+    const onClosed = () => {
+
+    }
+
     return (
         <div>           
              <CModal
@@ -70,6 +78,16 @@ const ViewAlert = ({visible, notification, onClose}) => {
                                     <p>Location : {notification.device?.ysnLocation == true ? notification.user?.location : notification.device?.location}</p>
                                     <p>Device   : {notification.device?.name}</p>
                                 </div>
+
+                               <div className="alert-button-wrapper">
+                                <CButton color="warning" variant="outline" size="sm"  onClick={(e) => onDispatch(notification)}>
+                                        Dispatch
+                                 </CButton>  
+                                 <CButton color="success" variant="outline" size="sm"  onClick={(e) => onClosed(notification)}>
+                                        Close
+                                 </CButton>  
+                               </div>
+
                             </div> 
                       
                       <MapComponent origin={origin} destination={destination} />
