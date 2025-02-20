@@ -4,7 +4,11 @@ import {  CRow, CCard, CCardHeader, CFormLabel, CButton, CCol, CForm, CFormInput
 import {  useForm } from '@inertiajs/react';
 import {  toast } from 'react-toastify';
 
-const Create = () => {   
+const Create = () => {  
+    //   const user = usePage().props.auth.user;  
+    const [provinces, setProvince] = useState([]);
+    const [municipalities, setMunicipalities] = useState([]);
+    const [barangays, setBarangays] = useState([]); 
 
     const { data, setData, post  } =
         useForm({
@@ -40,9 +44,76 @@ const Create = () => {
             
         };  
 
+    const getProvinces = async () => {
+                try {
+                    const response = await fetch('https://psgc.gitlab.io/api/provinces');
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch provinces');
+                    }
+                    const data = await response.json();
+                    setProvince(data);                
+                } catch (error) {
+                    console.error('Error fetching provinces:', error);
+                }
+            };
+    
+    const getMunicipalities = async (name) => {
+        try { 
 
+            if(!name) return;
+
+            if (provinces.length === 0) {
+                getProvinces();             
+            }    
+            // Find the province by name
+            let province = provinces.find(province => province.name === name); 
+           
+            const response = await fetch(`https://psgc.gitlab.io/api/provinces/${province.code}/municipalities`);
     
+            
+            if (!response.ok) {
+                throw new Error('Failed to fetch municipalities');
+            }
     
+            const resData = await response.json();
+
+            setMunicipalities(resData);   
+    
+        } catch (error) {
+            console.error('Error fetching municipalities:', error);
+        }
+    };
+            
+    const getBarangays= async (code) => {
+        try {                               
+            
+            const response = await fetch(`https://psgc.cloud/api/cities-municipalities/${code}/barangays`);        
+        
+            if (!response.ok) {
+                throw new Error('Failed to fetch barangays');
+            }
+
+            const data = await response.json();
+            setBarangays(data);  
+    
+        } catch (error) {
+            console.error('Error fetching barangays:', error);
+        }
+    };  
+   
+    const onProviceClick  = () => {
+        if(municipalities.length === 0){
+            getProvinces();
+        }        
+    }
+
+    const onMunicipalityClick = () => {      
+        getMunicipalities(data.province);
+    }
+
+    const onBarangaysClick = () => {
+        getBarangays(data.city)
+    }           
 
   return (
       <DefaultLayout     
@@ -130,7 +201,77 @@ const Create = () => {
                              Address
                             </CFormLabel>  
                         </CRow>
-                    </CCol>                     
+                    </CCol> 
+
+                    <CCol md={12}>
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="province" className="col-sm-2 col-form-label">
+                                    Province
+                                </CFormLabel>
+                                <CCol sm={10}>
+                                <CFormSelect 
+                                    id="province"
+                                    value={data.province}
+                                    onChange={(e) => setData('province', e.target.value)}
+                                    onClick={(e) => onProviceClick()}
+                                    >
+                                    { data.province ?? <option>Choose...</option>}
+                                    {
+                                        provinces.map((province, index) => (
+                                            <option key={index} value={province.name}>{province.name}</option>
+                                        ))
+                                    } 
+                                </CFormSelect>
+                                </CCol>
+                            </CRow>
+                    </CCol> 
+
+                    <CCol md={12}>
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="city" className="col-sm-2 col-form-label">
+                                    Municipality
+                                </CFormLabel>
+                                <CCol sm={10}>
+                                <CFormSelect 
+                                    id="city"
+                                    value={data.city}
+                                    onChange={(e) => setData('city', e.target.value)}
+                                    onClick={(e) => onMunicipalityClick()}
+                                    >
+                                     { data.city ?? <option>Choose...</option>}
+                                     {
+                                        municipalities.map((municipality, index) => (
+                                            <option key={index} value={municipality.name}>{municipality.name}</option>
+                                        ))
+                                     } 
+                                   
+                                </CFormSelect>
+                                </CCol>
+                            </CRow>
+                    </CCol>     
+
+                    <CCol md={12}>
+                        <CRow className="mb-3">
+                            <CFormLabel htmlFor="address1" className="col-sm-2 col-form-label">
+                                Barrangay
+                            </CFormLabel>
+                            <CCol sm={10}>
+                            <CFormSelect 
+                                    id="address1"
+                                    value={data.address1}
+                                    onChange={(e) => setData('address1', e.target.value)}
+                                    onClick={onBarangaysClick}
+                                    >
+                                    { data.address1 ?? <option>Choose...</option>}
+                                     {
+                                        barangays.map((barangay, index) => (
+                                            <option key={index} value={barangay.name}>{barangay.name}</option>
+                                        ))
+                                     } 
+                                </CFormSelect>
+                            </CCol>
+                        </CRow>
+                    </CCol>
 
                     <CCol md={12}>
                         <CRow className="mb-3">
@@ -147,54 +288,8 @@ const Create = () => {
                             </CCol>
                         </CRow>
                     </CCol> 
-
-                    <CCol md={12}>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="address1" className="col-sm-2 col-form-label">
-                                Barrangay
-                            </CFormLabel>
-                            <CCol sm={10}>
-                            <CFormInput
-                                    id="address1"
-                                    value={data.address1}
-                                    onChange={(e) => setData('address1', e.target.value)}                                
-                                />                                  
-                       
-                            </CCol>
-                        </CRow>
-                    </CCol>
-
-
-                    <CCol md={12}>
-                            <CRow className="mb-3">
-                                <CFormLabel htmlFor="city" className="col-sm-2 col-form-label">
-                                    Municipality
-                                </CFormLabel>
-                                <CCol sm={10}>
-                                <CFormInput
-                                    id="city"
-                                    value={data.city}
-                                    onChange={(e) => setData('city', e.target.value)}
-                                />
-                                </CCol>
-                            </CRow>
-                    </CCol> 
-                    
                
-                    <CCol md={12}>
-                            <CRow className="mb-3">
-                                <CFormLabel htmlFor="province" className="col-sm-2 col-form-label">
-                                    Province
-                                </CFormLabel>
-                                <CCol sm={10}>
-                                <CFormInput
-                                    id="province"
-                                    value={data.province}
-                                    onChange={(e) => setData('province', e.target.value)}                                 
-                                />
-                                </CCol>
-                            </CRow>
-                    </CCol> 
+                   
 
                                  
                     <CCol md={12}>

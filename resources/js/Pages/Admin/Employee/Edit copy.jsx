@@ -211,8 +211,78 @@ const Edit = ({user}) => {
                         </CRow>
                     </CCol> 
 
+                    <CCol md={12}>
+                                                <CRow className="mb-3">
+                                                    <CFormLabel htmlFor="province" className="col-sm-2 col-form-label">
+                                                        Province
+                                                    </CFormLabel>
+                                                    <CCol sm={10}>
+                                                    <CFormSelect 
+                                                        id="province"
+                                                        value={data.province}
+                                                        onChange={(e) => onProviceChange(e.target.value)}
+                                                        onClick={(e) => onProviceClick()}
+                                                        >
+                                                        { data.province ?? <option>Choose...</option>}
+                                                        {provinces.length === 0 &&  <option value={data.province}>{data.province}</option> }
+                                                        {
+                                                            provinces.map((province, index) => (
+                                                                <option key={index} value={province.name}>{province.name}</option>
+                                                            ))
+                                                        } 
+                                                    </CFormSelect>
+                                                    </CCol>
+                                                </CRow>
+                                        </CCol> 
                     
-                                                                                    
+                                        <CCol md={12}>
+                                                <CRow className="mb-3">
+                                                    <CFormLabel htmlFor="city" className="col-sm-2 col-form-label">
+                                                        Municipality
+                                                    </CFormLabel>
+                                                    <CCol sm={10}>
+                                                    <CFormSelect 
+                                                        id="city"
+                                                        value={data.city}
+                                                        onChange={(e) => setData('city', e.target.value)}
+                                                        onClick={(e) => onMunicipalityClick()}
+                                                        >
+                                                         { data.city ?? <option>Choose...</option>}
+                                                         { municipalities.length === 0 &&  <option value={data.city}>{data.city}</option> }
+                                                         {
+                                                            municipalities.map((municipality, index) => (
+                                                                <option key={index} value={municipality.name}>{municipality.name}</option>
+                                                            ))
+                                                         } 
+                                                       
+                                                    </CFormSelect>
+                                                    </CCol>
+                                                </CRow>
+                                        </CCol>     
+                    
+                                        <CCol md={12}>
+                                            <CRow className="mb-3">
+                                                <CFormLabel htmlFor="address1" className="col-sm-2 col-form-label">
+                                                    Barrangay
+                                                </CFormLabel>
+                                                <CCol sm={10}>
+                                                <CFormSelect 
+                                                        id="address1"
+                                                        value={data.address1}
+                                                        onChange={(e) => setData('address1', e.target.value)}
+                                                        onClick={onBarangaysClick}
+                                                        >
+                                                        { data.address1 ?? <option>Choose...</option>}
+                                                        { barangays.length === 0 &&  <option value={data.address1}>{data.address1}</option> }
+                                                        {
+                                                            barangays.map((barangay, index) => (
+                                                                <option key={index} value={barangay.name}>{barangay.name}</option>
+                                                            ))
+                                                        } 
+                                                    </CFormSelect>
+                                                </CCol>
+                                            </CRow>
+                                        </CCol>
                     
                                         <CCol md={12}>
                                             <CRow className="mb-3">
@@ -222,63 +292,17 @@ const Edit = ({user}) => {
                                                 <CCol sm={10}>
                                                 <CFormInput 
                                                     type="text" 
-                                                    id="address1" 
-                                                    value={data.address1}
-                                                    onChange={(e) => setData('address1', e.target.value)}
+                                                    id="address2" 
+                                                    value={data.address2}
+                                                    onChange={(e) => setData('address2', e.target.value)}
                                                      />
                                                 </CCol>
                                             </CRow>
                                         </CCol> 
-
-                                        <CCol md={12}>
-                                            <CRow className="mb-3">
-                                                <CFormLabel htmlFor="address2" className="col-sm-2 col-form-label">
-                                                    Barrangay
-                                                </CFormLabel>
-                                                <CCol sm={10}>
-                                                <CFormInput
-                                                        id="address2"
-                                                        value={data.address2}
-                                                        onChange={(e) => setData('address2', e.target.value)}                                                     
-                                                     />                                                  
-                                                </CCol>
-                                            </CRow>
-                                        </CCol>
-
-                                        <CCol md={12}>
-                                                <CRow className="mb-3">
-                                                    <CFormLabel htmlFor="city" className="col-sm-2 col-form-label">
-                                                        Municipality
-                                                    </CFormLabel>
-                                                    <CCol sm={10}>
-                                                    <CFormInput  
-                                                        id="city"
-                                                        value={data.city}
-                                                        onChange={(e) => setData('city', e.target.value)}
-                                                        onClick={(e) => onMunicipalityClick()}
-                                                        />                                                         
-                                                    </CCol>
-                                                </CRow>
-                                        </CCol> 
+                                   
+                                       
                     
-
-                                        <CCol md={12}>
-                                                <CRow className="mb-3">
-                                                    <CFormLabel htmlFor="province" className="col-sm-2 col-form-label">
-                                                        Province
-                                                    </CFormLabel>
-                                                    <CCol sm={10}>
-                                                    <CFormInput 
-                                                        id="province"
-                                                        value={data.province}
-                                                        onChange={(e) => onProviceChange(e.target.value)}
-                                                        onClick={(e) => onProviceClick()}
-                                                        />
-                                                       
-                                                    </CCol>
-                                                </CRow>
-                                        </CCol> 
-
+                                                     
                                         <CCol md={12}>
                                                 <CRow className="mb-3">
                                                     <CFormLabel htmlFor="zipcode" className="col-sm-2 col-form-label">
