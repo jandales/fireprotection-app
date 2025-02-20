@@ -13,12 +13,12 @@ import {
   cilUser,
 } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
-import { usePage, useForm} from '@inertiajs/react';
+import { usePage } from '@inertiajs/react';
 import avatar8 from '@/assets/images/avatars/8.jpg'
 
 const AppHeaderDropdown = () => {
 
-  const user = usePage().props.auth.user; 
+  const user = usePage().props?.auth?.user; 
 
   const avatar = user.avatar ? user.avatar : avatar8
 
@@ -29,10 +29,10 @@ const AppHeaderDropdown = () => {
       </CDropdownToggle>
       <CDropdownMenu className="pt-0" placement="bottom-end">       
         <CDropdownHeader className="bg-body-secondary fw-semibold my-2">Settings</CDropdownHeader>
-           <Link  className='dropdown-item' href={route('account')} active={route().current('account')} >
+           <Link  className='dropdown-item' href={route('account')}  >
                 <CIcon icon={cilUser} className='me-2' />Account  
            </Link>
-           <Link  className='dropdown-item' href={route('settings.index')} active={route().current('settings.index')} >
+           <Link  className='dropdown-item' href={route('settings.index')}>
                 <CIcon icon={cilSettings} className='me-2' />Settings
            </Link> 
            <Link  className='dropdown-item nav-link-btn'
