@@ -35,7 +35,7 @@ const Resident = (data) => {
             <CCard className="mb-4">
                 <CCardHeader>
                     Residents
-                    <Link href={route('residents.create')} active={route().current('residents')}>New</Link>
+                    <Link href={route('residents.create')} active={!!route().current('residents')}>New</Link>
                     </CCardHeader>        
                 <CTable align="middle" className="mb-0 border" hover responsive>
                     <CTableHead className="text-nowrap">
@@ -80,7 +80,7 @@ const Resident = (data) => {
                         </CTableDataCell> 
                         <CTableDataCell>
                             <div className='btn-gap'>
-                                <Link  href={route('residents.edit', item.id)} active={route().current('residents')} color="primary" variant="outline" size="sm">Edit</Link> 
+                                <Link  href={route('residents.edit', item.id)} active={!!route().current('residents')} color="primary" variant="outline" size="sm">Edit</Link> 
                                 <CButton color="danger" variant="outline" size="sm">Delete</CButton>   
                             </div>                  
                         </CTableDataCell>                                 

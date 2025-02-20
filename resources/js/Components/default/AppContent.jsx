@@ -19,13 +19,13 @@ const AppContent = () => {
               </NavLink>
               <NavLink
                   href={route('alerts')}
-                  active={route().current('alerts')}
+                  active={!!route().current('alerts')}
               >
                   Alerts
               </NavLink>
               <NavLink
                   href={route('dashboard')}
-                  active={route().current('dashboard')}
+                  active={!!route().current('dashboard')}
               >
                   Admin
               </NavLink>
