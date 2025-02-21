@@ -209,8 +209,22 @@ input[type=number] {
 .alert-button-wrapper{
     width: 100%;
     display: flex;
-    align-items: flex-end; 
+    align-items: flex-start; 
     justify-content: flex-end;
     gap: 10px;
 }
+
+.relative{
+    position: relative;
+}
+
+.alert-notify-wrapper{
+    position: absolute;
+    background-color: #fff;
+    border-radius: 5px;
+    height: 100px;
+    width: 400px;
+    z-index: 1000;
+}
+
 

@@ -7,22 +7,29 @@ import MapDirectionsRenderer from '@/Components/DirectionsRenderer'
 import { usePage } from '@inertiajs/react';
 import Alert from '@/Components/Alert'
 import { useJsApiLoader, GoogleMap, Circle } from "@react-google-maps/api";
-
+import NotificationAlert1 from '@/Components/NotificationAlert1'
+import { router } from '@inertiajs/react';
+import ViewAlert from '@/Components/ViewAlert'
+import echo from "../../../js/echo.js"
 import {  
     CRow,
     CCard,
     CCardHeader,
-    CCol,       
+    CCol, 
+    CButton,  
    
 } from '@coreui/react'
 
 
+
 const Dashboard = ({notifications}) => { 
-    const recentAlerts  = notifications 
-   
+
+    const recentAlerts  = notifications    
     const station = usePage().props.station;
-  
-    const [markerPosition, setMarkerPosition] = useState({ lat: 12.512838007591398 , lng: 124.28890301755825 });
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [alertData, setAlertData] = useState(null);
+    const [destination, setDestination] = useState();
+
     const [origin, setOrigin] = useState(
       {
         id: 1,
@@ -35,15 +42,28 @@ const Dashboard = ({notifications}) => {
         icon: FireStationIcon 
       }
     );
+
+    const { isLoaded } = useJsApiLoader({
+      id: 'google-map-script',
+      googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+   })
+
+
     const status = 'active';
 
 
-   const { isLoaded } = useJsApiLoader({
-         id: 'google-map-script',
-         googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
-   })
-
     const [opacity, setOpacity] = useState(0.35);
+
+    useEffect(() => {
+      echo.channel("notification-channel").listen("NotificationEvent", (e) => {  
+          router.get('/notifications', {}, { preserveScroll: true, preserveState: true });
+      });
+
+      return () => {
+          echo.leaveChannel("notification-channel"); 
+      };
+      
+  }, []);
 
   // useEffect(() => {
   //   const interval = setInterval(() => {
@@ -53,8 +73,18 @@ const Dashboard = ({notifications}) => {
   //   return () => clearInterval(interval);
   // }, []);
 
-  const handleAlertClick = (message, device, date, status, type) => {
-    console.log('Alert clicked:', { message, device, date, status, type });  
+  const handleAlertClick = (notification) => {
+    if(notification){     
+   
+      setDestination({
+        location : notification?.device?.location,
+        position : { 
+              lat : notification?.device?.latitude,
+              lng : notification?.device?.longitude 
+        } 
+      }) 
+      setAlertData(notification);      
+    }   
   };
 
   return (
@@ -66,15 +96,24 @@ const Dashboard = ({notifications}) => {
                 <CCard className="mb-4">
                     <CCardHeader>
                         <CRow>
-                            <CCol md={11}>
+                            <CCol md={10}>
                               <div className='device-header'>
                                     Maps
                               </div>
-                            </CCol>                           
+                            </CCol> 
+                            <CCol md={2}>
+                              {destination &&
+                              <div className='container-center-items'>
+                                  <CButton color="info" variant="outline" size="sm" onClick={() => setIsModalOpen(true) } className='mx-2' >View/Action</CButton>  
+                                  <CButton color="info" variant="outline" size="sm" onClick={() => setDestination(null) } >Clear</CButton>  
+                              </div>
+                              }
+                            </CCol>                            
                         </CRow>                      
-                    </CCardHeader>        
+                    </CCardHeader>   
+                                 
                     {isLoaded && <GoogleMap
-                                    center={markerPosition} // Default center
+                                    center={origin.position} // Default center
                                     zoom={15}
                                     mapContainerStyle={{ width: "100%", height: "700px" }}
                                     options={{
@@ -84,17 +123,18 @@ const Dashboard = ({notifications}) => {
                                         fullscreenControl: false,
                                     }}
                                 >   
-                                          <ClickMarker
+                                      {/* <ClickMarker
                                                 marker={{
                                                     name: origin.name,
                                                     location: origin.location,
                                                     position: origin.position,
                                                     icon : origin.icon
                                                 }} 
-                                            />
-                                            <Circle
+                                            /> */}
+
+                                        <Circle
                                             center={origin.position}
-                                            radius={150} // 200 meters
+                                            radius={50} // 200 meters
                                             options={{
                                               strokeColor: '#0000FF',    // Blue border
                                               strokeOpacity: 0.8,
@@ -104,19 +144,20 @@ const Dashboard = ({notifications}) => {
                                           }}
                                           />
 
-                                      {status == 'active'   && 
+                                       {status == 'active' && destination  && 
                                           <>
-                                          <FireMarker
+                                          {/* <FireMarker
                                                 marker={{
                                                     name: "Jess",
                                                     location: "Allen",
-                                                    position: markerPosition
+                                                    position: destination?.position
                                                 }} 
-                                            />
+                                            /> */}
                                         
+                                  
                                         <Circle
-                                            center={markerPosition}
-                                            radius={150} // 200 meters
+                                            center={destination.position}
+                                            radius={100} // 200 meters
                                             options={{
                                               strokeColor: '#FF0000',    // Red border
                                               strokeOpacity: 0.8,
@@ -125,11 +166,15 @@ const Dashboard = ({notifications}) => {
                                               fillOpacity: opacity,
                                             }}
                                           />
+                                  
                                           </>
-                                            }
-                                            <MapDirectionsRenderer origin={origin.position} destination={markerPosition} />
+                                        }
+
+                              { destination  && <MapDirectionsRenderer origin={origin.position} destination={destination} isLoaded={isLoaded} /> }
+                                           
                                 </GoogleMap>}
                 </CCard>
+
             </CCol>
             <CCol xs md={3}>
             <CCard className="mb-4">
@@ -141,22 +186,20 @@ const Dashboard = ({notifications}) => {
                               </div>
                             </CCol>                            
                         </CRow>                      
-                    </CCardHeader>                        
+                    </CCardHeader>  
                       {recentAlerts.data.map((notification, index) => (
                           <Alert 
                             key={index} 
-                            type={notification.type}
-                            message={notification.message}
-                            date={notification.created_at}
-                            device={notification.deviceName}
-                            status={notification.status} 
+                            alert={notification}                           
                             onAlertClick={handleAlertClick}                                            
                           />
                       ))}           
                 </CCard>
             </CCol>
         </CRow>
-        </div>             
+        </div>    
+        {/* <NotificationAlert1 />          */}
+        { alertData && <ViewAlert visible={isModalOpen} notification={alertData} onClose={() => setIsModalOpen(false)} /> }
      </DefaultLayout>
   )
 }

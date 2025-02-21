@@ -9,7 +9,7 @@ import {
    
 } from '@coreui/react'
 
-export default function Alert({ message, device, date, status, type, onAlertClick }) {
+export default function Alert({ alert, onAlertClick }) {
 
   const getIcon = (type) => {
     switch (type) {
@@ -38,20 +38,20 @@ export default function Alert({ message, device, date, status, type, onAlertClic
   };
 
   return (
-    <div className="alert-container" onClick={() => onAlertClick?.(message, device, date, status, type)} style={{ cursor: 'pointer' }}>
+    <div className="alert-container" onClick={() => onAlertClick?.(alert)} style={{ cursor: 'pointer' }}>
       <CCol md={1}>
-        <CIcon icon={getIcon(type)} size="lg" />
+        <CIcon icon={getIcon(alert.type)} size="lg" />
       </CCol>
 
       <CCol md={10}>
         <div className="alert-content mb-2">
-          <strong>{message}</strong>
-          <span>{date}</span>
+          <strong>{alert.message}</strong>
+          <span>{alert.created_at}</span>
         </div>
 
         <div className="alert-content">
-          <span>{device}</span>
-          <span className={`alert-status ${getStatus(status)}`}>{status}</span>
+          <span>{alert.deviceName}</span>
+          <span className={`alert-status ${getStatus(alert.status)}`}>{alert.status}</span>
         </div>
       </CCol>
     </div>

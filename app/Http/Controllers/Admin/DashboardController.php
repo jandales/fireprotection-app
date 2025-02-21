@@ -36,12 +36,10 @@ class DashboardController extends Controller
 
     public function index1(){
 
-        if (Auth::check() && Auth::user()->role === 'administrator') {           
-
+        if (Auth::check() && Auth::user()->role === 'administrator') { 
             return Inertia::render('Admin/Dashboard', [
-                'notifications' =>  Notification::paginate(10)
+                'notifications' =>  Notification::with('device')->orderBy('created_at', 'desc')->paginate(10)
             ]);
-
         }
 
         return redirect('/user'); 

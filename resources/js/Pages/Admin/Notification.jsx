@@ -70,8 +70,7 @@ const Notification = (res, filter) => {
         setIsModalDeleteOpen(false)
     }
 
-    const handleConfirm = () => {
-       
+    const handleConfirm = () => {       
         destroy(route('notifications.destroy', {id : deleteId}), {
             preserveScroll: true,
             onSuccess: () => {                        
@@ -80,23 +79,21 @@ const Notification = (res, filter) => {
                 });               
                 handlecloseDeleteModal()
             }                        
-        });
-      
-        
+        });  
     };
 
     const getStatus = (status) => {
         switch (status) {
-          case 'active':
+            case 'active':
             return 'alert-status-active';
-          case 'dispatched':
+            case 'dispatched':
             return 'alert-status-dispatched';
-          case 'closed':
+            case 'closed':
             return 'alert-status-closed';
-          default:
+            default:
             return 'alert-status-active';
         }
-      };
+    };
 
   return (
       <DefaultLayout     
