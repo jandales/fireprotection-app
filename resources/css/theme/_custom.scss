@@ -232,4 +232,21 @@ input[type=number] {
     z-index: 1000;
 }
 
+.flex{
+    display: flex;
+}
+.justify-content-end{
+    justify-content: flex-end;
+}
+.gap-10{
+    gap: 10px;
+}
+
+.map{
+    display: "flex";
+    flex-direction: column;
+    min-Height: "100vh";
+}
+
+
 

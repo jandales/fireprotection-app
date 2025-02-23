@@ -5,11 +5,11 @@ import ClickMarker from '@/Components/ClickMarker';
 import FireStationIcon from '@/assets/images/fire-station.png';
 import MapDirectionsRenderer from '@/Components/DirectionsRenderer'
 import { usePage } from '@inertiajs/react';
-import Alert from '@/Components/Alert'
+import RecentAlerts from '@/Components/RecentAlerts.jsx'
 import { useJsApiLoader, GoogleMap, Circle } from "@react-google-maps/api";
-import NotificationAlert1 from '@/Components/NotificationAlert1'
 import { router } from '@inertiajs/react';
 import ViewAlert from '@/Components/ViewAlert'
+import CurrenctAlert from '@/Components/CurrenctAlert'
 import echo from "../../../js/echo.js"
 import BackgroundAudio from '@/Components/BackgroundAudio';
 import {  
@@ -17,8 +17,7 @@ import {
     CCard,
     CCardHeader,
     CCol, 
-    CButton,  
-   
+    CButton   
 } from '@coreui/react'
 
 
@@ -26,13 +25,14 @@ import {
 const Dashboard = ({notifications}) => { 
 
     const recentAlerts  = notifications    
-    const station = usePage().props.station;
+    const station = usePage().props.station; 
+    const [activceAlerts, setActivceAlerts] = useState([]); 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [alertData, setAlertData] = useState(null);
     const [destination, setDestination] = useState();
     const [audio] = useState(new Audio("/storage/fire-alarm.mp3"));
     const [isPlaying, setIsPlaying] = useState(false);
-    const [zoom, setZoom] = useState(15);
+    const [zoom, setZoom] = useState(13);
 
     const [origin] = useState(
       {
@@ -48,30 +48,29 @@ const Dashboard = ({notifications}) => {
     );
 
     const { isLoaded } = useJsApiLoader({
-      id: 'google-map-script',
-      googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,      
-   })
-
+        id: 'google-map-script',
+        googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,      
+    })
 
     const status = 'active';
-
 
     const [opacity, setOpacity] = useState(0.35);
 
     useEffect(() => {
       echo.channel("notification-channel").listen("NotificationEvent", (e) => { 
-          // refresh recent history 
+          
           router.get('/dashboard', {}, { preserveScroll: true, preserveState: true });        
 
-          setDestination({
+          const _alert = {
             id : e.notification.id,
             location : e.notification?.device?.location,
             position : { 
                   lat : e.notification?.device?.latitude,
                   lng : e.notification?.device?.longitude 
             } 
-          }) 
+          }
 
+          setDestination(_alert);
           setAlertData(e.notification);
           setIsModalOpen(true);
 
@@ -81,26 +80,46 @@ const Dashboard = ({notifications}) => {
           echo.leaveChannel("notification-channel"); 
       };
       
-  }, []);
-
-
-  const handleUserInteraction = () => {
-
-      try {
-        audio.loop = true;
-        audio.play()
-          .then(() => setIsPlaying(true))
-          .catch((err) =>  audio.play());
-      } catch (error) {
-          audio.play()
-      }    
-
-  };
+  }, []); 
 
   const onHandleClearDirection = () => {
-      setDestination(null)        
+      setDestination(null)  
+      setAlertData(null)      
       setZoom(zoom == 15 ? 14 : 15);         
   }
+
+  useEffect(() => {
+    if (!notifications || !notifications.data) return;
+  
+    const locationSet = new Set();
+  
+    const reconstructedAlerts = notifications.data
+      .filter((notification) => notification.status === 'active') // ✅ Filter active alerts
+      .map((notification) => {
+        const location = notification?.device?.location;
+  
+        // If location already exists, return null (we will filter it out later)
+        if (locationSet.has(location)) return null;
+  
+        locationSet.add(location); // ✅ Track unique locations
+  
+        return {
+          id: notification.id,
+          location: location,
+          position: { 
+            lat: notification?.device?.latitude, 
+            lng: notification?.device?.longitude 
+          }
+        };
+      })
+      .filter(Boolean); // ✅ Remove `null` values from duplicates
+  console.log(reconstructedAlerts)
+    setActivceAlerts(reconstructedAlerts); // ✅ Update state
+  
+  }, [notifications]); // ✅ Runs when `notifications` changes
+  
+  
+  
 
   // useEffect(() => {
   //   const interval = setInterval(() => {
@@ -111,8 +130,7 @@ const Dashboard = ({notifications}) => {
   // }, []);
 
   const handleAlertClick = (notification) => {
-    if(notification){     
-   
+    if(notification){ 
       setDestination({
         id : notification.id,
         location : notification?.device?.location,
@@ -121,14 +139,14 @@ const Dashboard = ({notifications}) => {
               lng : notification?.device?.longitude 
         } 
       }) 
-      setAlertData(notification);  
+      setAlertData(notification); 
+      window.scrollTo({ top: 0, behavior: 'smooth' }); 
     }   
-  };
+  }; 
 
-
-
-
-  
+  const handleSetDirections = (item) => {
+    setDestination(item)
+  }
 
   return (
       <DefaultLayout     
@@ -146,9 +164,8 @@ const Dashboard = ({notifications}) => {
                             </CCol> 
                             <CCol md={2}>
                               {destination &&
-                              <div className='container-center-items'>
-                                  <CButton color="info" variant="outline" size="sm" onClick={() => setIsModalOpen(true) } className='mx-2' >View/Action</CButton>  
-                                  <CButton color="info" variant="outline" size="sm" onClick={() => onHandleClearDirection() } >Clear</CButton>  
+                              <div className='container-center-items justify-content-end'>                                
+                                  <CButton color="info" variant="outline" size="sm" onClick={() => onHandleClearDirection() } >Clear Map</CButton>  
                               </div>
                               }
                             </CCol>                            
@@ -174,10 +191,11 @@ const Dashboard = ({notifications}) => {
                                                     icon : origin.icon
                                                 }} 
                                             /> */}
-
+                                            
+{/* 
                                         <Circle
                                             center={origin.position}
-                                            radius={50} // 200 meters
+                                            radius={200} // 200 meters
                                             options={{
                                               strokeColor: '#0000FF',    // Blue border
                                               strokeOpacity: 0.8,
@@ -185,73 +203,57 @@ const Dashboard = ({notifications}) => {
                                               fillColor: '#0000FF',      // Blue fill
                                               fillOpacity: 0.35,
                                           }}
-                                          />
-
+                                          /> */}
+                                      
+                                          {activceAlerts.map((item, index) => (
+                                              <Circle
+                                                key={index}
+                                                center={item.position}
+                                                radius={200}
+                                                options={{
+                                                  strokeColor: '#FF0000',
+                                                  strokeOpacity: 0.8,
+                                                  strokeWeight: 2,
+                                                  fillColor: '#FF0000',
+                                                  fillOpacity: opacity,
+                                                }}
+                                                onClick={() => handleSetDirections(item)}
+                                              />
+                                            ))}   
+{/* 
                                        {status == 'active' && destination  && 
-                                          <>
-                                          {/* <FireMarker
-                                                marker={{
-                                                    name: "Jess",
-                                                    location: "Allen",
-                                                    position: destination?.position
-                                                }} 
-                                            /> */}
-                                        
-                                  
-                                        <Circle
-                                            center={destination.position}
-                                            radius={100} // 200 meters
-                                            options={{
-                                              strokeColor: '#FF0000',    // Red border
-                                              strokeOpacity: 0.8,
-                                              strokeWeight: 2,
-                                              fillColor: '#FF0000',      // Red fill
-                                              fillOpacity: opacity,
-                                            }}
-                                          />
-                                  
+                                          <>                                              
+                                            <Circle
+                                              center={destination.position}
+                                              radius={100} // 200 meters
+                                              options={{
+                                                strokeColor: '#FF0000',    // Red border
+                                                strokeOpacity: 0.8,
+                                                strokeWeight: 2,
+                                                fillColor: '#FF0000',      // Red fill
+                                                fillOpacity: opacity,
+                                              }}
+                                            />                                                                      
                                           </>
-                                        }
+                              } */}
 
-                              { destination  && <MapDirectionsRenderer origin={origin.position} destination={destination} isLoaded={isLoaded} /> }
-                                           
+                              { destination  && <MapDirectionsRenderer origin={origin.position} destination={destination} isLoaded={isLoaded} />
+                               }
                                 </GoogleMap>}
                 </CCard>
 
             </CCol>
             <CCol xs md={3}>
-            <CCard className="mb-4">
-                    <CCardHeader>
-                        <CRow>
-                            <CCol md={11}>
-                              <div className='device-header'>
-                                    Recent Alert
-                              </div>
-                            </CCol>                            
-                        </CRow>                      
-                    </CCardHeader>  
-                      {recentAlerts.data.map((notification, index) => (
-                          <Alert 
-                            key={index} 
-                            alert={notification}
-                            active={notification.id == destination?.id}                           
-                            onAlertClick={handleAlertClick}                                            
-                          />
-                      ))}           
-                </CCard>
+
+              { alertData && <CurrenctAlert notification={alertData} onUpdatedStatus={setAlertData} /> }
+
+              <RecentAlerts alerts={recentAlerts} id={destination?.id} handleAlertClick={handleAlertClick}    />
+
             </CCol>
         </CRow>
-        </div>    
-        {/* <NotificationAlert1 />          */}
+        </div>   
         { alertData && <ViewAlert visible={isModalOpen} notification={alertData} onClose={() => setIsModalOpen(false)} /> }
-       {/* <BackgroundAudio play={isPlaying} /> */}
-
-
-
-       <audio id="myAudio" controls muted autoPlay >
-          <source src="/storage/fire-alarm.mp3" />        
-        </audio>
-
+        {/* <BackgroundAudio play={isPlaying} /> */}
      </DefaultLayout>
   )
 }
