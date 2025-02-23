@@ -1,7 +1,7 @@
 import React from 'react'
-import classNames from 'classnames'
 import DefaultLayout from '@/Layouts/DefaultLayout'
 import WidgetsDropdown from '@/Components/WidgetsDropdown';
+
 import {
   CAvatar,  
   CCol,
@@ -90,6 +90,7 @@ const Dashboard = ({activities, userCount, deviceCount, employeeCount, notifitio
               </CCard>   
         </CCol>
         </CRow>
+   
        </DefaultLayout>
   )
 }

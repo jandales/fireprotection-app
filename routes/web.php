@@ -25,8 +25,8 @@ Route::get('/', function () {
     return redirect('/user'); 
 })->middleware(['auth', 'verified']);
 
-Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
-Route::get('/dashboard1', [DashboardController::class, 'index1'])->middleware(['auth', 'verified'])->name('dashboard.index1');
+// Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index1'])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/alerts', function () {
     return Inertia::render('Alerts');

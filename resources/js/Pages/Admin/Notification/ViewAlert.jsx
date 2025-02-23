@@ -74,7 +74,7 @@ const ViewAlert = ({visible, notification, onClose}) => {
                 lat : notification?.device?.latitude,
                 lng : notification?.device?.longitude 
           } 
-    })
+        })
   
     }, [visible, isModalOpen]);
   

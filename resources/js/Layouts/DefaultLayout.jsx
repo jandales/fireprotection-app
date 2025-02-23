@@ -30,7 +30,7 @@ export default function DefaultLayout({ header, children }) {
         {/* <AppFooter /> */}
       </div>
        <ToastContainer />
-       { <NotificationAlert /> } 
+      { !route().current('dashboard') && <NotificationAlert /> }
     </div>
   )
 }

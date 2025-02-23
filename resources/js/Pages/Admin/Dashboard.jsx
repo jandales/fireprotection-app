@@ -11,6 +11,7 @@ import NotificationAlert1 from '@/Components/NotificationAlert1'
 import { router } from '@inertiajs/react';
 import ViewAlert from '@/Components/ViewAlert'
 import echo from "../../../js/echo.js"
+import BackgroundAudio from '@/Components/BackgroundAudio';
 import {  
     CRow,
     CCard,
@@ -29,8 +30,11 @@ const Dashboard = ({notifications}) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [alertData, setAlertData] = useState(null);
     const [destination, setDestination] = useState();
+    const [audio] = useState(new Audio("/storage/fire-alarm.mp3"));
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [zoom, setZoom] = useState(15);
 
-    const [origin, setOrigin] = useState(
+    const [origin] = useState(
       {
         id: 1,
         name : station.name,      
@@ -45,7 +49,7 @@ const Dashboard = ({notifications}) => {
 
     const { isLoaded } = useJsApiLoader({
       id: 'google-map-script',
-      googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+      googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,      
    })
 
 
@@ -55,8 +59,21 @@ const Dashboard = ({notifications}) => {
     const [opacity, setOpacity] = useState(0.35);
 
     useEffect(() => {
-      echo.channel("notification-channel").listen("NotificationEvent", (e) => {  
-          router.get('/notifications', {}, { preserveScroll: true, preserveState: true });
+      echo.channel("notification-channel").listen("NotificationEvent", (e) => { 
+          // refresh recent history 
+          router.get('/dashboard', {}, { preserveScroll: true, preserveState: true });        
+
+          setDestination({
+            location : e.notification?.device?.location,
+            position : { 
+                  lat : e.notification?.device?.latitude,
+                  lng : e.notification?.device?.longitude 
+            } 
+          }) 
+
+          setAlertData(e.notification);
+          setIsModalOpen(true);
+
       });
 
       return () => {
@@ -64,6 +81,25 @@ const Dashboard = ({notifications}) => {
       };
       
   }, []);
+
+
+  const handleUserInteraction = () => {
+
+      try {
+        audio.loop = true;
+        audio.play()
+          .then(() => setIsPlaying(true))
+          .catch((err) =>  audio.play());
+      } catch (error) {
+          audio.play()
+      }    
+
+  };
+
+  const onHandleClearDirection = () => {
+      setDestination(null)        
+      setZoom(zoom == 15 ? 14 : 15);         
+  }
 
   // useEffect(() => {
   //   const interval = setInterval(() => {
@@ -83,9 +119,14 @@ const Dashboard = ({notifications}) => {
               lng : notification?.device?.longitude 
         } 
       }) 
-      setAlertData(notification);      
+      setAlertData(notification);  
     }   
   };
+
+
+
+
+  
 
   return (
       <DefaultLayout     
@@ -105,7 +146,7 @@ const Dashboard = ({notifications}) => {
                               {destination &&
                               <div className='container-center-items'>
                                   <CButton color="info" variant="outline" size="sm" onClick={() => setIsModalOpen(true) } className='mx-2' >View/Action</CButton>  
-                                  <CButton color="info" variant="outline" size="sm" onClick={() => setDestination(null) } >Clear</CButton>  
+                                  <CButton color="info" variant="outline" size="sm" onClick={() => onHandleClearDirection() } >Clear</CButton>  
                               </div>
                               }
                             </CCol>                            
@@ -114,7 +155,7 @@ const Dashboard = ({notifications}) => {
                                  
                     {isLoaded && <GoogleMap
                                     center={origin.position} // Default center
-                                    zoom={15}
+                                    zoom={zoom}
                                     mapContainerStyle={{ width: "100%", height: "700px" }}
                                     options={{
                                         zoomControl : false,
@@ -200,6 +241,14 @@ const Dashboard = ({notifications}) => {
         </div>    
         {/* <NotificationAlert1 />          */}
         { alertData && <ViewAlert visible={isModalOpen} notification={alertData} onClose={() => setIsModalOpen(false)} /> }
+       {/* <BackgroundAudio play={isPlaying} /> */}
+
+
+
+       <audio id="myAudio" controls muted autoPlay >
+          <source src="/storage/fire-alarm.mp3" />        
+        </audio>
+
      </DefaultLayout>
   )
 }
