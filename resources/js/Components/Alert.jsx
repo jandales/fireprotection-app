@@ -9,7 +9,7 @@ import {
    
 } from '@coreui/react'
 
-export default function Alert({ alert, onAlertClick }) {
+export default function Alert({ alert, active,  onAlertClick }) {
 
   const getIcon = (type) => {
     switch (type) {
@@ -38,7 +38,9 @@ export default function Alert({ alert, onAlertClick }) {
   };
 
   return (
-    <div className="alert-container" onClick={() => onAlertClick?.(alert)} style={{ cursor: 'pointer' }}>
+    <div  
+       className={`alert-container ${active ? 'alert-container-active' : ''}`} 
+       onClick={() => onAlertClick?.(alert)} style={{ cursor: 'pointer' }}>
       <CCol md={1}>
         <CIcon icon={getIcon(alert.type)} size="lg" />
       </CCol>

@@ -64,6 +64,7 @@ const Dashboard = ({notifications}) => {
           router.get('/dashboard', {}, { preserveScroll: true, preserveState: true });        
 
           setDestination({
+            id : e.notification.id,
             location : e.notification?.device?.location,
             position : { 
                   lat : e.notification?.device?.latitude,
@@ -113,6 +114,7 @@ const Dashboard = ({notifications}) => {
     if(notification){     
    
       setDestination({
+        id : notification.id,
         location : notification?.device?.location,
         position : { 
               lat : notification?.device?.latitude,
@@ -231,7 +233,8 @@ const Dashboard = ({notifications}) => {
                       {recentAlerts.data.map((notification, index) => (
                           <Alert 
                             key={index} 
-                            alert={notification}                           
+                            alert={notification}
+                            active={notification.id == destination?.id}                           
                             onAlertClick={handleAlertClick}                                            
                           />
                       ))}           
