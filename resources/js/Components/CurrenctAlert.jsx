@@ -54,11 +54,7 @@ const CurrenctAlert = ({notification, onUpdatedStatus}) => {
             
               
             }                        
-        });
-
-
-
-       
+        });       
 
     } 
 

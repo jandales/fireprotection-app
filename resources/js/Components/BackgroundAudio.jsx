@@ -1,36 +1,35 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
+import { useSelector } from "react-redux";
 
-const BackgroundAudio = (play) => {
+const BackgroundAudio = () => {
+  const isPlaying = useSelector((state) => state.isPlaying); // ✅ Get Redux state
+  const audioRef = useRef(null);
 
-  const [audio, setAudio] = useState(null);
+  useEffect(() => {
+    if (!audioRef.current) {
+      audioRef.current = new Audio("/storage/fire-alarm.mp3");
+      audioRef.current.loop = true;
+    }
+ 
+    if (isPlaying) {
+      audioRef.current.muted = false;
 
-  
+      audioRef.current.play().catch((err) => {
+        console.error("Audio play failed:", err);
+      });
 
-  const playAlarm = () => {
-    if(audio){
-      audio.loop = true;
-      audio.muted = true;
-      audio.play()
-        .then(() => {
-          setTimeout(() => (audio.muted = false), 1000);
-        })
-        .catch((err) => console.error("Audio play failed:", err));
-    } 
-
-
-    return () => {
-      audio.pause();
-      audio.currentTime = 0;
-    };
-  }
-
-  useEffect(() => {   
-    setAudio(new Audio("/storage/fire-alarm.mp3"))
-    if(audio){
-      playAlarm();
+    } else {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
     }
 
-  }, [play]);
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
+    };
+  }, [isPlaying]);
 
   return null;
 };

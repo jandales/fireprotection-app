@@ -12,6 +12,7 @@ import ViewAlert from '@/Components/ViewAlert'
 import CurrenctAlert from '@/Components/CurrenctAlert'
 import echo from "../../../js/echo.js"
 import BackgroundAudio from '@/Components/BackgroundAudio';
+import { useSelector, useDispatch } from "react-redux";
 import {  
     CRow,
     CCard,
@@ -24,14 +25,15 @@ import {
 
 const Dashboard = ({notifications}) => { 
 
+    const isPlaying = useSelector((state) => state.isPlaying);
+    const dispatch = useDispatch()
     const recentAlerts  = notifications    
     const station = usePage().props.station; 
     const [activceAlerts, setActivceAlerts] = useState([]); 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [alertData, setAlertData] = useState(null);
-    const [destination, setDestination] = useState();
-    const [audio] = useState(new Audio("/storage/fire-alarm.mp3"));
-    const [isPlaying, setIsPlaying] = useState(false);
+    const [destination, setDestination] = useState();   
+    // const [isPlaying, setIsPlaying] = useState(false);
     const [zoom, setZoom] = useState(13);
 
     const [origin] = useState(
@@ -72,8 +74,8 @@ const Dashboard = ({notifications}) => {
 
           setDestination(_alert);
           setAlertData(e.notification);
-          setIsModalOpen(true);
-
+          setIsModalOpen(true);         
+          dispatch({ type: "set", isPlaying: true });
       });
 
       return () => {
@@ -88,7 +90,13 @@ const Dashboard = ({notifications}) => {
       setZoom(zoom == 15 ? 14 : 15);         
   }
 
+  const onHandleCloseModal = () => {
+    setIsModalOpen(false);
+    dispatch({ type: "set", isPlaying: false }); 
+  };
+  
   useEffect(() => {
+
     if (!notifications || !notifications.data) return;
   
     const locationSet = new Set();
@@ -112,8 +120,7 @@ const Dashboard = ({notifications}) => {
           }
         };
       })
-      .filter(Boolean); // ✅ Remove `null` values from duplicates
-  console.log(reconstructedAlerts)
+      .filter(Boolean); // ✅ Remove `null` values from duplicates   
     setActivceAlerts(reconstructedAlerts); // ✅ Update state
   
   }, [notifications]); // ✅ Runs when `notifications` changes
@@ -153,7 +160,7 @@ const Dashboard = ({notifications}) => {
       >
         <div className="py-12">
         <CRow>
-            <CCol xs md={9}>
+            <CCol xs={12} md={9}>
                 <CCard className="mb-4">
                     <CCardHeader>
                         <CRow>
@@ -243,8 +250,8 @@ const Dashboard = ({notifications}) => {
                 </CCard>
 
             </CCol>
-            <CCol xs md={3}>
-
+            <CCol xs={12} md={3}>
+              
               { alertData && <CurrenctAlert notification={alertData} onUpdatedStatus={setAlertData} /> }
 
               <RecentAlerts alerts={recentAlerts} id={destination?.id} handleAlertClick={handleAlertClick}    />
@@ -252,8 +259,9 @@ const Dashboard = ({notifications}) => {
             </CCol>
         </CRow>
         </div>   
-        { alertData && <ViewAlert visible={isModalOpen} notification={alertData} onClose={() => setIsModalOpen(false)} /> }
-        {/* <BackgroundAudio play={isPlaying} /> */}
+        { alertData && <ViewAlert visible={isModalOpen} notification={alertData} onClose={() => onHandleCloseModal()  } /> }
+
+         {isPlaying && <BackgroundAudio /> }
      </DefaultLayout>
   )
 }

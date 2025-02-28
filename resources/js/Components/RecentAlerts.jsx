@@ -7,7 +7,7 @@ import {
   } from '@coreui/react'
 
 const RecentAlerts = ({alerts, id, handleAlertClick}) => {  
-    console.log(alerts)
+
     return (
         <CCard className="mb-4">
                     <CCardHeader>
