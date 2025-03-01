@@ -33,7 +33,7 @@ const Dashboard = ({notifications}) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [alertData, setAlertData] = useState(null);
     const [destination, setDestination] = useState();   
-    // const [isPlaying, setIsPlaying] = useState(false);
+
     const [zoom, setZoom] = useState(13);
 
     const [origin] = useState(
@@ -102,7 +102,7 @@ const Dashboard = ({notifications}) => {
     const locationSet = new Set();
   
     const reconstructedAlerts = notifications.data
-      .filter((notification) => notification.status === 'active') // ✅ Filter active alerts
+      .filter((notification) => notification.status === 'active' || notification.status === 'dispatched') 
       .map((notification) => {
         const location = notification?.device?.location;
   
@@ -117,7 +117,8 @@ const Dashboard = ({notifications}) => {
           position: { 
             lat: notification?.device?.latitude, 
             lng: notification?.device?.longitude 
-          }
+          },
+          status: notification.status
         };
       })
       .filter(Boolean); // ✅ Remove `null` values from duplicates   
@@ -218,10 +219,10 @@ const Dashboard = ({notifications}) => {
                                                 center={item.position}
                                                 radius={200}
                                                 options={{
-                                                  strokeColor: '#FF0000',
+                                                  strokeColor: item.status === 'active' ? '#FF0000' : '#FFA500',
                                                   strokeOpacity: 0.8,
                                                   strokeWeight: 2,
-                                                  fillColor: '#FF0000',
+                                                  fillColor: item.status === 'active' ? '#FF0000' : '#FFA500',
                                                   fillOpacity: opacity,
                                                 }}
                                                 onClick={() => handleSetDirections(item)}

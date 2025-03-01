@@ -13,8 +13,7 @@ import CIcon from '@coreui/icons-react'
 
 import { AppSidebarNav } from '@/Components/default/AppSidebarNav'
 
-import { logo } from '@/assets/brand/logo'
-import { sygnet } from '@/assets/brand/sygnet'
+import logo from '@/assets/images/BFP-LOGO.png'
 
 // sidebar nav config
 import navigation from '@/Includes/nav'
@@ -36,10 +35,10 @@ const AppSidebar = () => {
       }}
     >
       <CSidebarHeader className="border-bottom">
-        <CSidebarBrand to="/">
-        <h1 className='header-logo'>Fire Alert System</h1>
-          {/* <CIcon customClassName="sidebar-brand-full" icon={logo} height={32} />
-          <CIcon customClassName="sidebar-brand-narrow" icon={sygnet} height={32} /> */}
+        <CSidebarBrand to="/" className='w-full'>
+          <div className='w-full flex-container'>
+            <img src={logo} height='100px' width='100px' />  
+          </div>         
         </CSidebarBrand>
         <CCloseButton
           className="d-lg-none"

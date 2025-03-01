@@ -117,7 +117,6 @@ const Edit = ({user}) => {
     }  
 
     const onBarangaysClick =  async ()  => {
-        console.log(data.city)
         const municipality = municipalities.find(municipality => municipality.name === data.city);
         await getBarangays(municipality.psgc10DigitCode)
     }
