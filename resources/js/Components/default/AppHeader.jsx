@@ -26,12 +26,13 @@ import {
 } from '@coreui/icons'
 
 import NavLink from '@/Components/NavLink';
-
+import { usePage } from '@inertiajs/react';
 
 import { AppBreadcrumb } from './index'
 import { AppHeaderDropdown } from './header/index'
 
 const AppHeader = () => {
+  const station = usePage().props.station; 
   const headerRef = useRef()
   const { colorMode, setColorMode } = useColorModes('coreui-free-react-admin-template-theme')
 
@@ -57,7 +58,7 @@ const AppHeader = () => {
         <CHeaderNav className="d-none d-md-flex">
           <CNavItem>
             <NavLink href={route('dashboard')} active={route().current('dashboard')}> 
-                Dashboard
+                { station?.name ?? 'Fire Station' }
             </NavLink>
           </CNavItem>  
         </CHeaderNav>

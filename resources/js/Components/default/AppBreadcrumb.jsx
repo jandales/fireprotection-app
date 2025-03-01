@@ -43,10 +43,8 @@ const AppBreadcrumb = () => {
       </li>
       {breadcrumbs.map((breadcrumb, index) => {
         return (
-          <li className='breadcrumb-item' key={index}>
-            <Link className='breadcrumb-item-a'>  
-               {breadcrumb.name}
-             </Link>
+          <li className='breadcrumb-item active' key={index}>            
+               {breadcrumb.name}  
             </li>
         )
       })}
