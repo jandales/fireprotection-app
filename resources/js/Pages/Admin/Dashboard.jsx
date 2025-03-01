@@ -20,8 +20,7 @@ import {
     CCol, 
     CButton   
 } from '@coreui/react'
-
-
+import { motion } from "framer-motion";
 
 const Dashboard = ({notifications}) => { 
 
@@ -33,6 +32,7 @@ const Dashboard = ({notifications}) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [alertData, setAlertData] = useState(null);
     const [destination, setDestination] = useState();   
+    const [radius, setRadius] = useState(); 
 
     const [zoom, setZoom] = useState(13);
 
@@ -90,13 +90,14 @@ const Dashboard = ({notifications}) => {
   }
 
   const onHandleCloseModal = () => {
-    setIsModalOpen(false);
-    dispatch({ type: "set", isPlaying: false }); 
+      setIsModalOpen(false);
+      dispatch({ type: "set", isPlaying: false }); 
   };
   
   useEffect(() => {
 
     if (!notifications || !notifications.data) return;
+
     getActiveAlerts();
     
   
@@ -104,9 +105,9 @@ const Dashboard = ({notifications}) => {
 
 
   const getActiveAlerts =() => {
-    const locationSet = new Set();
+  const locationSet = new Set();
   
-    const reconstructedAlerts = notifications.data
+  const reconstructedAlerts = notifications.data
       .filter((notification) => notification.status === 'active' || notification.status === 'dispatched') 
       .map((notification) => {
         const location = notification?.device?.location;  
@@ -127,18 +128,14 @@ const Dashboard = ({notifications}) => {
       })
       .filter(Boolean); 
     setActivceAlerts(reconstructedAlerts); 
-  }
+  } 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setRadius((prev) => (prev === 200 ? 250 : 200)); 
+    }, 500); 
   
-  
-  
-
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     setOpacity((prev) => (prev === 0.35 ? 0.1 : 0.35));
-  //   }, 500); // Toggle every 500ms
-
-  //   return () => clearInterval(interval);
-  // }, []);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleAlertClick = (notification) => {
     if(notification){ 
@@ -159,6 +156,7 @@ const Dashboard = ({notifications}) => {
 
   const handleSetDirections = (item) => {
     setDestination(item)
+    setActivceAlerts([])
   }
 
   return (
@@ -198,10 +196,21 @@ const Dashboard = ({notifications}) => {
                                 >   
                                                                           
                                           { activceAlerts.map((item, index) => (
+                                            <motion.div 
+                                                  animate={{
+                                                    scale: [1, 1.3, 1], 
+                                                  }}
+                                                  transition={{
+                                                    duration: 1.2,
+                                                    repeat: Infinity, 
+                                                    ease: "easeInOut",
+                                                  }}
+                                                  style={{ display: "inline-block" }}
+                                                >
                                               <Circle
                                                 key={index}
                                                 center={item.position}
-                                                radius={200}
+                                                radius={radius} 
                                                 options={{
                                                   strokeColor: item.status === 'active' ? '#FF0000' : '#FFA500',
                                                   strokeOpacity: 0.8,
@@ -211,15 +220,27 @@ const Dashboard = ({notifications}) => {
                                                 }}
                                                 onClick={() => handleSetDirections(item)}
                                               />
+                                            </motion.div>
                                             )) }   
 
                               { 
                                 destination  
                                 && <>
                                 <MapDirectionsRenderer origin={origin.position} destination={destination} isLoaded={isLoaded} />
+                                <motion.div 
+                                      animate={{
+                                        scale: [1, 1.3, 1], 
+                                      }}
+                                      transition={{
+                                        duration: 1.2,
+                                        repeat: Infinity, 
+                                        ease: "easeInOut",
+                                      }}
+                                      style={{ display: "inline-block" }}
+                                    >
                                 <Circle                                  
                                       center={destination.position}
-                                      radius={200}
+                                      radius={radius} 
                                       options={{
                                         strokeColor: 
                                             destination.status === "active"
@@ -238,6 +259,7 @@ const Dashboard = ({notifications}) => {
                                         fillOpacity: opacity,
                                       }}                                      
                                 />
+                                </motion.div>
                                 </>
                           
                                }
@@ -249,7 +271,7 @@ const Dashboard = ({notifications}) => {
               
               { alertData && <CurrenctAlert notification={alertData} onUpdatedStatus={setAlertData} /> }
 
-              <RecentAlerts alerts={recentAlerts} id={destination?.id} handleAlertClick={handleAlertClick}    />
+              <RecentAlerts alerts={recentAlerts} id={destination?.id} handleAlertClick={handleAlertClick}  />
 
             </CCol>
         </CRow>
