@@ -13,13 +13,14 @@ import {
   } from '@coreui/react'
 import MapComponent from '@/Components/MapComponent';
 import CIcon from '@coreui/icons-react'; 
+import { useSelector, useDispatch } from "react-redux";
 import { 
   cilWarning
  } from '@coreui/icons'; 
 
 const NotificationAlert = () => {
     const station= usePage().props.station;
-   
+    const dispatch = useDispatch()
     const [notification, setNotification] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [destination, setDestination] = useState("");
@@ -49,7 +50,8 @@ const NotificationAlert = () => {
             
             setDestination({ ...coordinates });   
             setNotification(e.notification);  
-            setIsModalOpen(true);             
+            setIsModalOpen(true);      
+            dispatch({ type: "set", isPlaying: true });       
             childRef.current?.rerenderDirection();     
         });
 
@@ -72,7 +74,8 @@ const NotificationAlert = () => {
                             autoClose: 1000,
                         });     
                         alert.status = 'dispatched'
-                        setNotification(alert)              
+                        setNotification(alert)   
+                        dispatch({ type: "set", isPlaying: false });           
                     }                        
                 });
                 return;
@@ -85,12 +88,17 @@ const NotificationAlert = () => {
                         autoClose: 1000,
                     });   
                     alert.status = 'closed'
-                    setNotification(alert)               
+                    setNotification(alert) 
+                    dispatch({ type: "set", isPlaying: false });              
                 }                        
             });
     
         } 
 
+    const handleCloseAlert = () => {
+      setIsModalOpen(false)
+      dispatch({ type: "set", isPlaying: false });
+    }
     
 
     return (
@@ -98,7 +106,7 @@ const NotificationAlert = () => {
              <CModal
                     size="lg"
                     visible={isModalOpen}
-                    onClose={() => setIsModalOpen(false)}
+                    onClose={() => handleCloseAlert()}
                     aria-labelledby="LiveDemoExampleLabel"
                   >               
                     <CModalHeader>
@@ -140,7 +148,7 @@ const NotificationAlert = () => {
                             
                     </CModalBody> 
                     <CModalFooter>
-                      <CButton color="secondary" onClick={() => setIsModalOpen(false)}>
+                      <CButton color="secondary" onClick={() => handleCloseAlert()}>
                         Close
                       </CButton>                     
                     </CModalFooter>

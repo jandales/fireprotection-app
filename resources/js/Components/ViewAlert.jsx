@@ -18,7 +18,7 @@ import {
   cilWarning
  } from '@coreui/icons'; 
 
-const ViewAlert = ({visible, notification, onClose}) => {  
+const ViewAlert = ({visible, notification, onClose, onUpdatedStatus}) => {  
 
 
     const { patch } = useForm(); 
@@ -34,6 +34,8 @@ const ViewAlert = ({visible, notification, onClose}) => {
                     toast.success("Successfully Update status", {
                         autoClose: 1000,
                     });
+                    notification.status = 'dispatched'
+                    onUpdatedStatus(notification)
                     onClose()
                 }                        
             });
@@ -46,6 +48,8 @@ const ViewAlert = ({visible, notification, onClose}) => {
                 toast.success("Successfully Update status", {
                     autoClose: 1000,
                 });
+                 notification.status = 'closed'
+                 onUpdatedStatus(notification)
                 onClose()
             }                        
         });
@@ -106,8 +110,7 @@ const ViewAlert = ({visible, notification, onClose}) => {
                                </div>
 
                             </div> 
-                      
-                     
+                    
                     </CModalBody>
                     <CModalFooter>
                       <CButton color="secondary"  onClick={(e) => onClose()}>

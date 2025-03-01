@@ -54,8 +54,6 @@ const Dashboard = ({notifications}) => {
         googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,      
     })
 
-    const status = 'active';
-
     const [opacity, setOpacity] = useState(0.35);
 
     useEffect(() => {
@@ -87,7 +85,8 @@ const Dashboard = ({notifications}) => {
   const onHandleClearDirection = () => {
       setDestination(null)  
       setAlertData(null)      
-      setZoom(zoom == 15 ? 14 : 15);         
+      setZoom(zoom == 15 ? 14 : 15); 
+      getActiveAlerts();        
   }
 
   const onHandleCloseModal = () => {
@@ -98,18 +97,23 @@ const Dashboard = ({notifications}) => {
   useEffect(() => {
 
     if (!notifications || !notifications.data) return;
+    getActiveAlerts();
+    
   
+  }, [notifications]);
+
+
+  const getActiveAlerts =() => {
     const locationSet = new Set();
   
     const reconstructedAlerts = notifications.data
       .filter((notification) => notification.status === 'active' || notification.status === 'dispatched') 
       .map((notification) => {
-        const location = notification?.device?.location;
-  
-        // If location already exists, return null (we will filter it out later)
+        const location = notification?.device?.location;  
+      
         if (locationSet.has(location)) return null;
   
-        locationSet.add(location); // ✅ Track unique locations
+        locationSet.add(location);
   
         return {
           id: notification.id,
@@ -121,10 +125,9 @@ const Dashboard = ({notifications}) => {
           status: notification.status
         };
       })
-      .filter(Boolean); // ✅ Remove `null` values from duplicates   
-    setActivceAlerts(reconstructedAlerts); // ✅ Update state
-  
-  }, [notifications]); // ✅ Runs when `notifications` changes
+      .filter(Boolean); 
+    setActivceAlerts(reconstructedAlerts); 
+  }
   
   
   
@@ -145,9 +148,11 @@ const Dashboard = ({notifications}) => {
         position : { 
               lat : notification?.device?.latitude,
               lng : notification?.device?.longitude 
-        } 
+        },
+        status : notification.status
       }) 
       setAlertData(notification); 
+      setActivceAlerts([])
       window.scrollTo({ top: 0, behavior: 'smooth' }); 
     }   
   }; 
@@ -191,29 +196,8 @@ const Dashboard = ({notifications}) => {
                                         fullscreenControl: false,
                                     }}
                                 >   
-                                      {/* <ClickMarker
-                                                marker={{
-                                                    name: origin.name,
-                                                    location: origin.location,
-                                                    position: origin.position,
-                                                    icon : origin.icon
-                                                }} 
-                                            /> */}
-                                            
-{/* 
-                                        <Circle
-                                            center={origin.position}
-                                            radius={200} // 200 meters
-                                            options={{
-                                              strokeColor: '#0000FF',    // Blue border
-                                              strokeOpacity: 0.8,
-                                              strokeWeight: 2,
-                                              fillColor: '#0000FF',      // Blue fill
-                                              fillOpacity: 0.35,
-                                          }}
-                                          /> */}
-                                      
-                                          {activceAlerts.map((item, index) => (
+                                                                          
+                                          { activceAlerts.map((item, index) => (
                                               <Circle
                                                 key={index}
                                                 center={item.position}
@@ -227,25 +211,35 @@ const Dashboard = ({notifications}) => {
                                                 }}
                                                 onClick={() => handleSetDirections(item)}
                                               />
-                                            ))}   
-{/* 
-                                       {status == 'active' && destination  && 
-                                          <>                                              
-                                            <Circle
-                                              center={destination.position}
-                                              radius={100} // 200 meters
-                                              options={{
-                                                strokeColor: '#FF0000',    // Red border
-                                                strokeOpacity: 0.8,
-                                                strokeWeight: 2,
-                                                fillColor: '#FF0000',      // Red fill
-                                                fillOpacity: opacity,
-                                              }}
-                                            />                                                                      
-                                          </>
-                              } */}
+                                            )) }   
 
-                              { destination  && <MapDirectionsRenderer origin={origin.position} destination={destination} isLoaded={isLoaded} />
+                              { 
+                                destination  
+                                && <>
+                                <MapDirectionsRenderer origin={origin.position} destination={destination} isLoaded={isLoaded} />
+                                <Circle                                  
+                                      center={destination.position}
+                                      radius={200}
+                                      options={{
+                                        strokeColor: 
+                                            destination.status === "active"
+                                          ? "#FF0000"
+                                          : destination.status === "closed"
+                                          ? "#008000"
+                                          : "#FFA500",
+                                        strokeOpacity: 0.8,
+                                        strokeWeight: 2,
+                                        fillColor:
+                                        destination.status === "active"
+                                          ? "#FF0000"
+                                          : destination.status === "closed"
+                                          ? "#008000"
+                                          : "#FFA500",
+                                        fillOpacity: opacity,
+                                      }}                                      
+                                />
+                                </>
+                          
                                }
                                 </GoogleMap>}
                 </CCard>
@@ -260,7 +254,7 @@ const Dashboard = ({notifications}) => {
             </CCol>
         </CRow>
         </div>   
-        { alertData && <ViewAlert visible={isModalOpen} notification={alertData} onClose={() => onHandleCloseModal()  } /> }
+        { alertData && <ViewAlert visible={isModalOpen} notification={alertData} onUpdatedStatus={setAlertData} onClose={() => onHandleCloseModal()  } /> }
 
          {isPlaying && <BackgroundAudio /> }
      </DefaultLayout>
