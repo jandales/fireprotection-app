@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Device;
 use App\Models\UserSetting;
+use Illuminate\Support\Facades\Http;
+
 
 class DeviceController extends Controller
 {
@@ -27,10 +29,12 @@ class DeviceController extends Controller
         
             if(Device::count() > 0){
                 $lastDeviceId = Device::orderBy('id', 'desc')->first()->id;
-                $device_name = 'Device-' . $lastDeviceId + 1; 
+                $device_name = 'Device-' . ($lastDeviceId + 1);
             }else {
                 $device_name = 'Device-1';
-            }           
+            }     
+            
+            $location = $this->getAddressFromCoordinates($request->latitude, $request->longitude);
             
             $device = Device::create([
                 'name'        => $device_name,
@@ -38,7 +42,7 @@ class DeviceController extends Controller
                 'ipAddress'   => $request->ipAddress,
                 'latitude'    => $request->latitude,
                 'longitude'   => $request->longitude,
-                'location'    => $request->location,
+                'location'    => $location,
                 'ysnLocation' => 0,
                 'user_id'     => $setting->user_id                
             ]);          
@@ -72,6 +76,23 @@ class DeviceController extends Controller
         return response()->json(['device' => $device], 200);
 
         
+    }
+
+    private function getAddressFromCoordinates($latitude, $longitude)
+    {
+        $apiKey = config('services.google_maps.key');
+        $url = "https://maps.googleapis.com/maps/api/geocode/json?latlng={$latitude},{$longitude}&key={$apiKey}"; 
+
+        $response = Http::get($url);      
+
+        if ($response->successful()) {      
+            $data = $response->json();
+            if (!empty($data['results'])) {
+                return $data['results'][0]['formatted_address']; // Get first address
+            }         
+        }      
+
+        return null;
     }
 
    
