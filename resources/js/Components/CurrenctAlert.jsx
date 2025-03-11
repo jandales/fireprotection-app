@@ -102,7 +102,7 @@ const CurrenctAlert = ({notification, onUpdatedStatus}) => {
                                           plainText  
                                           readOnly 
                                           className='capitalize'                                     
-                                          value={`: ${notification?.device.location ?? '' }`}             
+                                          value={`: ${notification?.device?.location ?? '' }`}             
                                       />
                                       </CCol>
                                   </CRow>

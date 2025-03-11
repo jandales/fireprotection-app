@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 use App\Observers\NotificationObserver;
@@ -26,10 +27,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // if(env('APP_ENV') == 'local'){
+        //     URL::forceScheme('https');  // ✅ Force HTTPS
+        // }
+
         Notification::observe(NotificationObserver::class);
         Device::observe(DeviceObserver::class);
         User::observe(UserObserver::class);
         Vite::prefetch(concurrency: 3);
+
         
     }
 }

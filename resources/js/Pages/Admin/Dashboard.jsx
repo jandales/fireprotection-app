@@ -129,6 +129,7 @@ const Dashboard = ({notifications}) => {
       .filter(Boolean); 
     setActivceAlerts(reconstructedAlerts); 
   } 
+
   useEffect(() => {
     const interval = setInterval(() => {
       setRadius((prev) => (prev === 200 ? 250 : 200)); 
@@ -157,6 +158,19 @@ const Dashboard = ({notifications}) => {
   const handleSetDirections = (item) => {
     setDestination(item)
     setActivceAlerts([])
+  }
+
+  const handleUpdateStatus = (data) => {
+    setAlertData(data); 
+    setDestination({
+      id : data.id,
+      location : data?.device?.location,
+      position : { 
+            lat : data?.device?.latitude,
+            lng : data?.device?.longitude 
+      },
+      status : data.status
+    })    
   }
 
   return (
@@ -197,6 +211,7 @@ const Dashboard = ({notifications}) => {
                                                                           
                                           { activceAlerts.map((item, index) => (
                                             <motion.div 
+                                                  key={index}
                                                   animate={{
                                                     scale: [1, 1.3, 1], 
                                                   }}
@@ -269,7 +284,7 @@ const Dashboard = ({notifications}) => {
             </CCol>
             <CCol xs={12} md={3}>
               
-              { alertData && <CurrenctAlert notification={alertData} onUpdatedStatus={setAlertData} /> }
+              { alertData && <CurrenctAlert notification={alertData} onUpdatedStatus={handleUpdateStatus} /> }
 
               <RecentAlerts alerts={recentAlerts} id={destination?.id} handleAlertClick={handleAlertClick}  />
 
