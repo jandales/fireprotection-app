@@ -13,12 +13,11 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
-
-import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
+import {  ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import PrimaryButton from '@/Components/PrimaryButton';
-import TextInput from '@/Components/TextInput';
 import { Head, Link, useForm } from '@inertiajs/react';
+import {  toast } from 'react-toastify';
 
 const Register = () => {
      const { data, setData, post, processing, errors, reset } = useForm({
@@ -32,6 +31,13 @@ const Register = () => {
             e.preventDefault();
     
             post(route('register'), {
+                onError: (errors) => {              
+                    Object.keys(errors).forEach((field) => { 
+                        toast.error(errors[field], {                          
+                            autoClose: 1000,
+                        });                      
+                    });
+                },
                 onFinish: () => reset('password', 'password_confirmation'),
             });
         };
@@ -56,7 +62,7 @@ const Register = () => {
                         onChange={(e) => setData('name', e.target.value)}                       
                     />
                   </CInputGroup>
-                   <InputError message={errors.name} className="mt-2" />
+                   
                   <CInputGroup className="mb-3">
                     <CInputGroupText>@</CInputGroupText>
                     <CFormInput 
@@ -66,7 +72,7 @@ const Register = () => {
                         onChange={(e) => setData('email', e.target.value)}
                      />
                   </CInputGroup>
-                  <InputError message={errors.email} className="mt-2" />
+                
                   <CInputGroup className="mb-3">
                     <CInputGroupText>
                       <CIcon icon={cilLockLocked} />
@@ -79,7 +85,7 @@ const Register = () => {
                       onChange={(e) => setData('password', e.target.value)}
                     />
                   </CInputGroup>
-                    <InputError message={errors.password} className="mt-2" />
+                 
                   <CInputGroup className="mb-4">
                     <CInputGroupText>
                       <CIcon icon={cilLockLocked} />
@@ -94,10 +100,7 @@ const Register = () => {
                     }
                     />
                   </CInputGroup>
-                  <InputError
-                                          message={errors.password_confirmation}
-                                          className="mt-2"
-                                      />
+                  
                   <div className="d-grid">
                       <PrimaryButton className="btn btn-primary px-4" disabled={processing}>
                                             Register
@@ -109,6 +112,7 @@ const Register = () => {
             </CCard>
           </CCol>
         </CRow>
+               <ToastContainer />
       </CContainer>
     </div>
   )

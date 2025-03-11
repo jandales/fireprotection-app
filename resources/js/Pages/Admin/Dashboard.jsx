@@ -141,13 +141,13 @@ const Dashboard = ({notifications}) => {
   const handleAlertClick = (notification) => {
     if(notification){ 
       setDestination({
-        id : notification.id,
-        location : notification?.device?.location,
-        position : { 
-              lat : notification?.device?.latitude,
-              lng : notification?.device?.longitude 
-        },
-        status : notification.status
+          id : notification.id,
+          location : notification?.device?.location,
+          position : { 
+                lat : notification?.device?.latitude,
+                lng : notification?.device?.longitude 
+          },
+          status : notification.status
       }) 
       setAlertData(notification); 
       setActivceAlerts([])
@@ -163,13 +163,13 @@ const Dashboard = ({notifications}) => {
   const handleUpdateStatus = (data) => {
     setAlertData(data); 
     setDestination({
-      id : data.id,
-      location : data?.device?.location,
-      position : { 
-            lat : data?.device?.latitude,
-            lng : data?.device?.longitude 
-      },
-      status : data.status
+        id : data.id,
+        location : data?.device?.location,
+        position : { 
+              lat : data?.device?.latitude,
+              lng : data?.device?.longitude 
+        },
+        status : data.status
     })    
   }
 
@@ -205,7 +205,7 @@ const Dashboard = ({notifications}) => {
                                         zoomControl : false,
                                         mapTypeControl : false,
                                         streetViewControl : false,
-                                        fullscreenControl: false,
+                                        fullscreenControl: true,
                                     }}
                                 >   
                                                                           
@@ -291,7 +291,7 @@ const Dashboard = ({notifications}) => {
             </CCol>
         </CRow>
         </div>   
-        { alertData && <ViewAlert visible={isModalOpen} notification={alertData} onUpdatedStatus={setAlertData} onClose={() => onHandleCloseModal()  } /> }
+         { alertData && <ViewAlert visible={isModalOpen} notification={alertData} onUpdatedStatus={handleUpdateStatus} onClose={() => onHandleCloseModal()  } /> }
 
          {isPlaying && <BackgroundAudio /> }
      </DefaultLayout>

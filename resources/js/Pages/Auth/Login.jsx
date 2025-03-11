@@ -4,6 +4,8 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import ApplicationLogo from '@/Components/ApplicationLogo';
 import InputError from '@/Components/InputError';
 import { Head, Link, useForm } from '@inertiajs/react';
+import {  ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import {
   CButton,
@@ -21,10 +23,11 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
+import {  toast } from 'react-toastify';
 
 const Login = ({ status, canResetPassword }) => {
 
-    const { data, setData, post, processing, errors, reset } = useForm({
+       const { data, setData, post, processing, errors, reset } = useForm({
           email: '',
           password: '',
           remember: false,
@@ -33,6 +36,13 @@ const Login = ({ status, canResetPassword }) => {
       const submit = (e) => {
           e.preventDefault();
           post(route('login'), {
+              onError: (errors) => {              
+                  Object.keys(errors).forEach((field) => { 
+                      toast.error(errors[field], {                          
+                          autoClose: 1000,
+                      });                      
+                  });
+              },
               onFinish: () => reset('password'),
           });
       };
@@ -58,10 +68,7 @@ const Login = ({ status, canResetPassword }) => {
                          value={data.email}               
                          onChange={(e) => setData('email', e.target.value)}
                        />                      
-                    </CInputGroup>
-                    <CInputGroup className="mb-1">                      
-                       <InputError message={errors.email} className="mt-2" />
-                    </CInputGroup>
+                    </CInputGroup>                 
                     <CInputGroup className="mb-4">
                       <CInputGroupText>
                         <CIcon icon={cilLockLocked} />
@@ -75,9 +82,7 @@ const Login = ({ status, canResetPassword }) => {
                       />
                      
                     </CInputGroup>
-                    <CInputGroup className="mb-1">                      
-                        <InputError message={errors.password} className="mt-2" />
-                    </CInputGroup>
+                   
                     <CInputGroup className="mb-4">
                       <CFormCheck 
                           id="flexCheckDefault" 
@@ -112,6 +117,7 @@ const Login = ({ status, canResetPassword }) => {
             </CCardGroup>
           </CCol>
         </CRow>
+          <ToastContainer />
       </CContainer>
     </div>
   )
