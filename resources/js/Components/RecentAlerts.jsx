@@ -12,7 +12,7 @@ const RecentAlerts = ({alerts, id, handleAlertClick}) => {
         <CCard className="mb-4">
                     <CCardHeader>
                         <CRow>
-                            <CCol md={11}>
+                            <CCol md={12}>
                               <div className='device-header'>
                                     Recent Alert
                               </div>

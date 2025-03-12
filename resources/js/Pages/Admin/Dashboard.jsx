@@ -178,22 +178,20 @@ const Dashboard = ({notifications}) => {
       >
         <div className="py-12">
         <CRow>
-            <CCol xs={12} md={9}>
+            <CCol xs={12} lg={9}>
                 <CCard className="mb-4">
                     <CCardHeader>
                         <CRow>
-                            <CCol md={10}>
-                              <div className='device-header'>
+                            <CCol  md={12}>
+                              <div className='xpanel-header'>
                                     Maps
-                              </div>
-                            </CCol> 
-                            <CCol md={2}>
-                              {destination &&
-                              <div className='container-center-items justify-content-end'>                                
-                                  <CButton color="info" variant="outline" size="sm" onClick={() => onHandleClearDirection() } >Clear Map</CButton>  
-                              </div>
-                              }
-                            </CCol>                            
+                                    {destination &&
+                                    <div className='container-center-items justify-content-end'>                                
+                                        <CButton color="info" variant="outline" size="sm" onClick={() => onHandleClearDirection() } >Clear Map</CButton>  
+                                    </div>
+                                    }
+                              </div>                              
+                            </CCol>                                                     
                         </CRow>                      
                     </CCardHeader>   
                                  
@@ -282,7 +280,7 @@ const Dashboard = ({notifications}) => {
                 </CCard>
 
             </CCol>
-            <CCol xs={12} md={3}>
+            <CCol xs={12} lg={3}>
               
               { alertData && <CurrenctAlert notification={alertData} onUpdatedStatus={handleUpdateStatus} /> }
 
