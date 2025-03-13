@@ -62,7 +62,7 @@ const CurrenctAlert = ({notification, onUpdatedStatus}) => {
         <CCard className="mb-4">
                     <CCardHeader>
                         <CRow>
-                            <CCol md={11}>
+                            <CCol xs={12}>
                               <div className='device-header capitalize'>
                                     {notification.message}
                               </div>
@@ -72,66 +72,66 @@ const CurrenctAlert = ({notification, onUpdatedStatus}) => {
                       <CCardBody>
                         <CCol md={12}>
                                   <CRow>
-                                     
-                                        <CFormLabel htmlFor="province" className="col-sm-2 col-md-3 col-form-label">
+                           
+                                    <div className="flex">
+                                        <CFormLabel htmlFor="province" className="w-90 col-form-label">
                                             Name
-                                        </CFormLabel>
-                                      <CCol sm={9}>
-                                      <CFormInput
-                                          id="province" 
-                                          plainText  
-                                          readOnly 
-                                          className='capitalize'  
-                                          value={`: ${notification?.user?.name ?? '' }`}            
-                                      />
-                                      </CCol>
+                                        </CFormLabel>                                    
+                                        
+                                        <CFormInput
+                                            id="province" 
+                                            plainText  
+                                            readOnly 
+                                            className='capitalize'  
+                                            value={`: ${notification?.user?.name ?? '' }`}            
+                                        />
+                                    </div>                                   
+                            
                                   </CRow>
                         </CCol> 
 
                         <CCol md={12}>
                                   <CRow>
-                                     
-                                        <CFormLabel htmlFor="province" className="col-sm-2 col-md-3 col-form-label">
+                                  <div className="flex">
+                                        <CFormLabel htmlFor="province" className="w-90 col-form-label">
                                             Location
-                                        </CFormLabel>
-                                        
-                                  
-                                      <CCol sm={9}>
-                                      <CFormInput
-                                          id="province" 
-                                          plainText  
-                                          readOnly 
-                                          className='capitalize'                                     
-                                          value={`: ${notification?.device?.location ?? '' }`}             
-                                      />
-                                      </CCol>
+                                        </CFormLabel>  
+                                        <CFormInput
+                                            id="province" 
+                                            plainText  
+                                            readOnly 
+                                            className='capitalize'                                     
+                                            value={`: ${notification?.device?.location ?? '' }`}             
+                                        />
+                                   </div>
                                   </CRow>
                         </CCol> 
 
                         <CCol md={12}>
-                                  <CRow>                                     
-                                        <CFormLabel htmlFor="province" className="col-sm-2 col-md-3 col-form-label">
+                                  <CRow> 
+                                   <div className="flex">
+                                    <CFormLabel htmlFor="province" className="w-90 col-form-label">
                                             Contact
                                         </CFormLabel>   
-                                      <CCol sm={9}>
-                                      <CFormInput
-                                          id="contact"  
-                                          readOnly
-                                          plainText
-                                          className='capitalize'                                     
-                                          value={`: ${notification?.user.phonenumber ?? '' }`}
-                                                   
-                                      />
-                                      </CCol>
+                                    
+                                        <CFormInput
+                                            id="contact"  
+                                            readOnly
+                                            plainText
+                                            className='capitalize'                                     
+                                            value={`: ${notification?.user.phonenumber ?? '' }`}                                                
+                                        />
+                                   </div>                                    
                                   </CRow>
                         </CCol> 
 
                         <CCol md={12}>
-                                  <CRow className="mb-1">                                     
-                                        <CFormLabel htmlFor="province" className="col-sm-2 col-md-3 col-form-label">
+                                  <CRow className="mb-1"> 
+                                  <div className="flex">                                    
+                                        <CFormLabel htmlFor="province" className="w-90 col-form-label">
                                             Status:
                                         </CFormLabel>
-                                      <CCol sm={8}>
+                                     
                                       <CFormInput
                                           id="status" 
                                           readOnly
@@ -139,7 +139,8 @@ const CurrenctAlert = ({notification, onUpdatedStatus}) => {
                                           value={`: ${notification?.status ?? '' }`}
                                           plainText             
                                       />
-                                      </CCol>
+                                     
+                                      </div>
                                   </CRow>
                         </CCol> 
 

@@ -41,11 +41,11 @@ export default function Alert({ alert, active,  onAlertClick }) {
     <div  
        className={`alert-container ${active ? 'alert-container-active' : ''}`} 
        onClick={() => onAlertClick?.(alert)} style={{ cursor: 'pointer' }}>
-      <CCol sm={1} md={1}>
+      <CCol xs={1}>
         <CIcon icon={getIcon(alert.type)} size="lg" />
       </CCol>
 
-      <CCol sm={11} md={11}>
+      <CCol xs={11}>
         <div className="alert-content mb-2">
           <strong>{alert.message}</strong>
           <span>{alert.created_at}</span>
