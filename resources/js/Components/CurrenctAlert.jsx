@@ -119,7 +119,7 @@ const CurrenctAlert = ({notification, onUpdatedStatus}) => {
                                             readOnly
                                             plainText
                                             className='capitalize'                                     
-                                            value={`: ${notification?.user.phonenumber ?? '' }`}                                                
+                                            value={`: ${notification?.user?.phonenumber ?? '' }`}                                                
                                         />
                                    </div>                                    
                                   </CRow>

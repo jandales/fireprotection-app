@@ -23,7 +23,7 @@ import {
 import { motion } from "framer-motion";
 
 const Dashboard = ({notifications}) => { 
-
+ 
     const isPlaying = useSelector((state) => state.isPlaying);
     const dispatch = useDispatch()
     const recentAlerts  = notifications    
@@ -156,7 +156,13 @@ const Dashboard = ({notifications}) => {
   }; 
 
   const handleSetDirections = (item) => {
-    setDestination(item)
+   
+    if(item){
+      setDestination(item) 
+      const result = notifications.data.filter(alert => alert.id === item.id); 
+      setAlertData(result[0]);
+    }
+   
     setActivceAlerts([])
   }
 
