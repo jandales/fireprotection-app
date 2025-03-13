@@ -1,14 +1,10 @@
 import React from 'react'
-import Checkbox from '@/Components/Checkbox';
 import PrimaryButton from '@/Components/PrimaryButton';
-import ApplicationLogo from '@/Components/ApplicationLogo';
-import InputError from '@/Components/InputError';
-import { Head, Link, useForm } from '@inertiajs/react';
-import {  ToastContainer } from 'react-toastify';
+import { useForm } from '@inertiajs/react';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import {
-  CButton,
   CCard,
   CCardBody,
   CCardGroup,
@@ -25,9 +21,9 @@ import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
 import {  toast } from 'react-toastify';
 
-const Login = ({ status, canResetPassword }) => {
+const Login = () => {
 
-       const { data, setData, post, processing, errors, reset } = useForm({
+      const { data, setData, post, reset } = useForm({
           email: '',
           password: '',
           remember: false,
@@ -96,7 +92,7 @@ const Login = ({ status, canResetPassword }) => {
                     </CInputGroup>
                     <CRow>
                       <CCol xs={6}>                   
-                         <PrimaryButton className="btn btn-primary px-4" disabled={processing}>
+                          <PrimaryButton className="btn btn-primary px-4">
                                        Log in
                           </PrimaryButton>
                       </CCol>
