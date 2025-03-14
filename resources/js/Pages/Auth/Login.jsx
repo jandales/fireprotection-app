@@ -1,6 +1,6 @@
 import React from 'react'
 import PrimaryButton from '@/Components/PrimaryButton';
-import { useForm } from '@inertiajs/react';
+import { Link, useForm } from '@inertiajs/react';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -47,7 +47,7 @@ const Login = () => {
     <div className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center">
       <CContainer>
         <CRow className="justify-content-center">
-          <CCol md={6}>
+          <CCol md={5}>
             <CCardGroup>
               <CCard className="p-4">
                 <CCardBody>               
@@ -91,21 +91,19 @@ const Login = () => {
                       />                     
                     </CInputGroup>
                     <CRow>
-                      <CCol xs={6}>                   
-                          <PrimaryButton className="btn btn-primary px-4">
+                      <CCol xs={12} className='mb-2'>                   
+                          <PrimaryButton  className="col-12 btn btn-primary px-4">
                                        Log in
                           </PrimaryButton>
                       </CCol>
-                      {/* <CCol xs={6} className="text-right">
-                            {canResetPassword && (
+                       <CCol xs={12} className="text-center">                           
                               <Link
-                                  href={route('password.request')}
-                                  className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                  href={route('register')}
+                                  className="rounded-md text-sm text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 login-register-link"
                               >
-                                  Forgot your password?
-                              </Link>
-                          )}
-                      </CCol> */}
+                                  Create an account
+                              </Link>                      
+                      </CCol> 
                     </CRow>
                     </CForm>                
                 </CCardBody>

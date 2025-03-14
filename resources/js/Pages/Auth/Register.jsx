@@ -45,7 +45,7 @@ const Register = () => {
     <div className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center">
       <CContainer>
         <CRow className="justify-content-center">
-          <CCol md={9} lg={7} xl={6}>
+          <CCol md={9} lg={7} xl={5}>
             <CCard className="mx-4">
               <CCardBody className="p-4">
                 <CForm onSubmit={submit}>
@@ -101,12 +101,21 @@ const Register = () => {
                     />
                   </CInputGroup>
                   
-                  <div className="d-grid">
+                  <div className="d-grid mb-2">
                       <PrimaryButton className="btn btn-primary px-4" disabled={processing}>
-                                            Register
+                                Register
                       </PrimaryButton>
-                   
                   </div>
+                   <CCol xs={12} className="text-center"> 
+                      <p>Already have an account?                        
+                            <Link
+                                href={route('login')}
+                                className="rounded-md text-sm text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 login-register-link"
+                            >
+                                Login
+                            </Link>     
+                      </p>                 
+                    </CCol> 
                 </CForm>
               </CCardBody>
             </CCard>
