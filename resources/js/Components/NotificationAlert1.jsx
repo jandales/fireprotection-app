@@ -27,7 +27,7 @@ const NotificationAlert1 = () => {
 
     useEffect(() => {
      
-        echo.channel("notification-channel").listen("NotificationEvent", (e) => {
+        echo.channel("notification-channel").listen(".NotificationEvent", (e) => {
             const device = e.notification.device;  
           
             setIsModalOpen(true);             

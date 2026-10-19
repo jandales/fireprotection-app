@@ -57,7 +57,7 @@ const Dashboard = ({notifications}) => {
     const [opacity, setOpacity] = useState(0.35);
 
     useEffect(() => {
-      echo.channel("notification-channel").listen("NotificationEvent", (e) => { 
+      echo.channel("notification-channel").listen(".NotificationEvent", (e) => { 
           
           router.get('/dashboard', {}, { preserveScroll: true, preserveState: true });        
 

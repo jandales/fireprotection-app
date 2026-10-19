@@ -43,7 +43,7 @@ const Notification = (res, filter) => {
     } 
 
     useEffect(() => {
-        echo.channel("notification-channel").listen("NotificationEvent", (e) => {  
+        echo.channel("notification-channel").listen(".NotificationEvent", (e) => {  
             router.get('/notifications', {}, { preserveScroll: true, preserveState: true });
         });
 

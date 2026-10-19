@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\User;
 use App\Models\Device;
@@ -14,13 +13,25 @@ class DeviceSeeder extends Seeder
      */
     public function run(): void
     {
-        $users  = User::where('role', 'user')->get();
+        $users = User::where('role', 'user')->get();
 
-        foreach($users as $user)
-        {
-            Device::factory(10)->create([           
-                'user_id' => $user->id
-            ]);          
+        foreach ($users as $user) {
+            for ($i = 0; $i < 10; $i++) {
+                // Metro Manila bounds (approx.)
+                $latitude = fake()->latitude(14.45, 14.75);
+                $longitude = fake()->longitude(120.95, 121.12);
+                $ysnLocation = fake()->boolean(50);
+
+                Device::factory()->create([
+                    'user_id' => $user->id,
+                    'latitude' => $latitude,
+                    'longitude' => $longitude,
+                    'ysnLocation' => $ysnLocation,
+                    'location' => $ysnLocation
+                        ? fake()->streetAddress() . ', Manila, Philippines'
+                        : null,
+                ]);
+            }
         }
     }
 }

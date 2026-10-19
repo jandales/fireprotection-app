@@ -5,43 +5,35 @@ namespace App\Events;
 use App\Models\Notification;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class NotificationEvent implements ShouldBroadcast
+class NotificationEvent implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    // public $notification;
-
-    // public function __construct(Notification $model)
-    // {
-    //     $this->$notification = $model;
-    // }
-
-    // /**
-    //  * Get the channels the event should broadcast on.
-    //  *
-    //  * @return array<int, \Illuminate\Broadcasting\Channel>
-    //  */
-    // public function broadcastOn():  Channel
-    // {
-    //     return new PrivateChannel('notifications.'.$this->id);        
-    // }
-
-    public $notification;
-
-    public function __construct(Notification $model)
+    public function __construct(public Notification $notification)
     {
-        $this->notification = $model;
+        $this->notification->loadMissing(['device', 'user']);
     }
 
-    public function broadcastOn()
+    public function broadcastOn(): array
     {
-        return ['notification-channel'];
+        return [
+            new Channel('notification-channel'),
+        ];
     }
-   
+
+    public function broadcastAs(): string
+    {
+        return 'NotificationEvent';
+    }
+
+    public function broadcastWith(): array
+    {
+        return [
+            'notification' => $this->notification->load(['device', 'user']),
+        ];
+    }
 }

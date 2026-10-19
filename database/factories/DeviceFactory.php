@@ -17,15 +17,22 @@ class DeviceFactory extends Factory
     public function definition(): array
     {
         $ysnLocation = fake()->boolean(50);
+
+        // Metro Manila bounds (approx.)
+        $latitude = fake()->latitude(14.45, 14.75);
+        $longitude = fake()->longitude(120.95, 121.12);
+
         return [
             'name' => 'Device-' . fake()->randomNumber(5, false),
             'macAddress' => fake()->macAddress(),
             'ipAddress' => fake()->ipv4(),
-            'latitude'  => fake()->latitude(-90, 90),
-            'longitude' => fake()->longitude(-180,180),
-            'location' =>  $ysnLocation == true ? fake()->address() : null,
-            'ysnLocation' =>  $ysnLocation,
-            'user_id' => 1
+            'latitude' => $latitude,
+            'longitude' => $longitude,
+            'location' => $ysnLocation
+                ? fake()->streetAddress() . ', Manila, Philippines'
+                : null,
+            'ysnLocation' => $ysnLocation,
+            'user_id' => 1,
         ];
     }
 }

@@ -37,7 +37,7 @@ const NotificationAlert = () => {
 
     useEffect(() => {
      
-        echo.channel("notification-channel").listen("NotificationEvent", (e) => {
+        echo.channel("notification-channel").listen(".NotificationEvent", (e) => {
             const device = e.notification.device; 
           
             const coordinates = { 
