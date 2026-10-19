@@ -41,8 +41,8 @@ const Dashboard = ({notifications}) => {
         id: 1,
         name : station.name,      
         position: {
-          lat: station.latitude,
-          lng: station.longitude,
+          lat: Number(station.latitude),
+          lng: Number(station.longitude),
         },
         location : station.address,
         icon: FireStationIcon 

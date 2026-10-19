@@ -23,11 +23,17 @@ class NotificationSeeder extends Seeder
                                 ->where('ysnLocation', 1)
                                 ->first();
 
-            Notification::create([           
+            if (!$device) {
+                continue;
+            }
+
+            Notification::create([
                 'user_id' => $user->id,
-                'device_id'  => $device->id,
-                'location'  => $device->location
-            ]);          
+                'device_id' => $device->id,
+                'message' => 'Fire alert detected at ' . ($device->location ?? 'unknown location'),
+                'type' => 'alert',
+                'status' => 'active',
+            ]);
         }
     }
 }

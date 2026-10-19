@@ -15,9 +15,10 @@ class SettingSeeder extends Seeder
     {          
             if(Setting::count() == 0) {
                 Setting::create([
-                    'latitude'  => null,
-                    'longitude' => null,
-                    'location'  =>  null,
+                    'stationName' => 'Fire Station',
+                    'latitude' => 14.5995,
+                    'longitude' => 120.9842,
+                    'location' => 'Manila, Philippines',
                 ]);
             }
     }

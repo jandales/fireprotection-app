@@ -30,19 +30,23 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
         
-        $setting = Setting::first();  
- 
+        $setting = Setting::first();
+
+        // Default to Manila so Google Maps always gets finite coordinates.
+        $latitude = is_numeric($setting?->latitude) ? (float) $setting->latitude : 14.5995;
+        $longitude = is_numeric($setting?->longitude) ? (float) $setting->longitude : 120.9842;
+
         return [
             ...parent::share($request),
             'auth' => [
                 'user' => $request->user(),
             ],
             'station' => [
-                'name'  => $setting->stationName,
-                'contact'  => $setting->phonenumber,
-                'latitude'  => $setting->latitude,
-                'longitude' => $setting->longitude,
-                'address'  => $setting->location,  
+                'name' => $setting?->stationName ?? 'Fire Station',
+                'contact' => $setting?->phonenumber,
+                'latitude' => $latitude,
+                'longitude' => $longitude,
+                'address' => $setting?->location,
             ],
         ];
     }

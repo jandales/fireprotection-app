@@ -27,19 +27,19 @@ const Maps = (res) => {
         name : device.user.name,
         contact  : device.user.phonenumber,
         position: {
-          lat: device.latitude,
-          lng: device.longitude,
+          lat: Number(device.latitude),
+          lng: Number(device.longitude),
         },
         location : device.location,
         icon: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png', 
         //icon: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png', 
         origin : false
-    }));
+    })).filter(device => Number.isFinite(device.position.lat) && Number.isFinite(device.position.lng));
 
     const markerPosition  = { 
       contact  : station.contact,
       location : station.address,
-      position : { lat: station.latitude, lng:  station.longitude} 
+      position : { lat: Number(station.latitude), lng: Number(station.longitude)} 
     }
 
     devices.push({
