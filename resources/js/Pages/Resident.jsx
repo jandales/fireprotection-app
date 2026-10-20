@@ -61,8 +61,8 @@ const Resident = (data) => {
                     </CTableRow>
                     </CTableHead>
                     <CTableBody>
-                    {residents.map((item, index) => (
-                        <CTableRow v-for="item in tableItems" key={index}>
+                    {residents.length ? residents.map((item) => (
+                        <CTableRow key={item.id}>
                         <CTableDataCell className="text-center">
                             <CAvatar size="md" src={avatar1} />
                         </CTableDataCell>
@@ -85,7 +85,11 @@ const Resident = (data) => {
                             </div>                  
                         </CTableDataCell>                                 
                         </CTableRow>
-                    ))}
+                    )) : (
+                      <CTableRow>
+                        <CTableDataCell colSpan={6} className="table-empty-cell">No residents found.</CTableDataCell>
+                      </CTableRow>
+                    )}
                     </CTableBody>
                 </CTable>       
             </CCard>

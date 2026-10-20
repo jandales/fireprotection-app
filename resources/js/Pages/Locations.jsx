@@ -46,8 +46,8 @@ const Locations = (data) => {
                     </CTableRow>
                     </CTableHead>
                     <CTableBody>
-                    {locations.map((item, index) => (
-                        <CTableRow v-for="item in tableItems" key={index}>
+                    {locations.length ? locations.map((item) => (
+                        <CTableRow key={item.id}>
                         <CTableDataCell>
                             <div>{item.location}</div>
                         </CTableDataCell>
@@ -64,7 +64,11 @@ const Locations = (data) => {
                             </div>                  
                         </CTableDataCell>                                 
                         </CTableRow>
-                    ))}
+                    )) : (
+                      <CTableRow>
+                        <CTableDataCell colSpan={4} className="table-empty-cell">No locations found.</CTableDataCell>
+                      </CTableRow>
+                    )}
                     </CTableBody>
                 </CTable>       
             </CCard>

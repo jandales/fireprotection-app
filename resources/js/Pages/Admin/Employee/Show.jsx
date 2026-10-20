@@ -118,8 +118,8 @@ const Show = (res) => {
                                 </CTableRow>
                                 </CTableHead>
                                 <CTableBody>
-                                {activities.map((item, index) => (
-                                    <CTableRow v-for="item in tableItems" key={index}>                        
+                                {activities.length ? activities.map((item) => (
+                                    <CTableRow key={item.id}>
                                     <CTableDataCell>
                                         <div>{item.action}</div>
                                     </CTableDataCell>                                           
@@ -130,7 +130,11 @@ const Show = (res) => {
                                         <div>{item.created_at}</div>                       
                                     </CTableDataCell>                                                         
                                     </CTableRow>
-                                ))}
+                                )) : (
+                                  <CTableRow>
+                                    <CTableDataCell colSpan={3} className="table-empty-cell">No activity records found.</CTableDataCell>
+                                  </CTableRow>
+                                )}
                                 </CTableBody>
                             </CTable> 
                             {activities.next_page_url && (

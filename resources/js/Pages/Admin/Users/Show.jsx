@@ -138,8 +138,8 @@ const Show = (res) => {
                                 </CTableRow>
                                 </CTableHead>
                                 <CTableBody>
-                                {devices.map((item, index) => (
-                                    <CTableRow v-for="item in tableItems" key={index}>                        
+                                {devices.length ? devices.map((item) => (
+                                    <CTableRow key={item.id}>
                                     <CTableDataCell>
                                         <div>{item.macAddress}</div>
                                     </CTableDataCell> 
@@ -158,7 +158,11 @@ const Show = (res) => {
                                         </div>                  
                                     </CTableDataCell>                                 
                                     </CTableRow>
-                                ))}
+                                )) : (
+                                  <CTableRow>
+                                    <CTableDataCell colSpan={5} className="table-empty-cell">No devices registered.</CTableDataCell>
+                                  </CTableRow>
+                                )}
                                 </CTableBody>
                             </CTable> 
                             {devices.next_page_url && (

@@ -62,8 +62,8 @@ const Dashboard = ({activities, userCount, deviceCount, employeeCount, notifitio
                   </CTableRow>
                 </CTableHead>
                 <CTableBody>
-                  {activities.map((item, index) => (
-                    <CTableRow v-for="item in tableItems" key={index}>
+                  {activities.length ? activities.map((item) => (
+                    <CTableRow key={item.id}>
                       <CTableDataCell className="text-center">
                         <CAvatar size="md" src={item.user?.avatar == null ? avatar6 : item.user?.avatar} status="success" />
                       </CTableDataCell>
@@ -84,7 +84,11 @@ const Dashboard = ({activities, userCount, deviceCount, employeeCount, notifitio
                           <div>{item.created_at}</div>                      
                       </CTableDataCell>                    
                     </CTableRow>
-                  ))}
+                  )) : (
+                    <CTableRow>
+                      <CTableDataCell colSpan={5} className="table-empty-cell">No activity records found.</CTableDataCell>
+                    </CTableRow>
+                  )}
                 </CTableBody>
               </CTable>  
               </CCard>   

@@ -1,243 +1,322 @@
 import React, { useEffect, useState } from 'react';
 import DefaultLayout from '@/Layouts/DefaultLayout';
-import {  CAvatar, CRow, CCard, CFormLabel, CButton, CCol, CForm, CFormInput, CFormSelect, CCardBody } from '@coreui/react'
-import { usePage, useForm} from '@inertiajs/react';
-import avatar from '@/assets/images/avatars/user.png'
+import { useForm, usePage } from '@inertiajs/react';
+import { CAvatar } from '@coreui/react';
+import CIcon from '@coreui/icons-react';
+import {
+  cilBriefcase,
+  cilCheckCircle,
+  cilEnvelopeClosed,
+  cilLocationPin,
+  cilPencil,
+  cilPhone,
+  cilUser,
+} from '@coreui/icons';
 import { toast } from 'react-toastify';
-const Profile = () => {  
-      const user = usePage().props.auth.user;   
-      const [provinces, setProvince] = useState([]);
-      const [municipalities, setMunicipalities] = useState([]);
-      const [barangays, setBarangays] = useState([]);
-      const { data, setData, post } =
-            useForm({
-                name: user.name,
-                email: user.email,
-                avatar: user.avatar,
-                phonenumber: user.phonenumber,
-                address1: user.address1,
-                address2: user.address2,
-                city: user.city,
-                province: user.province,
-                zipcode : user.zipcode,                
-            });   
-    
-        const submit = (e) => {
-            e.preventDefault();          
-            post(route('user.update'), {
-                preserveScroll: true,
-                onSuccess: (res) => { 
-                    toast.success('Account updated successfully!', {                          
-                        autoClose: 1000,
-                    });                     
-                                                                    
-                },
-            });                  
-        }; 
-      
+import DefaultAvatar from '@/assets/images/avatars/user.png';
+
+const createProfileData = (user) => ({
+  name: user.name || '',
+  phonenumber: user.phonenumber || '',
+  address1: user.address1 || '',
+  address2: user.address2 || '',
+  city: user.city || '',
+  province: user.province || '',
+  zipcode: user.zipcode || '',
+  avatar: null,
+});
+
+const ProfileField = ({ id, label, value, onChange, error, disabled = false, helperText, ...props }) => (
+  <div className="account-field">
+    <label htmlFor={id}>{label}</label>
+    <input
+      id={id}
+      name={id}
+      value={value}
+      onChange={onChange}
+      disabled={disabled}
+      aria-invalid={Boolean(error)}
+      aria-describedby={error ? `${id}-error` : undefined}
+      className={error ? 'account-input account-input-error' : 'account-input'}
+      {...props}
+    />
+    {error && <span className="account-field-error" id={`${id}-error`}>{error}</span>}
+    {helperText && <span className="account-field-help">{helperText}</span>}
+  </div>
+);
+
+export default function Profile() {
+  const user = usePage().props.auth.user;
+  const [isEditing, setIsEditing] = useState(false);
+  const [avatarPreview, setAvatarPreview] = useState(null);
+  const {
+    data,
+    setData,
+    setDefaults,
+    post,
+    processing,
+    errors,
+    setError,
+    clearErrors,
+    reset,
+  } = useForm(createProfileData(user));
+
+  useEffect(() => {
+    const profileData = createProfileData(user);
+    setData(profileData);
+    setDefaults(profileData);
+    setIsEditing(false);
+  }, [user, setData, setDefaults]);
+
+  useEffect(() => {
+    if (!avatarPreview) return undefined;
+    return () => URL.revokeObjectURL(avatarPreview);
+  }, [avatarPreview]);
+
+  const fullAddress = [
+    user.address1,
+    user.address2,
+    user.city,
+    user.province,
+    user.zipcode,
+  ].filter(Boolean).join(', ');
+
+  const cancelEditing = () => {
+    reset();
+    clearErrors();
+    setAvatarPreview(null);
+    setIsEditing(false);
+  };
+
+  const handleAvatarChange = (event) => {
+    const file = event.target.files?.[0] ?? null;
+    setData('avatar', file);
+    clearErrors('avatar');
+    setAvatarPreview(file ? URL.createObjectURL(file) : null);
+  };
+
+  const submit = (event) => {
+    event.preventDefault();
+    clearErrors();
+
+    if (!data.name.trim()) {
+      setError('name', 'Please enter your name.');
+      return;
+    }
+
+    post(route('user.update'), {
+      preserveScroll: true,
+      onSuccess: () => {
+        setAvatarPreview(null);
+        setIsEditing(false);
+        toast.success('Profile updated successfully.', { autoClose: 1800 });
+      },
+      onError: (validationErrors) => {
+        if (Object.keys(validationErrors).length === 0) {
+          toast.error('Your profile could not be updated. Please try again.');
+        }
+      },
+    });
+  };
 
   return (
-      <DefaultLayout     
-      >
-        <div className="py-12">
-        <CRow>
-            <CCol xs>
-            <CCard className="mb-4">          
-                <CCardBody>
-                <CForm className="row g-3" onSubmit={submit} encType="multipart/form-data">
-                    <CCol md={12}> 
-                        <CRow className="mb-3"> 
-                        <CCol md={1}>
-                            <CAvatar src={user.avatar ?? avatar} size="xl"  />
-                        </CCol>
-                        <CCol md={11}>
-                            <label className='avatar-name'>{user.name}</label>                            
-                            <span className='avater-email'>{user.email}</span>
-                        </CCol>
-                        </CRow>
-                    </CCol>
-                    <CCol md={12}>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="name" className="col-sm-2 col-form-label">
-                                Name
-                            </CFormLabel>
-                            <CCol sm={10}>
-                                <CFormInput 
-                                    type="text" 
-                                    id="name" 
-                                    value={data.name}
-                                    onChange={(e) => setData('name', e.target.value)}
-                                     />
-                            </CCol>
-                        </CRow>
-                        
-                    </CCol>
-                    <CCol md={12}>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="email" className="col-sm-2 col-form-label">
-                                Email
-                            </CFormLabel>
-                            <CCol sm={10}>
-                            <CFormInput 
-                                type="email" 
-                                id="email" 
-                                value={data.email}
-                                onChange={(e) => setData('email', e.target.value)}
-                                readOnly
-                                 />
-                            </CCol>
-                        </CRow>
-                    </CCol> 
+    <DefaultLayout>
+      <main className="account-page">
+        <header className="account-page-heading">
+          <div>
+            <h1>My Account</h1>
+            <p>View and update your personal information.</p>
+          </div>
+        </header>
 
-                    <CCol md={12}>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="contactnumber" className="col-sm-2 col-form-label">
-                            Contact Number
-                            </CFormLabel>
-                            <CCol sm={10}>
-                            <CFormInput 
-                                type="text" 
-                                id="contactnumber" 
-                                value={data.phonenumber}
-                                onChange={(e) => setData('phonenumber', e.target.value)} 
-                                />
-                            </CCol>
-                        </CRow>
-                    </CCol>  
+        <div className="account-profile-grid">
+          <section className="account-profile-card" aria-label="Profile summary">
+            <div className="account-profile-avatar-wrap">
+              <CAvatar
+                src={avatarPreview || user.avatar || DefaultAvatar}
+                size="xl"
+                className="account-profile-avatar"
+                alt={`${user.name} profile`}
+              />
+            </div>
+            <h2>{user.name}</h2>
+            <p className="account-profile-email">{user.email}</p>
+            {user.role && (
+              <span className="account-role-badge">
+                <CIcon icon={cilBriefcase} aria-hidden="true" />
+                <span>{user.role}</span>
+              </span>
+            )}
+            {user.status !== null && user.status !== undefined && (
+              <span className={`account-status-badge ${Number(user.status) === 1 ? 'account-status-active' : 'account-status-inactive'}`}>
+                <CIcon icon={cilCheckCircle} aria-hidden="true" />
+                {user.statusName}
+              </span>
+            )}
+            <button
+              type="button"
+              className="account-edit-button"
+              onClick={() => setIsEditing(true)}
+              disabled={isEditing}
+            >
+              <CIcon icon={cilPencil} aria-hidden="true" />
+              Edit Profile
+            </button>
+            <div className="account-summary-divider" />
+            <div className="account-summary-detail">
+              <CIcon icon={cilEnvelopeClosed} aria-hidden="true" />
+              <div>
+                <span>Email address</span>
+                <strong>{user.email}</strong>
+              </div>
+            </div>
+            <div className="account-summary-detail">
+              <CIcon icon={cilPhone} aria-hidden="true" />
+              <div>
+                <span>Phone number</span>
+                <strong>{user.phonenumber || 'Not provided'}</strong>
+              </div>
+            </div>
+            <div className="account-summary-detail">
+              <CIcon icon={cilLocationPin} aria-hidden="true" />
+              <div>
+                <span>Address</span>
+                <strong>{fullAddress || 'Not provided'}</strong>
+              </div>
+            </div>
+          </section>
 
-                   { user.role != 'user' &&
-                    <CCol md={12}>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="contactnumber" className="col-sm-2 col-form-label">
-                            Role
-                            </CFormLabel>
-                            <CCol sm={10}>
-                            <CFormInput 
-                                type="text" 
-                                id="contactnumber" 
-                                value={user.role}
-                                readOnly                              
-                                />
-                            </CCol>
-                        </CRow>
-                    </CCol>  
-                    }
+          <section className="account-information-card" aria-labelledby="account-information-heading">
+            <header className="account-card-heading">
+              <div>
+                <h2 id="account-information-heading">Personal Information</h2>
+                <p>Manage the details associated with your account.</p>
+              </div>
+            </header>
 
-                    <CCol md={12}>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="Address" className="col-sm-2 col-form-label">
-                             Address
-                            </CFormLabel>  
-                        </CRow>
-                    </CCol> 
-                 
+            {Object.keys(errors).length > 0 && (
+              <div className="account-error-summary" role="alert">
+                Please review the highlighted fields and try again.
+              </div>
+            )}
 
-                    
-                    <CCol md={12}>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="address1" className="col-sm-2 col-form-label">
-                                Steet Name
-                            </CFormLabel>
-                            <CCol sm={10}>
-                            <CFormInput 
-                                type="text" 
-                                id="address1" 
-                                value={data.address1}
-                                onChange={(e) => setData('address1', e.target.value)}
-                                 />
-                            </CCol>
-                        </CRow>
-                    </CCol> 
+            <form onSubmit={submit} noValidate>
+              <div className="account-fields-grid">
+                <ProfileField
+                  id="name"
+                  label="Full name"
+                  autoComplete="name"
+                  value={data.name}
+                  onChange={(event) => setData('name', event.target.value)}
+                  error={errors.name}
+                  disabled={!isEditing || processing}
+                  required
+                />
+                <ProfileField
+                  id="email"
+                  label="Email address"
+                  type="email"
+                  autoComplete="email"
+                  value={user.email || ''}
+                  disabled
+                  readOnly
+                  helperText="Email address is managed by your account."
+                />
+                <ProfileField
+                  id="phonenumber"
+                  label="Phone number"
+                  type="tel"
+                  autoComplete="tel"
+                  value={data.phonenumber}
+                  onChange={(event) => setData('phonenumber', event.target.value)}
+                  error={errors.phonenumber}
+                  disabled={!isEditing || processing}
+                />
+                <ProfileField
+                  id="address1"
+                  label="Street address"
+                  autoComplete="address-line1"
+                  value={data.address1}
+                  onChange={(event) => setData('address1', event.target.value)}
+                  error={errors.address1}
+                  disabled={!isEditing || processing}
+                />
+                <ProfileField
+                  id="address2"
+                  label="Barangay"
+                  autoComplete="address-line2"
+                  value={data.address2}
+                  onChange={(event) => setData('address2', event.target.value)}
+                  error={errors.address2}
+                  disabled={!isEditing || processing}
+                />
+                <ProfileField
+                  id="city"
+                  label="Municipality / city"
+                  autoComplete="address-level2"
+                  value={data.city}
+                  onChange={(event) => setData('city', event.target.value)}
+                  error={errors.city}
+                  disabled={!isEditing || processing}
+                />
+                <ProfileField
+                  id="province"
+                  label="Province"
+                  autoComplete="address-level1"
+                  value={data.province}
+                  onChange={(event) => setData('province', event.target.value)}
+                  error={errors.province}
+                  disabled={!isEditing || processing}
+                />
+                <ProfileField
+                  id="zipcode"
+                  label="ZIP code"
+                  inputMode="numeric"
+                  autoComplete="postal-code"
+                  value={data.zipcode}
+                  onChange={(event) => setData('zipcode', event.target.value)}
+                  error={errors.zipcode}
+                  disabled={!isEditing || processing}
+                />
+              </div>
 
-                    <CCol md={12}>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="address" className="col-sm-2 col-form-label">
-                                Baranggay
-                            </CFormLabel>
-                            <CCol sm={10}>                            
-                             <CFormInput 
-                                   id="address2" 
-                                   value={data.address2}
-                                   onChange={(e) => setData('address2', e.target.value)}                                                       
-                            />                     
-                            </CCol>
-                        </CRow>
-                    </CCol> 
+              {isEditing && (
+                <div className="account-avatar-field">
+                  <label htmlFor="avatar">Profile photo</label>
+                  <input
+                    id="avatar"
+                    name="avatar"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarChange}
+                    disabled={processing}
+                    aria-invalid={Boolean(errors.avatar)}
+                    aria-describedby={errors.avatar ? 'avatar-error' : 'avatar-help'}
+                  />
+                  <span className="account-field-help" id="avatar-help">Choose an image file for your profile picture.</span>
+                  {errors.avatar && <span className="account-field-error" id="avatar-error">{errors.avatar}</span>}
+                </div>
+              )}
 
-
-                    <CCol md={12}>
-                            <CRow className="mb-3">
-                                <CFormLabel htmlFor="city" className="col-sm-2 col-form-label">
-                                    Municipality
-                                </CFormLabel>
-                                <CCol sm={10}>                              
-                                   <CFormInput
-                                    id="city"
-                                    value={data.city}
-                                    onChange={(e) => setData('city', e.target.value)} 
-                                   />                              
-                                </CCol>
-                            </CRow>
-                    </CCol>
-
-                     <CCol md={12}>
-                            <CRow className="mb-3">
-                                <CFormLabel htmlFor="province" className="col-sm-2 col-form-label">
-                                    Province
-                                </CFormLabel>
-                                <CCol sm={10}>
-                                <CFormInput
-                                    id="province"
-                                    value={data.province}
-                                    onChange={(e) => setData('province', e.target.value)}                                    
-                                />   
-                                </CCol>
-                            </CRow>
-                    </CCol>   
-
-                                   
-                    <CCol md={12}>
-                            <CRow className="mb-3">
-                                <CFormLabel htmlFor="zipcode" className="col-sm-2 col-form-label">
-                                   Zip Code
-                                </CFormLabel>
-                                <CCol sm={10}>
-                                <CFormInput 
-                                    type="text" 
-                                    id="zipcode" 
-                                    value={data.zipcode} 
-                                    onChange={(e) => setData('zipcode', e.target.value)}
-                                />
-                                </CCol>
-                            </CRow>
-                    </CCol> 
-                    <CCol xs={12}>
-                        <CRow className="mb-3">
-                                <CFormLabel htmlFor="zipcode" className="col-sm-2 col-form-label">
-                                Avatar
-                                </CFormLabel>
-                                <CCol sm={10}>
-                                <CFormInput 
-                                     type="file"
-                                     id="avatar" 
-                                     accept="image/*"
-                                     onChange={(e) => setData('avatar', e.target.files[0])} 
-                                     />                              
-                                </CCol>
-                        </CRow>  
-                               
-                    </CCol>                                  
-                    <CCol xs={12}>
-                       <CButton color="primary" type="submit">Save Changes</CButton>
-                    </CCol>
-                </CForm>
-                </CCardBody>
-            </CCard>            
-            </CCol>          
-        </CRow>
+              {isEditing && (
+                <div className="account-form-actions">
+                  <button
+                    className="account-cancel-button"
+                    type="button"
+                    onClick={cancelEditing}
+                    disabled={processing}
+                  >
+                    Cancel
+                  </button>
+                  <button className="account-save-button" type="submit" disabled={processing}>
+                    {processing ? 'Saving…' : 'Save Changes'}
+                  </button>
+                </div>
+              )}
+            </form>
+          </section>
         </div>
-     </DefaultLayout>
-  )
+      </main>
+    </DefaultLayout>
+  );
 }
-
-export default Profile

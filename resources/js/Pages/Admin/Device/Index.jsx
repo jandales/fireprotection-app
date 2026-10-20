@@ -30,21 +30,20 @@ import Search from '@/Components/Search';
 import { toast } from 'react-toastify';
 
 import CIcon from '@coreui/icons-react'; 
-import { 
+import {
+    cilMagnifyingGlass,
     cilMap,
     cilList
  } from '@coreui/icons'; 
 
 
 
-const Index = (res, filter) => {    
-   
-    const devices = res.devices 
+const Index = ({ devices, filter }) => {
     const [visible, setVisible] = useState(false)
     const [device, setDevice] = useState({});
 
     const onPageChange = (url) => {
-        router.get(url, {}, { preserveScroll: true, preserveState: true });
+        router.get(url, filter ? { search: filter } : {}, { preserveScroll: true, preserveState: true });
     } 
 
     const handleOpenModal = (state, data) => {
@@ -100,13 +99,13 @@ const Index = (res, filter) => {
                     </CTableRow>
                     </CTableHead>
                     <CTableBody>
-                    {devices.data.map((item, index) => (
-                        <CTableRow v-for="item in tableItems" key={index}>                       
+                    {devices.data.length ? devices.data.map((item) => (
+                        <CTableRow key={item.id}>
                         <CTableDataCell>
-                            <div>{item.name}</div>
+                            <div className="table-primary-value">{item.name}</div>
                         </CTableDataCell>
                         <CTableDataCell>
-                            <div>{item.macAddress}</div>
+                            <div className="table-secondary-value">{item.macAddress}</div>
                         </CTableDataCell>
                         <CTableDataCell>
                             <div className='capitalize'>{item.user?.name}</div>
@@ -115,12 +114,16 @@ const Index = (res, filter) => {
                             <div>{item.ysnLocation === 1 ? item.user?.location : item.location}</div>                       
                         </CTableDataCell> 
                         <CTableDataCell>  
-                            <div className='btn-gap'>
-                                <CButton color="info" variant="outline" size="sm"  onClick={(e) => handleOpenModal(true, item)}>View</CButton> 
+                            <div className="table-actions">
+                                <CButton className="table-action-button" title="View device" aria-label={`View ${item.name}`} onClick={() => handleOpenModal(true, item)}><CIcon icon={cilMagnifyingGlass} /></CButton>
                             </div> 
                         </CTableDataCell>                                 
                         </CTableRow>
-                    ))}
+                    )) : (
+                      <CTableRow>
+                        <CTableDataCell colSpan={5} className="table-empty-cell">No devices found.</CTableDataCell>
+                      </CTableRow>
+                    )}
                     </CTableBody>
                 </CTable> 
 
@@ -133,6 +136,7 @@ const Index = (res, filter) => {
                         lastpage={devices.last_page_url}
                         totalRecord={devices.total}
                         totalPage={devices.last_page}
+                        perPage={devices.per_page}
                         onPageChange={onPageChange}
                      />
                  )}

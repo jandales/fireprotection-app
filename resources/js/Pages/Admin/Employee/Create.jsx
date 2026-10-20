@@ -1,228 +1,200 @@
-import React, { useState } from 'react';
+import React from 'react';
 import DefaultLayout from '@/Layouts/DefaultLayout';
-import {  CRow, CCard, CCardHeader, CFormLabel, CButton, CCol, CForm, CFormInput, CFormSelect, CCardBody } from '@coreui/react'
-import {  useForm } from '@inertiajs/react';
-import {  toast } from 'react-toastify';
+import { Link, useForm } from '@inertiajs/react';
+import CIcon from '@coreui/icons-react';
+import { cilBriefcase, cilLocationPin, cilUser } from '@coreui/icons';
+import { toast } from 'react-toastify';
 
-const Create = () => {   
+const Field = ({ id, label, value, onChange, error, ...props }) => (
+  <div className="employee-create-field">
+    <label htmlFor={id}>{label}</label>
+    <input
+      id={id}
+      name={id}
+      value={value ?? ''}
+      onChange={onChange}
+      aria-invalid={Boolean(error)}
+      aria-describedby={error ? `${id}-error` : undefined}
+      className={error ? 'employee-create-input employee-create-input-error' : 'employee-create-input'}
+      {...props}
+    />
+    {error && <span className="employee-create-error" id={`${id}-error`}>{error}</span>}
+  </div>
+);
 
-    const { data, setData, post  } =
-        useForm({
-            name: null,
-            email: null,
-            role: null,
-            phonenumber: null,
-            address1: null,          
-            address2: null,
-            city: null,                
-            province: null,       
-            zipcode : null,
-        });   
-    
-        const submit = (e) => {
-            e.preventDefault(); 
+export default function Create() {
+  const { data, setData, post, processing, errors } = useForm({
+    name: '',
+    email: '',
+    role: '',
+    phonenumber: '',
+    address1: '',
+    address2: '',
+    city: '',
+    province: '',
+    zipcode: '',
+  });
 
-            post(route('employees.store'), {
-                preserveScroll: true,
-                onSuccess: () => {                        
-                    toast.success("Successfully Created", {
-                        autoClose: 1000,
-                    });
-                },
-                onError: (errors) => {              
-                    Object.keys(errors).forEach((field) => { 
-                        toast.error(errors[field], {                          
-                            autoClose: 1000,
-                        });                      
-                    });
-                }
-            });
-            
-        };  
-
-
-    
-    
+  const submit = (event) => {
+    event.preventDefault();
+    post(route('employees.store'), {
+      preserveScroll: true,
+      onSuccess: () => {
+        toast.success('Employee created successfully.', { autoClose: 1800 });
+      },
+      onError: (validationErrors) => {
+        if (Object.keys(validationErrors).length === 0) {
+          toast.error('The employee could not be created. Please try again.');
+        }
+      },
+    });
+  };
 
   return (
-      <DefaultLayout     
-      >
-        <div className="py-12">
-        <CRow>
-            <CCol xs>
-            <CCard className="mb-4"> 
-                <CCardHeader>
-                    Create Employee
-                </CCardHeader>      
-                <CCardBody>
-                <CForm className="row g-3" onSubmit={submit}>                   
-                    <CCol md={12}>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="name" className="col-sm-2 col-form-label">
-                                Name
-                            </CFormLabel>
-                            <CCol sm={10}>
-                                <CFormInput 
-                                    type="text" 
-                                    id="name" 
-                                    value={data.name}
-                                    onChange={(e) => setData('name', e.target.value)}
-                                     />
-                            </CCol>
-                        </CRow>
-                        
-                    </CCol>
-                    <CCol md={12}>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="email" className="col-sm-2 col-form-label">
-                                Email
-                            </CFormLabel>
-                            <CCol sm={10}>
-                            <CFormInput 
-                                type="email" 
-                                id="email" 
-                                value={data.email}
-                                onChange={(e) => setData('email', e.target.value)}                              
-                                 />
-                            </CCol>
-                        </CRow>
-                    </CCol> 
+    <DefaultLayout>
+      <main className="employee-create-page">
+        <header className="employee-create-heading">
+          <div>
+            <h1>Add employee</h1>
+            <p>Create an employee account and add their contact information.</p>
+          </div>
+          <Link className="employee-create-back" href={route('employees')}>
+            Back to employees
+          </Link>
+        </header>
 
-                    <CCol md={12}>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="contactnumber" className="col-sm-2 col-form-label">
-                            Contact Number
-                            </CFormLabel>
-                            <CCol sm={10}>
-                            <CFormInput 
-                                type="text" 
-                                id="contactnumber" 
-                                value={data.phonenumber}
-                                onChange={(e) => setData('phonenumber', e.target.value)} 
-                                />
-                            </CCol>
-                        </CRow>
-                    </CCol> 
+        {Object.keys(errors).length > 0 && (
+          <div className="employee-create-error-summary" role="alert">
+            Some information needs your attention. Review the highlighted fields below.
+          </div>
+        )}
 
-                         <CCol md={12}>
-                            <CRow className="mb-3">
-                                <CFormLabel htmlFor="role" className="col-sm-2 col-form-label">
-                                    Role
-                                </CFormLabel>
-                                <CCol sm={10}>
-                                <CFormSelect 
-                                    id="role"
-                                    value={data.role}
-                                    onChange={(e) => setData('role', e.target.value)}
-                                    >
-                                    <option>Choose...</option>
-                                    <option value='administrator'>Administrator</option>
-                                    <option value='dispatcher'>Dispatcher</option>                                   
-                                </CFormSelect>
-                                </CCol>
-                            </CRow>
-                    </CCol> 
+        <form className="employee-create-form" onSubmit={submit} noValidate>
+          <section className="employee-create-section" aria-labelledby="employee-details-title">
+            <header className="employee-create-section-heading">
+              <span className="employee-create-section-icon"><CIcon icon={cilUser} aria-hidden="true" /></span>
+              <div>
+                <h2 id="employee-details-title">Employee details</h2>
+                <p>Enter the employee’s name, work email, phone number, and role.</p>
+              </div>
+            </header>
+            <div className="employee-create-fields">
+              <Field
+                id="name"
+                label="Full name"
+                autoComplete="name"
+                required
+                value={data.name}
+                onChange={(event) => setData('name', event.target.value)}
+                error={errors.name}
+              />
+              <Field
+                id="email"
+                label="Work email"
+                type="email"
+                autoComplete="email"
+                required
+                value={data.email}
+                onChange={(event) => setData('email', event.target.value)}
+                error={errors.email}
+              />
+              <Field
+                id="phonenumber"
+                label="Contact number"
+                type="tel"
+                autoComplete="tel"
+                required
+                value={data.phonenumber}
+                onChange={(event) => setData('phonenumber', event.target.value)}
+                error={errors.phonenumber}
+              />
+              <div className="employee-create-field">
+                <label htmlFor="role">Role</label>
+                <select
+                  id="role"
+                  name="role"
+                  value={data.role}
+                  onChange={(event) => setData('role', event.target.value)}
+                  aria-invalid={Boolean(errors.role)}
+                  aria-describedby={errors.role ? 'role-error' : 'role-hint'}
+                  className={errors.role ? 'employee-create-input employee-create-input-error' : 'employee-create-input'}
+                  required
+                >
+                  <option value="">Select a role</option>
+                  <option value="administrator">Administrator</option>
+                  <option value="dispatcher">Dispatcher</option>
+                </select>
+                {errors.role
+                  ? <span className="employee-create-error" id="role-error">{errors.role}</span>
+                  : <span className="employee-create-hint" id="role-hint">Choose the access role for this account.</span>}
+              </div>
+            </div>
+          </section>
 
+          <section className="employee-create-section" aria-labelledby="employee-address-title">
+            <header className="employee-create-section-heading">
+              <span className="employee-create-section-icon"><CIcon icon={cilLocationPin} aria-hidden="true" /></span>
+              <div>
+                <h2 id="employee-address-title">Address</h2>
+                <p>Add the employee’s address. These fields are optional.</p>
+              </div>
+            </header>
+            <div className="employee-create-fields">
+              <Field
+                id="address1"
+                label="Street"
+                autoComplete="address-line1"
+                value={data.address1}
+                onChange={(event) => setData('address1', event.target.value)}
+                error={errors.address1}
+              />
+              <Field
+                id="address2"
+                label="Barangay"
+                autoComplete="address-line2"
+                value={data.address2}
+                onChange={(event) => setData('address2', event.target.value)}
+                error={errors.address2}
+              />
+              <Field
+                id="city"
+                label="Municipality / city"
+                autoComplete="address-level2"
+                value={data.city}
+                onChange={(event) => setData('city', event.target.value)}
+                error={errors.city}
+              />
+              <Field
+                id="province"
+                label="Province"
+                autoComplete="address-level1"
+                value={data.province}
+                onChange={(event) => setData('province', event.target.value)}
+                error={errors.province}
+              />
+              <Field
+                id="zipcode"
+                label="ZIP code"
+                inputMode="numeric"
+                autoComplete="postal-code"
+                value={data.zipcode}
+                onChange={(event) => setData('zipcode', event.target.value)}
+                error={errors.zipcode}
+              />
+            </div>
+          </section>
 
-                    <CCol md={12}>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="Address" className="col-sm-2 col-form-label">
-                             Address
-                            </CFormLabel>  
-                        </CRow>
-                    </CCol>                     
-
-                    <CCol md={12}>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="address" className="col-sm-2 col-form-label">
-                                Street
-                            </CFormLabel>
-                            <CCol sm={10}>
-                            <CFormInput 
-                                type="text" 
-                                id="address2" 
-                                value={data.address2}
-                                onChange={(e) => setData('address2', e.target.value)}
-                                 />
-                            </CCol>
-                        </CRow>
-                    </CCol> 
-
-                    <CCol md={12}>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="address1" className="col-sm-2 col-form-label">
-                                Barrangay
-                            </CFormLabel>
-                            <CCol sm={10}>
-                            <CFormInput
-                                    id="address1"
-                                    value={data.address1}
-                                    onChange={(e) => setData('address1', e.target.value)}                                
-                                />                                  
-                       
-                            </CCol>
-                        </CRow>
-                    </CCol>
-
-
-                    <CCol md={12}>
-                            <CRow className="mb-3">
-                                <CFormLabel htmlFor="city" className="col-sm-2 col-form-label">
-                                    Municipality
-                                </CFormLabel>
-                                <CCol sm={10}>
-                                <CFormInput
-                                    id="city"
-                                    value={data.city}
-                                    onChange={(e) => setData('city', e.target.value)}
-                                />
-                                </CCol>
-                            </CRow>
-                    </CCol> 
-                    
-               
-                    <CCol md={12}>
-                            <CRow className="mb-3">
-                                <CFormLabel htmlFor="province" className="col-sm-2 col-form-label">
-                                    Province
-                                </CFormLabel>
-                                <CCol sm={10}>
-                                <CFormInput
-                                    id="province"
-                                    value={data.province}
-                                    onChange={(e) => setData('province', e.target.value)}                                 
-                                />
-                                </CCol>
-                            </CRow>
-                    </CCol> 
-
-                                 
-                    <CCol md={12}>
-                            <CRow className="mb-3">
-                                <CFormLabel htmlFor="zipcode" className="col-sm-2 col-form-label">
-                                   Zip Code
-                                </CFormLabel>
-                                <CCol sm={10}>
-                                <CFormInput 
-                                    type="number" 
-                                    id="zipcode" 
-                                    value={data.zipcode} 
-                                    onChange={ (e) => setData('zipcode', e.target.value) }
-                                />
-                                </CCol>
-                            </CRow>
-                    </CCol>                         
-                    <CCol xs={12}>
-                       <CButton color="primary" type="submit" >Save</CButton>
-                    </CCol>                    
-                </CForm>
-                </CCardBody>
-            </CCard>            
-            </CCol>          
-        </CRow>
-        </div>
-     </DefaultLayout>
-  )
+          <footer className="employee-create-actions">
+            <Link className="employee-create-cancel" href={route('employees')}>
+              Cancel
+            </Link>
+            <button className="employee-create-submit" type="submit" disabled={processing}>
+              <CIcon icon={cilBriefcase} aria-hidden="true" />
+              {processing ? 'Creating…' : 'Create employee'}
+            </button>
+          </footer>
+        </form>
+      </main>
+    </DefaultLayout>
+  );
 }
-
-export default Create

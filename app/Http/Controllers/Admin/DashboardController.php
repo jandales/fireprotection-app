@@ -38,7 +38,13 @@ class DashboardController extends Controller
 
         if (Auth::check() && Auth::user()->role === 'administrator') { 
             return Inertia::render('Admin/Dashboard', [
-                'notifications' =>  Notification::with('device')->orderBy('created_at', 'desc')->paginate(10),
+                'notifications' => Notification::with(['device', 'user'])->orderBy('created_at', 'desc')->paginate(10),
+                'stats' => [
+                    'activeAlerts' => Notification::whereIn('status', ['active', 'dispatched'])->count(),
+                    'deviceCount' => Device::count(),
+                    'userCount' => User::where('role', 'user')->count(),
+                    'resolvedAlerts' => Notification::where('status', 'closed')->count(),
+                ],
                 'destination' => $request,
             ]);
         }

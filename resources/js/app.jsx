@@ -12,7 +12,11 @@ import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import store from './Includes/store'; // Import your Redux store
 
-const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+const configuredAppName = import.meta.env.VITE_APP_NAME;
+const appName =
+    configuredAppName && configuredAppName !== 'Laravel'
+        ? configuredAppName
+        : 'Fire Station Management System';
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,

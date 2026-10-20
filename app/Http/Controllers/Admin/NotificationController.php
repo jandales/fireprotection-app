@@ -12,21 +12,44 @@ class NotificationController extends Controller
 {
     public function index(Request $request){
         
-        $query  = Notification::query();  
+        $query = Notification::query();
+        $search = $request->input('search');
+        $status = $request->input('status', 'all');
 
-        $search = $request->search;
-        
-        if ($request->has('search') ) {            
-            $query->whereHas('user', function ($q) use ($search) {
-                $q->where('name', 'like', '%' . $search . '%');
+        if ($request->filled('search')) {
+            $query->where(function ($query) use ($search) {
+                $query->where('location', 'like', '%' . $search . '%')
+                    ->orWhereHas('user', function ($userQuery) use ($search) {
+                        $userQuery->where('name', 'like', '%' . $search . '%')
+                            ->orWhere('email', 'like', '%' . $search . '%');
+                    })
+                    ->orWhereHas('device', function ($deviceQuery) use ($search) {
+                        $deviceQuery->where('name', 'like', '%' . $search . '%')
+                            ->orWhere('macAddress', 'like', '%' . $search . '%')
+                            ->orWhere('location', 'like', '%' . $search . '%');
+                    });
             });
-        }      
-        
-        $data = $query->with('device')->orderBy('created_at', 'desc')->paginate(10);
+        }
+
+        if ($status === 'active') {
+            $query->whereIn('status', ['active', 'dispatched']);
+        } elseif ($status === 'closed') {
+            $query->where('status', 'closed');
+        } else {
+            $status = 'all';
+        }
+
+        $data = $query->with(['user', 'device'])->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
 
         return Inertia::render('Admin/Notification', [
             'notifications' => $data,
             'filter' => $search,
+            'statusFilter' => $status,
+            'stats' => [
+                'all' => Notification::count(),
+                'active' => Notification::whereIn('status', ['active', 'dispatched'])->count(),
+                'closed' => Notification::where('status', 'closed')->count(),
+            ],
         ]);
     }
 

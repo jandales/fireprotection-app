@@ -1,125 +1,80 @@
 import React, { useEffect, useRef } from 'react'
-// import { NavLink } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
+import { Link, usePage } from '@inertiajs/react'
 import {
   CContainer,
-  CDropdown,
-  CDropdownItem,
-  CDropdownMenu,
-  CDropdownToggle,
   CHeader,
   CHeaderNav,
   CHeaderToggler,
-  CNavLink,
-  CNavItem,
-  useColorModes,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import {
   cilBell,
-  cilContrast,
-  cilEnvelopeOpen,
-  cilList,
   cilMenu,
-  cilMoon,
-  cilSun,
 } from '@coreui/icons'
-
-import NavLink from '@/Components/NavLink';
-import { usePage } from '@inertiajs/react';
 
 import { AppBreadcrumb } from './index'
 import { AppHeaderDropdown } from './header/index'
 
 const AppHeader = () => {
-  const station = usePage().props.station; 
+  const { props, url } = usePage()
+  const station = props.station
   const headerRef = useRef()
-  const { colorMode, setColorMode } = useColorModes('coreui-free-react-admin-template-theme')
 
   const dispatch = useDispatch()
   const sidebarShow = useSelector((state) => state.sidebarShow)
+  const pagePath = url.split('?')[0]
+  const pageTitle = {
+    '/dashboard': 'Emergency Dashboard',
+    '/notifications': 'Notifications',
+    '/users': 'Users',
+    '/devices': 'Devices',
+    '/employees': 'Employee',
+    '/account': 'Account',
+    '/settings': 'Settings',
+  }[pagePath] || 'Fire Station Management'
 
   useEffect(() => {
-    document.addEventListener('scroll', () => {
+    const handleScroll = () => {
       headerRef.current &&
         headerRef.current.classList.toggle('shadow-sm', document.documentElement.scrollTop > 0)
-    })
+    }
+    document.addEventListener('scroll', handleScroll)
+    return () => document.removeEventListener('scroll', handleScroll)
   }, [])
 
   return (
     <CHeader position="sticky" className="mb-4 p-0" ref={headerRef}>
       <CContainer className="border-bottom px-4" fluid>
-        <CHeaderToggler
-          onClick={() => dispatch({ type: 'set', sidebarShow: !sidebarShow })}
-          style={{ marginInlineStart: '-14px' }}
-        >
-          <CIcon icon={cilMenu} size="lg" />
-        </CHeaderToggler>
-        <CHeaderNav className="d-none d-md-flex">
-          <CNavItem>
-            <NavLink href={route('dashboard')} active={route().current('dashboard')}> 
-                { station?.name ?? 'Fire Station' }
-            </NavLink>
-          </CNavItem>  
-        </CHeaderNav>
-        <CHeaderNav className="ms-auto">
-          {/* <CNavItem>
-            <NavLink href={route('dashboard')} active={route().current('dashboard')}> 
-                Dashboard
-            </NavLink>              
-          </CNavItem> */}
-        </CHeaderNav>
-        <CHeaderNav>
-          <li className="nav-item py-1">
-            <div className="vr h-100 mx-2 text-body text-opacity-75"></div>
+        <div className="app-header-title">
+          <strong>{pageTitle}</strong>
+          <span>{station?.name ?? 'Fire Station Management'}</span>
+        </div>
+        <CHeaderNav className="ms-auto app-header-actions">
+          <li className="nav-item">
+            <Link
+              href={route('notifications')}
+              className="header-notifications-link"
+              aria-label="Open notifications"
+              title="Notifications"
+            >
+              <CIcon icon={cilBell} size="lg" aria-hidden="true" />
+            </Link>
           </li>
-          <CDropdown variant="nav-item" placement="bottom-end">
-            <CDropdownToggle caret={false}>
-              {colorMode === 'dark' ? (
-                <CIcon icon={cilMoon} size="lg" />
-              ) : colorMode === 'auto' ? (
-                <CIcon icon={cilContrast} size="lg" />
-              ) : (
-                <CIcon icon={cilSun} size="lg" />
-              )}
-            </CDropdownToggle>
-            <CDropdownMenu>
-              <CDropdownItem
-                active={colorMode === 'light'}
-                className="d-flex align-items-center"
-                as="button"
-                type="button"
-                onClick={() => setColorMode('light')}
-              >
-                <CIcon className="me-2" icon={cilSun} size="lg" /> Light
-              </CDropdownItem>
-              <CDropdownItem
-                active={colorMode === 'dark'}
-                className="d-flex align-items-center"
-                as="button"
-                type="button"
-                onClick={() => setColorMode('dark')}
-              >
-                <CIcon className="me-2" icon={cilMoon} size="lg" /> Dark
-              </CDropdownItem>
-              <CDropdownItem
-                active={colorMode === 'auto'}
-                className="d-flex align-items-center"
-                as="button"
-                type="button"
-                onClick={() => setColorMode('auto')}
-              >
-                <CIcon className="me-2" icon={cilContrast} size="lg" /> Auto
-              </CDropdownItem>
-            </CDropdownMenu>
-          </CDropdown>
           <li className="nav-item py-1">
             <div className="vr h-100 mx-2 text-body text-opacity-75"></div>
           </li>
           <AppHeaderDropdown />
         </CHeaderNav>
       </CContainer>
-      <CContainer className="px-4" fluid>
+      <CContainer className="px-4 app-header-breadcrumb-row" fluid>
+        <CHeaderToggler
+          className="app-header-breadcrumb-toggler"
+          aria-label="Toggle navigation"
+          onClick={() => dispatch({ type: 'set', sidebarShow: !sidebarShow })}
+        >
+          <CIcon icon={cilMenu} size="lg" />
+        </CHeaderToggler>
         <AppBreadcrumb />
       </CContainer>
     </CHeader>

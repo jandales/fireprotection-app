@@ -1,305 +1,277 @@
-import React, { useState,  useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Link, router, usePage } from '@inertiajs/react';
+import { useJsApiLoader, GoogleMap, Circle, Marker } from '@react-google-maps/api';
+import {
+  cilBell,
+  cilCheckCircle,
+  cilDevices,
+  cilFire,
+  cilPeople,
+} from '@coreui/icons';
+import CIcon from '@coreui/icons-react';
+import { CButton } from '@coreui/react';
+import { useDispatch } from 'react-redux';
 import DefaultLayout from '@/Layouts/DefaultLayout';
-import FireMarker from '@/Components/FireMarker';
-import ClickMarker from '@/Components/ClickMarker';
 import FireStationIcon from '@/assets/images/fire-station.png';
-import MapDirectionsRenderer from '@/Components/DirectionsRenderer'
-import { usePage } from '@inertiajs/react';
-import RecentAlerts from '@/Components/RecentAlerts.jsx'
-import { useJsApiLoader, GoogleMap, Circle } from "@react-google-maps/api";
-import { router } from '@inertiajs/react';
-import ViewAlert from '@/Components/ViewAlert'
-import CurrenctAlert from '@/Components/CurrenctAlert'
-import echo from "../../../js/echo.js"
-import BackgroundAudio from '@/Components/BackgroundAudio';
-import { useSelector, useDispatch } from "react-redux";
-import {  
-    CRow,
-    CCard,
-    CCardHeader,
-    CCol, 
-    CButton   
-} from '@coreui/react'
-import { motion } from "framer-motion";
+import MapDirectionsRenderer from '@/Components/DirectionsRenderer';
+import RecentAlerts from '@/Components/RecentAlerts.jsx';
+import ViewAlert from '@/Components/ViewAlert';
+import CurrenctAlert from '@/Components/CurrenctAlert';
+import echo from '../../../js/echo.js';
 
-const Dashboard = ({notifications}) => { 
- 
-    const isPlaying = useSelector((state) => state.isPlaying);
-    const dispatch = useDispatch()
-    const recentAlerts  = notifications    
-    const station = usePage().props.station; 
-    const [activceAlerts, setActivceAlerts] = useState([]); 
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [alertData, setAlertData] = useState(null);
-    const [destination, setDestination] = useState();   
-    const [radius, setRadius] = useState(); 
+const StatCard = ({ icon, label, value, tone }) => (
+  <article className="dashboard-stat-card">
+    <span className={`dashboard-stat-icon dashboard-stat-icon-${tone}`} aria-hidden="true">
+      <CIcon icon={icon} />
+    </span>
+    <div>
+      <p className="dashboard-stat-label">{label}</p>
+      <p className="dashboard-stat-value">{value ?? 0}</p>
+    </div>
+  </article>
+);
 
-    const [zoom, setZoom] = useState(13);
+const Dashboard = ({ notifications, stats }) => {
+  const dispatch = useDispatch();
+  const station = usePage().props.station;
+  const [activeAlerts, setActiveAlerts] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [alertData, setAlertData] = useState(null);
+  const [destination, setDestination] = useState(null);
+  const [zoom, setZoom] = useState(13);
 
-    const [origin] = useState(
-      {
-        id: 1,
-        name : station.name,      
-        position: {
-          lat: Number(station.latitude),
-          lng: Number(station.longitude),
-        },
-        location : station.address,
-        icon: FireStationIcon 
-      }
-    );
-
-    const { isLoaded } = useJsApiLoader({
-        id: 'google-map-script',
-        googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,      
-    })
-
-    const [opacity, setOpacity] = useState(0.35);
-
-    useEffect(() => {
-      echo.channel("notification-channel").listen(".NotificationEvent", (e) => { 
-          
-          router.get('/dashboard', {}, { preserveScroll: true, preserveState: true });        
-
-          const _alert = {
-            id : e.notification.id,
-            location : e.notification?.device?.location,
-            position : { 
-                  lat : e.notification?.device?.latitude,
-                  lng : e.notification?.device?.longitude 
-            } 
-          }
-
-          setDestination(_alert);
-          setAlertData(e.notification);
-          setIsModalOpen(true);         
-          dispatch({ type: "set", isPlaying: true });
-      });
-
-      return () => {
-          echo.leaveChannel("notification-channel"); 
-      };
-      
-  }, []); 
-
-  const onHandleClearDirection = () => {
-      setDestination(null)  
-      setAlertData(null)      
-      setZoom(zoom == 15 ? 14 : 15); 
-      getActiveAlerts();        
-  }
-
-  const onHandleCloseModal = () => {
-      setIsModalOpen(false);
-      dispatch({ type: "set", isPlaying: false }); 
+  const origin = {
+    id: 1,
+    name: station?.name,
+    position: {
+      lat: Number(station?.latitude),
+      lng: Number(station?.longitude),
+    },
+    location: station?.address,
+    icon: FireStationIcon,
   };
-  
+
+  const { isLoaded } = useJsApiLoader({
+    id: 'google-map-script',
+    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+  });
+
   useEffect(() => {
+    const channel = echo.channel('notification-channel').listen('.NotificationEvent', (event) => {
+      router.get('/dashboard', {}, { preserveScroll: true, preserveState: true });
 
-    if (!notifications || !notifications.data) return;
+      const notification = event.notification;
+      const latitude = Number(notification?.device?.latitude);
+      const longitude = Number(notification?.device?.longitude);
+      if (Number.isFinite(latitude) && Number.isFinite(longitude)) {
+        setDestination({
+          id: notification.id,
+          location: notification?.device?.location,
+          position: { lat: latitude, lng: longitude },
+        });
+      }
+      setAlertData(notification);
+      setIsModalOpen(true);
+      dispatch({ type: 'set', isPlaying: true });
+    });
 
-    getActiveAlerts();
-    
-  
+    return () => {
+      echo.leaveChannel('notification-channel');
+    };
+  }, [dispatch]);
+
+  useEffect(() => {
+    const alerts = (notifications?.data ?? [])
+      .filter((notification) => ['active', 'dispatched'].includes(notification.status))
+      .filter((notification) => {
+        const latitude = Number(notification?.device?.latitude);
+        const longitude = Number(notification?.device?.longitude);
+        return Number.isFinite(latitude) && Number.isFinite(longitude);
+      });
+    const uniqueLocations = new Set();
+
+    setActiveAlerts(alerts.filter((notification) => {
+      const location = notification?.device?.location ?? notification.id;
+      if (uniqueLocations.has(location)) return false;
+      uniqueLocations.add(location);
+      return true;
+    }).map((notification) => ({
+      id: notification.id,
+      location: notification?.device?.location,
+      position: {
+        lat: Number(notification.device.latitude),
+        lng: Number(notification.device.longitude),
+      },
+      status: notification.status,
+    })));
   }, [notifications]);
 
-
-  const getActiveAlerts =() => {
-  const locationSet = new Set();
-  
-  const reconstructedAlerts = notifications.data
-      .filter((notification) => notification.status === 'active' || notification.status === 'dispatched') 
-      .map((notification) => {
-        const location = notification?.device?.location;  
-      
-        if (locationSet.has(location)) return null;
-  
-        locationSet.add(location);
-  
-        return {
-          id: notification.id,
-          location: location,
-          position: { 
-            lat: notification?.device?.latitude, 
-            lng: notification?.device?.longitude 
-          },
-          status: notification.status
-        };
-      })
-      .filter(Boolean); 
-    setActivceAlerts(reconstructedAlerts); 
-  } 
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setRadius((prev) => (prev === 200 ? 250 : 200)); 
-    }, 500); 
-  
-    return () => clearInterval(interval);
-  }, []);
+  const clearMapSelection = () => {
+    setDestination(null);
+    setAlertData(null);
+    setZoom((currentZoom) => currentZoom === 15 ? 14 : 15);
+  };
 
   const handleAlertClick = (notification) => {
-    if(notification){ 
+    const latitude = Number(notification?.device?.latitude);
+    const longitude = Number(notification?.device?.longitude);
+    setAlertData(notification);
+    if (Number.isFinite(latitude) && Number.isFinite(longitude)) {
       setDestination({
-          id : notification.id,
-          location : notification?.device?.location,
-          position : { 
-                lat : notification?.device?.latitude,
-                lng : notification?.device?.longitude 
-          },
-          status : notification.status
-      }) 
-      setAlertData(notification); 
-      setActivceAlerts([])
-      window.scrollTo({ top: 0, behavior: 'smooth' }); 
-    }   
-  }; 
+        id: notification.id,
+        location: notification?.device?.location,
+        position: { lat: latitude, lng: longitude },
+        status: notification.status,
+      });
+      setActiveAlerts([]);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
 
   const handleSetDirections = (item) => {
-   
-    if(item){
-      setDestination(item) 
-      const result = notifications.data.filter(alert => alert.id === item.id); 
-      setAlertData(result[0]);
-    }
-   
-    setActivceAlerts([])
-  }
+    setDestination(item);
+    setAlertData(notifications.data.find((alert) => alert.id === item.id) ?? null);
+    setActiveAlerts([]);
+  };
 
-  const handleUpdateStatus = (data) => {
-    setAlertData(data); 
-    setDestination({
-        id : data.id,
-        location : data?.device?.location,
-        position : { 
-              lat : data?.device?.latitude,
-              lng : data?.device?.longitude 
-        },
-        status : data.status
-    })    
-  }
+  const handleUpdateStatus = (notification) => {
+    setAlertData(notification);
+    const latitude = Number(notification?.device?.latitude);
+    const longitude = Number(notification?.device?.longitude);
+    if (Number.isFinite(latitude) && Number.isFinite(longitude)) {
+      setDestination({
+        id: notification.id,
+        location: notification?.device?.location,
+        position: { lat: latitude, lng: longitude },
+        status: notification.status,
+      });
+    }
+  };
 
   return (
-      <DefaultLayout     
-      >
-        <div className="py-12">
-        <CRow>
-            <CCol xs={12} lg={9}>
-                <CCard className="mb-4">
-                    <CCardHeader>
-                        <CRow>
-                            <CCol  md={12}>
-                              <div className='xpanel-header'>
-                                    Maps
-                                    {destination &&
-                                    <div className='container-center-items justify-content-end'>                                
-                                        <CButton color="info" variant="outline" size="sm" onClick={() => onHandleClearDirection() } >Clear Map</CButton>  
-                                    </div>
-                                    }
-                              </div>                              
-                            </CCol>                                                     
-                        </CRow>                      
-                    </CCardHeader>   
-                                 
-                    {isLoaded && <GoogleMap
-                                    center={origin.position} // Default center
-                                    zoom={zoom}
-                                    mapContainerStyle={{ width: "100%", height: "700px" }}
-                                    options={{
-                                        zoomControl : false,
-                                        mapTypeControl : false,
-                                        streetViewControl : false,
-                                        fullscreenControl: true,
-                                    }}
-                                >   
-                                                                          
-                                          { activceAlerts.map((item, index) => (
-                                            <motion.div 
-                                                  key={index}
-                                                  animate={{
-                                                    scale: [1, 1.3, 1], 
-                                                  }}
-                                                  transition={{
-                                                    duration: 1.2,
-                                                    repeat: Infinity, 
-                                                    ease: "easeInOut",
-                                                  }}
-                                                  style={{ display: "inline-block" }}
-                                                >
-                                              <Circle
-                                                key={index}
-                                                center={item.position}
-                                                radius={radius} 
-                                                options={{
-                                                  strokeColor: item.status === 'active' ? '#FF0000' : '#FFA500',
-                                                  strokeOpacity: 0.8,
-                                                  strokeWeight: 2,
-                                                  fillColor: item.status === 'active' ? '#FF0000' : '#FFA500',
-                                                  fillOpacity: opacity,
-                                                }}
-                                                onClick={() => handleSetDirections(item)}
-                                              />
-                                            </motion.div>
-                                            )) }   
+    <DefaultLayout>
+      <main className="dashboard-page">
+        <header className="page-heading dashboard-heading">
+          <div>
+            <h1>Emergency Dashboard</h1>
+            <p>Monitor fire alerts, devices, and emergency activity.</p>
+          </div>
+        </header>
 
-                              { 
-                                destination  
-                                && <>
-                                <MapDirectionsRenderer origin={origin.position} destination={destination} isLoaded={isLoaded} />
-                                <motion.div 
-                                      animate={{
-                                        scale: [1, 1.3, 1], 
-                                      }}
-                                      transition={{
-                                        duration: 1.2,
-                                        repeat: Infinity, 
-                                        ease: "easeInOut",
-                                      }}
-                                      style={{ display: "inline-block" }}
-                                    >
-                                <Circle                                  
-                                      center={destination.position}
-                                      radius={radius} 
-                                      options={{
-                                        strokeColor: 
-                                            destination.status === "active"
-                                          ? "#FF0000"
-                                          : destination.status === "closed"
-                                          ? "#008000"
-                                          : "#FFA500",
-                                        strokeOpacity: 0.8,
-                                        strokeWeight: 2,
-                                        fillColor:
-                                        destination.status === "active"
-                                          ? "#FF0000"
-                                          : destination.status === "closed"
-                                          ? "#008000"
-                                          : "#FFA500",
-                                        fillOpacity: opacity,
-                                      }}                                      
-                                />
-                                </motion.div>
-                                </>
-                          
-                               }
-                                </GoogleMap>}
-                </CCard>
+        <section className="dashboard-stat-grid" aria-label="Station overview">
+          <StatCard icon={cilFire} label="Active Fire Alerts" value={stats?.activeAlerts} tone="critical" />
+          <StatCard icon={cilDevices} label="Total Devices" value={stats?.deviceCount} tone="blue" />
+          <StatCard icon={cilPeople} label="Registered Users" value={stats?.userCount} tone="slate" />
+          <StatCard icon={cilCheckCircle} label="Resolved Alerts" value={stats?.resolvedAlerts} tone="green" />
+        </section>
 
-            </CCol>
-            <CCol xs={12} lg={3}>
-              
-              { alertData && <CurrenctAlert notification={alertData} onUpdatedStatus={handleUpdateStatus} /> }
+        <section className="dashboard-main-grid">
+          <article className="dashboard-panel map-panel">
+            <div className="dashboard-panel-heading">
+              <div>
+                <h2>Incident Map</h2>
+                <p>Live incident locations and station response routes</p>
+              </div>
+              {destination && (
+                <CButton color="secondary" variant="outline" size="sm" onClick={clearMapSelection}>
+                  Clear selection
+                </CButton>
+              )}
+            </div>
+            <div className="map-legend" aria-label="Map legend">
+              <span><i className="map-legend-dot map-legend-active" /> Active incident</span>
+              <span><i className="map-legend-dot map-legend-dispatched" /> Dispatched</span>
+              <span><i className="map-legend-station" /> Fire station</span>
+            </div>
+            {isLoaded ? (
+              <GoogleMap
+                center={origin.position}
+                zoom={zoom}
+                mapContainerClassName="incident-map-canvas"
+                options={{
+                  zoomControl: true,
+                  mapTypeControl: false,
+                  streetViewControl: false,
+                  fullscreenControl: true,
+                }}
+              >
+                {Number.isFinite(origin.position.lat) && Number.isFinite(origin.position.lng) && (
+                  <Marker
+                    position={origin.position}
+                    icon={{
+                      url: FireStationIcon,
+                      scaledSize: new window.google.maps.Size(36, 36),
+                      anchor: new window.google.maps.Point(18, 36),
+                    }}
+                    title={station?.name || 'Fire station'}
+                  />
+                )}
+                {activeAlerts.map((item) => (
+                  <Circle
+                    key={item.id}
+                    center={item.position}
+                    radius={180}
+                    options={{
+                      strokeColor: item.status === 'active' ? '#dc2626' : '#d97706',
+                      strokeOpacity: 0.8,
+                      strokeWeight: 2,
+                      fillColor: item.status === 'active' ? '#dc2626' : '#d97706',
+                      fillOpacity: 0.2,
+                    }}
+                    onClick={() => handleSetDirections(item)}
+                  />
+                ))}
+                {destination?.position && (
+                  <>
+                    <MapDirectionsRenderer origin={origin.position} destination={destination} isLoaded={isLoaded} />
+                    <Circle
+                      center={destination.position}
+                      radius={180}
+                      options={{
+                        strokeColor: destination.status === 'closed' ? '#16a34a' : '#dc2626',
+                        strokeOpacity: 0.9,
+                        strokeWeight: 2,
+                        fillColor: destination.status === 'closed' ? '#16a34a' : '#dc2626',
+                        fillOpacity: 0.22,
+                      }}
+                    />
+                  </>
+                )}
+              </GoogleMap>
+            ) : (
+              <div className="map-loading" role="status">Loading incident map…</div>
+            )}
+          </article>
 
-              <RecentAlerts alerts={recentAlerts} id={destination?.id} handleAlertClick={handleAlertClick}  />
+          <aside className="dashboard-side-column">
+            {alertData && (
+              <CurrenctAlert notification={alertData} onUpdatedStatus={handleUpdateStatus} />
+            )}
+            <RecentAlerts
+              alerts={notifications}
+              id={destination?.id}
+              handleAlertClick={handleAlertClick}
+            />
+            <Link href={route('notifications')} className="dashboard-all-alerts">
+              <CIcon icon={cilBell} aria-hidden="true" />
+              View all notifications
+            </Link>
+          </aside>
+        </section>
+      </main>
+      {alertData && (
+        <ViewAlert
+          visible={isModalOpen}
+          notification={alertData}
+          onUpdatedStatus={handleUpdateStatus}
+          onClose={() => {
+            setIsModalOpen(false);
+            dispatch({ type: 'set', isPlaying: false });
+          }}
+        />
+      )}
+    </DefaultLayout>
+  );
+};
 
-            </CCol>
-        </CRow>
-        </div>   
-         { alertData && <ViewAlert visible={isModalOpen} notification={alertData} onUpdatedStatus={handleUpdateStatus} onClose={() => onHandleCloseModal()  } /> }
-
-         {isPlaying && <BackgroundAudio /> }
-     </DefaultLayout>
-  )
-}
-
-export default Dashboard
+export default Dashboard;

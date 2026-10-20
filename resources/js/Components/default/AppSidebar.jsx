@@ -9,14 +9,9 @@ import {
   CSidebarHeader,
   CSidebarToggler,
 } from '@coreui/react'
-import CIcon from '@coreui/icons-react'
-
 import { AppSidebarNav } from '@/Components/default/AppSidebarNav'
 
 import logo from '@/assets/images/BFP-LOGO.png'
-
-// sidebar nav config
-import navigation from '@/Includes/nav'
 
 const AppSidebar = () => {
   const dispatch = useDispatch()
@@ -35,10 +30,12 @@ const AppSidebar = () => {
       }}
     >
       <CSidebarHeader className="border-bottom">
-        <CSidebarBrand to="/" className='w-full'>
-          <div className='w-full flex-container'>
-            <img src={logo} height='100px' width='100px' />  
-          </div>         
+        <CSidebarBrand to="/" className="fire-sidebar-brand">
+          <img src={logo} alt="Bureau of Fire Protection" />
+          <span className="fire-sidebar-brand-copy">
+            <strong>Fire Station</strong>
+            <small>Management System</small>
+          </span>
         </CSidebarBrand>
         <CCloseButton
           className="d-lg-none"
@@ -46,7 +43,7 @@ const AppSidebar = () => {
           onClick={() => dispatch({ type: 'set', sidebarShow: false })}
         />
       </CSidebarHeader>
-      <AppSidebarNav items={navigation} />
+      <AppSidebarNav />
       <CSidebarFooter className="border-top d-none d-lg-flex">
         <CSidebarToggler
           onClick={() => dispatch({ type: 'set', sidebarUnfoldable: !unfoldable })}

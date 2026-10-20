@@ -15,19 +15,17 @@ import {
   CAvatar,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import {  cilPeople  } from '@coreui/icons'
+import { cilMagnifyingGlass, cilPeople } from '@coreui/icons'
 import DefaultAvatar from  '@/assets/images/avatars/user.png';
 import Pagination from '@/Components/Pagination';
 import Search from '@/Components/Search';
 
 
-const User = (res, filter) => {    
-   
-    const users = res.users 
+const User = ({ users, filter }) => {
 
   
     const onPageChange = (url) => {
-        router.get(url, {}, { preserveScroll: true, preserveState: true });
+        router.get(url, filter ? { search: filter } : {}, { preserveScroll: true, preserveState: true });
     }  
     
 
@@ -65,8 +63,8 @@ const User = (res, filter) => {
                     </CTableRow>
                     </CTableHead>
                     <CTableBody>
-                    {users.data.map((item, index) => (
-                        <CTableRow v-for="item in tableItems" key={index}>
+                    {users.data.length ? users.data.map((item) => (
+                        <CTableRow key={item.id}>
                         <CTableDataCell className="text-center">
                             <CAvatar size="md" src={item.avatar ? item.avatar : DefaultAvatar} />
                         </CTableDataCell>
@@ -84,11 +82,17 @@ const User = (res, filter) => {
                         </CTableDataCell> 
                         <CTableDataCell>
                             <div className='btn-gap'>
-                                <Link color="info" className="btn btn-outline-primary btn-sm" variant="outline" size="sm" href={route('users.show', item)}>View</Link>
+                                <Link className="table-action-button" title="View user" aria-label={`View ${item.name}`} href={route('users.show', item)}>
+                                  <CIcon icon={cilMagnifyingGlass} aria-hidden="true" />
+                                </Link>
                             </div>                  
                         </CTableDataCell>                                 
                         </CTableRow>
-                    ))}
+                    )) : (
+                      <CTableRow>
+                        <CTableDataCell colSpan={6} className="table-empty-cell">No users found.</CTableDataCell>
+                      </CTableRow>
+                    )}
                     </CTableBody>
                 </CTable> 
 
@@ -101,6 +105,7 @@ const User = (res, filter) => {
                         lastpage={users.last_page_url}
                         totalRecord={users.total}
                         totalPage={users.last_page}
+                        perPage={users.per_page}
                         onPageChange={onPageChange}
                      />
                  )}

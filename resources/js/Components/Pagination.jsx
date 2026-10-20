@@ -1,52 +1,68 @@
-import React, { useState } from 'react'
-import { 
-     CPagination
-    ,CPaginationItem
- } from '@coreui/react'
+import React from 'react';
 
- 
-const Pagination = ({currentpage, nextpage, prevpage, firstpage, lastpage, totalRecord, totalPage, onPageChange}) => { 
-     
-    const handlefirstPage = () => {
+const Pagination = ({
+  currentpage,
+  nextpage,
+  prevpage,
+  firstpage,
+  lastpage,
+  totalRecord,
+  totalPage,
+  perPage,
+  onPageChange,
+}) => {
+  const pageSize = Number(perPage) || 0;
+  const from = totalRecord === 0 ? 0 : pageSize ? (currentpage - 1) * pageSize + 1 : null;
+  const to = pageSize ? Math.min(currentpage * pageSize, totalRecord) : null;
 
-        onPageChange(firstpage)
-    }
+  return (
+    <nav className="table-pagination" aria-label="Table pagination">
+      <span className="table-pagination-summary">
+        {from !== null
+          ? `Showing ${from}–${to} of ${totalRecord}`
+          : `${totalRecord} records`}
+      </span>
+      <div className="table-pagination-controls">
+        <span className="table-pagination-page">Page {currentpage} of {totalPage}</span>
+        <button
+          type="button"
+          className="table-pagination-button"
+          onClick={() => onPageChange(firstpage)}
+          disabled={!prevpage}
+          aria-label="First page"
+        >
+          First
+        </button>
+        <button
+          type="button"
+          className="table-pagination-button"
+          onClick={() => onPageChange(prevpage || firstpage)}
+          disabled={!prevpage}
+          aria-label="Previous page"
+        >
+          Previous
+        </button>
+        <button
+          type="button"
+          className="table-pagination-button"
+          onClick={() => onPageChange(nextpage || lastpage)}
+          disabled={!nextpage}
+          aria-label="Next page"
+        >
+          Next
+        </button>
+        <button
+          type="button"
+          className="table-pagination-button"
+          onClick={() => onPageChange(lastpage)}
+          disabled={!nextpage}
+          aria-label="Last page"
+        >
+          Last
+        </button>
+      </div>
+    </nav>
+  );
+};
 
-    const handleLastPage = () => {
-        onPageChange(lastpage)
-    }
-
-    const handlePrevPage = () => {
-        onPageChange(prevpage)
-    }
-
-    const handleNextPage = () => {
-        onPageChange(nextpage)
-    }
-
-  return ( 
-    <div className="custom-pagination-wrapper">   
-            <span className="pagination-label mx-2">Total Record: {totalRecord}</span>
-            <div className='flex-container'>                
-                <span className='pagination-label'>Page {currentpage} of {totalPage}</span>
-               <CPagination aria-label="Page navigation example" className='mt-3 mx-2'>
-                    <CPaginationItem aria-label="Previous"  onClick={handlefirstPage}>
-                        <span aria-hidden="true">&laquo;</span>
-                    </CPaginationItem> 
-                    <CPaginationItem aria-label="Next" onClick={handlePrevPage}>
-                        <span aria-hidden="true">&#60;</span>
-                    </CPaginationItem>
-                    <CPaginationItem aria-label="Next" onClick={handleNextPage}>
-                        <span aria-hidden="true">&#62;</span>
-                    </CPaginationItem>                                                                       
-                    <CPaginationItem aria-label="Next" onClick={handleLastPage}>
-                        <span aria-hidden="true">&raquo;</span>
-                    </CPaginationItem>
-                </CPagination>
-            </div>  
-   </div>   
-         
-  )
-}
-
-export default Pagination
+export default Pagination;

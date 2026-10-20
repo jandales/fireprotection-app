@@ -18,7 +18,7 @@ import {
   CButton,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import {  cilPeople  } from '@coreui/icons'
+import { cilPeople, cilMagnifyingGlass, cilPencil, cilTrash } from '@coreui/icons'
 import DefaultAvatar from  '@/assets/images/avatars/user.png';
 import Pagination from '@/Components/Pagination';
 import Search from '@/Components/Search';
@@ -26,16 +26,15 @@ import { toast } from 'react-toastify';
 
 
 
-const User = (res, filter) => {    
+const User = ({ users, filter }) => {
    
-    const users = res.users  
        const { delete : destroy } =  useForm();
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [deleteId, setDeleteId] = useState("");
   
     const onPageChange = (url) => {
-        router.get(url, {}, { preserveScroll: true, preserveState: true });
+        router.get(url, filter ? { search: filter } : {}, { preserveScroll: true, preserveState: true });
     } 
 
     const deleteDevice = () => { 
@@ -118,8 +117,8 @@ const User = (res, filter) => {
                     </CTableRow>
                     </CTableHead>
                     <CTableBody>
-                    {users.data.map((item, index) => (
-                        <CTableRow v-for="item in tableItems" key={index}>
+                    {users.data.length ? users.data.map((item) => (
+                        <CTableRow key={item.id}>
                         <CTableDataCell className="text-center">
                             <CAvatar size="md" src={item.avatar ? item.avatar : DefaultAvatar} />
                         </CTableDataCell>
@@ -139,17 +138,21 @@ const User = (res, filter) => {
                             <div>{item.location}</div>                       
                         </CTableDataCell> 
                         <CTableDataCell>
-                            <span className={ item.status == 1 ? 'capitalize status status-active' : 'capitalize status status-inactive' }>{item.statusName}</span>                       
+                            <span className={`status-badge ${item.status == 1 ? 'status-badge-critical' : 'status-badge-neutral'}`}>{item.statusName}</span>
                         </CTableDataCell> 
                         <CTableDataCell>  
-                            <div className='btn-gap'>
-                                <CButton color="danger" variant="outline" size="sm"  onClick={(e) => handleOpenModal(item.id)}>Delete</CButton>   
-                                <Link  className="btn btn-outline-primary btn-sm" color="info" variant="outline" size="sm" href={route('employees.edit', item.id)}>Edit</Link>  
-                                <Link  className="btn btn-outline-info btn-sm" color="info" variant="outline" size="sm" href={route('employees.show', item.id)}>View</Link>   
+                            <div className="table-actions">
+                                <CButton className="table-action-button table-action-delete" title="Delete employee" aria-label={`Delete ${item.name}`} onClick={() => handleOpenModal(item.id)}><CIcon icon={cilTrash} /></CButton>
+                                <Link className="table-action-button" title="Edit employee" aria-label={`Edit ${item.name}`} href={route('employees.edit', item.id)}><CIcon icon={cilPencil} /></Link>
+                                <Link className="table-action-button" title="View employee" aria-label={`View ${item.name}`} href={route('employees.show', item.id)}><CIcon icon={cilMagnifyingGlass} /></Link>
                             </div> 
                         </CTableDataCell>                                 
                         </CTableRow>
-                    ))}
+                    )) : (
+                      <CTableRow>
+                        <CTableDataCell colSpan={8} className="table-empty-cell">No employees found.</CTableDataCell>
+                      </CTableRow>
+                    )}
                     </CTableBody>
                 </CTable> 
 
@@ -162,6 +165,7 @@ const User = (res, filter) => {
                         lastpage={users.last_page_url}
                         totalRecord={users.total}
                         totalPage={users.last_page}
+                        perPage={users.per_page}
                         onPageChange={onPageChange}
                      />
                  )}

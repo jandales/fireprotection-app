@@ -1,135 +1,113 @@
-import React from 'react'
+import React from 'react';
 import { Link, usePage } from '@inertiajs/react';
-import PropTypes from 'prop-types'
-import SimpleBar from 'simplebar-react'
-import 'simplebar-react/dist/simplebar.min.css'
-
-import {  CSidebarNav } from '@coreui/react'
-import CIcon from '@coreui/icons-react'; 
-import { 
+import SimpleBar from 'simplebar-react';
+import 'simplebar-react/dist/simplebar.min.css';
+import { CSidebarNav } from '@coreui/react';
+import CIcon from '@coreui/icons-react';
+import {
+  cilAccountLogout,
   cilBell,
+  cilDevices,
+  cilGroup,
+  cilSettings,
   cilSpeedometer,
   cilUser,
-  cilGroup,
-  cilAccountLogout,
-  cilSettings,
-  cilDevices
- } from '@coreui/icons'; 
+} from '@coreui/icons';
 
-export const AppSidebarNav = ({ items }) => {
-      const user = usePage().props.auth.user;
- 
+const SidebarLink = ({ href, active, icon, children, className = '' }) => (
+  <div className="nav-item">
+    <Link
+      href={href}
+      title={children}
+      aria-current={active ? 'page' : undefined}
+      className={`nav-link ${active ? 'active' : ''} ${className}`}
+    >
+      <CIcon icon={icon} className="nav-icon" aria-hidden="true" />
+      <span>{children}</span>
+    </Link>
+  </div>
+);
+
+export const AppSidebarNav = () => {
+  const user = usePage().props.auth.user;
+  const isAdministrator = user.role === 'administrator';
+  const isStaff = user.role !== 'user';
+
   return (
-    <CSidebarNav as={SimpleBar}>    
-        {
-          user.role != 'user' && (
+    <CSidebarNav as={SimpleBar} className="fire-sidebar-nav">
+      {isStaff && (
+        <>
+          {isAdministrator && (
+            <SidebarLink href={route('dashboard')} active={route().current('dashboard')} icon={cilSpeedometer}>
+              Dashboard
+            </SidebarLink>
+          )}
+          <SidebarLink href={route('notifications')} active={route().current('notifications')} icon={cilBell}>
+            Notifications
+          </SidebarLink>
+          <SidebarLink href={route('users')} active={route().current('users') || route().current('users.show')} icon={cilGroup}>
+            Users
+          </SidebarLink>
+          {isAdministrator && (
             <>
-            {user.role == 'administrator' &&
-            <div className='nav-item'>
-              <Link 
-                className={`nav-link ${route().current('dashboard') ? 'active' : ''}`}  
-                href={route('dashboard')}>
-                <CIcon icon={cilSpeedometer} className='nav-icon'/> Dashboard   
-              </Link>
-            </div>
-            }
-            <div className='nav-item'>
-              <Link            
-                 className={`nav-link ${route().current('notifications') ? 'active' : ''}`}  
-                 href={route('notifications')}>
-                <CIcon icon={cilBell} className='nav-icon'/> Notifications
-              </Link>
-             </div>
-            <div className='nav-item'>
-              <Link  
-                className={`nav-link ${route().current('users') ? 'active' : ''}`}  
-                href={route('users')} >
-                <CIcon icon={cilGroup} className='nav-icon' /> Users    
-              </Link>
-            </div> 
-            {user.role == 'administrator' &&
-            <div className='nav-item'>
-              <Link  
-                className={`nav-link ${route().current('devices')  || route().current('devices.maps')  ? 'active' : ''}`}  
-                href={route('devices')} >
-                <CIcon icon={cilDevices} className='nav-icon' /> Devices    
-              </Link>
-            </div> 
-            }
-            {user.role == 'administrator' &&
-              <div className='nav-item'>
-                <Link  
-                  className={`nav-link ${route().current('employees') ? 'active' : ''}`} 
-                  href={route('employees')} >
-                  <CIcon icon={cilGroup} className='nav-icon' /> Employee    
-                </Link>
-              </div> 
-            }
-            <div className='nav-item'>
-              <Link  
-                 className={`nav-link ${route().current('account') ? 'active' : ''}`} 
-                 href={route('account')} >
-                <CIcon icon={cilUser} className='nav-icon' />  Account  
-              </Link>
-            </div> 
-            {user.role == 'administrator' &&
-              <div className='nav-item'>
-                <Link  
-                  className={`nav-link ${route().current('settings.index') ? 'active' : ''}`} 
-                  href={route('settings.index')}>
-                  <CIcon icon={cilSettings} className='nav-icon' /> Settings    
-                </Link>
-              </div> 
-            }              
+              <SidebarLink
+                href={route('devices')}
+                active={route().current('devices') || route().current('devices.maps')}
+                icon={cilDevices}
+              >
+                Devices
+              </SidebarLink>
+              <SidebarLink
+                href={route('employees')}
+                active={
+                  route().current('employees')
+                  || route().current('employees.create')
+                  || route().current('employees.edit')
+                  || route().current('employees.show')
+                }
+                icon={cilGroup}
+              >
+                Employee
+              </SidebarLink>
             </>
-          )
-        }       
+          )}
+          <SidebarLink href={route('account')} active={route().current('account')} icon={cilUser}>
+            Account
+          </SidebarLink>
+          {isAdministrator && (
+            <SidebarLink href={route('settings.index')} active={route().current('settings.index')} icon={cilSettings}>
+              Settings
+            </SidebarLink>
+          )}
+        </>
+      )}
 
-        {
-           user.role === 'user' && (
-              <>
-            <div className='nav-item'>
-              <Link  
-                className={`nav-link ${route().current('user') ? 'active' : ''}`} 
-                href={route('user')}>
-                <CIcon icon={cilUser} className='nav-icon' /> Profile   
-              </Link>
-            </div> 
-    
-            <div className='nav-item'>
-              <Link  
-                className={`nav-link ${route().current('user.devices') ? 'active' : ''}`} 
-                href={route('user.devices')}>
-                <CIcon icon={cilDevices} className='nav-icon' /> Devices   
-              </Link>
-            </div> 
-    
-            <div className='nav-item'>
-              <Link  
-                className={`nav-link ${route().current('user.settings') ? 'active' : ''}`} 
-                href={route('user.settings')}>
-                <CIcon icon={cilSettings} className='nav-icon' /> Settings
-              </Link>
-            </div>
-              </>
-           )
-        }
-        
+      {user.role === 'user' && (
+        <>
+          <SidebarLink href={route('user')} active={route().current('user')} icon={cilUser}>
+            Profile
+          </SidebarLink>
+          <SidebarLink href={route('user.devices')} active={route().current('user.devices')} icon={cilDevices}>
+            Devices
+          </SidebarLink>
+          <SidebarLink href={route('user.settings')} active={route().current('user.settings')} icon={cilSettings}>
+            Settings
+          </SidebarLink>
+        </>
+      )}
 
-        <div className='nav-item'>
-          <Link  className='nav-link nav-link-btn'
-             href={route('logout')}
-             method="post"
-             as="button"                    
-          >
-            <CIcon icon={cilAccountLogout} className='nav-icon' /> Logout
-          </Link>
-        </div>        
-       
+      <div className="nav-item sidebar-logout-item">
+        <Link
+          className="nav-link nav-link-btn"
+          title="Logout"
+          href={route('logout')}
+          method="post"
+          as="button"
+        >
+          <CIcon icon={cilAccountLogout} className="nav-icon" aria-hidden="true" />
+          <span>Logout</span>
+        </Link>
+      </div>
     </CSidebarNav>
-  )
-}
-
-AppSidebarNav.propTypes = {
-  items: PropTypes.arrayOf(PropTypes.any).isRequired,
-}
+  );
+};

@@ -1,203 +1,300 @@
+import React, { useEffect, useState } from 'react';
+import { router, useForm } from '@inertiajs/react';
+import { toast } from 'react-toastify';
+import { CAvatar } from '@coreui/react';
+import CIcon from '@coreui/icons-react';
+import { cilBell, cilCheckCircle, cilMagnifyingGlass, cilFire, cilSearch, cilTrash, cilWarning } from '@coreui/icons';
 import DefaultLayout from '@/Layouts/DefaultLayout';
-import { Link, router } from '@inertiajs/react';
-import React, { useEffect,useState } from "react";
-import {  useForm } from '@inertiajs/react';
-import {  toast } from 'react-toastify';
-import {
-  CCard,
-  CCardHeader,
-  CCol,
-  CRow,
-  CTable,
-  CTableBody,
-  CTableDataCell,
-  CTableHead,
-  CTableHeaderCell,
-  CTableRow,
-  CAvatar,
-  CButton,
-} from '@coreui/react'
-import CIcon from '@coreui/icons-react'
-import {  cilPeople, cilFilterX  } from '@coreui/icons'
-import DefaultAvatar from  '@/assets/images/avatars/user.png';
 import Pagination from '@/Components/Pagination';
-import Search from '@/Components/Search';
-import echo from "../../../js/echo.js"
+import DefaultAvatar from '@/assets/images/avatars/user.png';
+import echo from '../../../js/echo.js';
 import ViewAlert from '@/Pages/Admin/Notification/ViewAlert.jsx';
 import ConfirmDelete from '@/Components/ConfirmDelete';
 
-const Notification = (res, filter) => { 
-    
-    const notifications  = res.notifications  
+const statusClass = {
+  active: 'status-badge-critical',
+  dispatched: 'status-badge-warning',
+  closed: 'status-badge-resolved',
+};
 
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
-    const [deleteId, setDeleteId] = useState("");
+const StatusBadge = ({ status }) => (
+  <span className={`status-badge ${statusClass[status] || 'status-badge-neutral'}`}>
+    {status || 'unknown'}
+  </span>
+);
 
-    const [alert, setAlert] = useState("");  
-    
-        const { delete: destroy } =  useForm(); 
-    
-    const onPageChange = (url) => {
-        router.get(url, {}, { preserveScroll: true, preserveState: true });
-    } 
+const Notification = ({ notifications, filter, statusFilter = 'all', stats }) => {
+  const records = notifications?.data ?? [];
+  const [search, setSearch] = useState(filter || '');
+  const [status, setStatus] = useState(statusFilter);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
+  const [alert, setAlert] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const { delete: destroy, processing } = useForm();
 
-    useEffect(() => {
-        echo.channel("notification-channel").listen(".NotificationEvent", (e) => {  
-            router.get('/notifications', {}, { preserveScroll: true, preserveState: true });
-        });
+  useEffect(() => {
+    setSearch(filter || '');
+    setStatus(statusFilter);
+  }, [filter, statusFilter]);
 
-        return () => {
-            echo.leaveChannel("notification-channel"); 
-        };
-        
-    }, []);
+  useEffect(() => {
+    echo.channel('notification-channel').listen('.NotificationEvent', () => {
+      router.reload({ only: ['notifications', 'stats'], preserveScroll: true });
+    });
 
-    const handleOpenModal = (state, item) => {
-        setIsModalOpen(state);   
-        setAlert(item);        
+    return () => echo.leaveChannel('notification-channel');
+  }, []);
+
+  const applyFilters = (event) => {
+    event.preventDefault();
+    router.get(route('notifications'), {
+      search: search.trim() || undefined,
+      status: status !== 'all' ? status : undefined,
+    }, {
+      preserveScroll: true,
+      preserveState: true,
+      replace: true,
+      onStart: () => setIsLoading(true),
+      onFinish: () => setIsLoading(false),
+    });
+  };
+
+  const clearFilters = () => {
+    setSearch('');
+    setStatus('all');
+    router.get(route('notifications'), {}, {
+      preserveScroll: true,
+      preserveState: true,
+      replace: true,
+      onStart: () => setIsLoading(true),
+      onFinish: () => setIsLoading(false),
+    });
+  };
+
+  const onPageChange = (url) => {
+    if (url) {
+      router.get(url, {}, {
+        preserveScroll: true,
+        preserveState: true,
+        onStart: () => setIsLoading(true),
+        onFinish: () => setIsLoading(false),
+      });
     }
+  };
 
-    const handleCloseModal = () => {
-        setIsModalOpen(false); 
-    }
+  const openAlert = (notification) => {
+    setAlert(notification);
+    setIsModalOpen(true);
+  };
 
-    const handleOpenDeleteModal = (state, id) => {
-        setIsModalDeleteOpen(state)
-        setDeleteId(id);
-    }
-    const handlecloseDeleteModal = () => {
-        setIsModalDeleteOpen(false)
-    }
+  const handleConfirmDelete = () => {
+    if (!deleteId) return;
+    destroy(route('notifications.destroy', { id: deleteId }), {
+      preserveScroll: true,
+      onSuccess: () => {
+        toast.success('Notification deleted.', { autoClose: 1500 });
+        setIsModalDeleteOpen(false);
+        setDeleteId(null);
+      },
+    });
+  };
 
-    const handleConfirm = () => {       
-        destroy(route('notifications.destroy', {id : deleteId}), {
-            preserveScroll: true,
-            onSuccess: () => {                        
-                toast.success("Successfully Deleted", {
-                    autoClose: 1000,
-                });               
-                handlecloseDeleteModal()
-            }                        
-        });  
-    };
+  const renderActions = (notification) => (
+    <div className="notification-actions">
+      <button
+        type="button"
+        className="notification-action-button"
+        onClick={() => openAlert(notification)}
+        title="View notification"
+        aria-label={`View notification from ${notification.name || notification.id}`}
+      >
+        <CIcon icon={cilMagnifyingGlass} aria-hidden="true" />
+        <span className="notification-action-label">View</span>
+      </button>
+      <button
+        type="button"
+        className="notification-action-button notification-action-delete"
+        onClick={() => {
+          setDeleteId(notification.id);
+          setIsModalDeleteOpen(true);
+        }}
+        aria-label={`Delete notification ${notification.name || notification.id}`}
+      >
+        <CIcon icon={cilTrash} aria-hidden="true" />
+        <span className="notification-action-label">Delete</span>
+      </button>
+    </div>
+  );
 
-    const getStatus = (status) => {
-        switch (status) {
-            case 'active':
-            return 'alert-status-active';
-            case 'dispatched':
-            return 'alert-status-dispatched';
-            case 'closed':
-            return 'alert-status-closed';
-            default:
-            return 'alert-status-active';
-        }
-    };
+  const renderContact = (notification) => (
+    <div className="notification-contact">
+      <CAvatar
+        size="md"
+        src={notification.user?.avatar || DefaultAvatar}
+        alt=""
+      />
+      <div>
+        <strong>{notification.name || notification.user?.name || 'Unknown contact'}</strong>
+        {notification.user?.email && <span>{notification.user.email}</span>}
+        <span>
+          {notification.deviceName || notification.device?.name || 'Fire incident'}
+          {(notification.macAddress || notification.device?.macAddress)
+            ? ` · ${notification.macAddress || notification.device.macAddress}`
+            : ''}
+        </span>
+      </div>
+    </div>
+  );
 
   return (
-      <DefaultLayout     
-      >
-        <div className="py-12">
-        <CRow>
-            <CCol xs>
-            <CCard className="mb-4">
-                <CCardHeader>    
-                    <Search route={route('notifications')} filter={filter} />  
-                </CCardHeader>        
-                <CTable align="middle" className="mb-0 border" hover responsive>
-                    <CTableHead className="text-nowrap">
-                    <CTableRow>  
-                        <CTableHeaderCell className="bg-body-tertiary text-center">
-                        <CIcon icon={cilPeople} />
-                        </CTableHeaderCell>                
-                        <CTableHeaderCell className="bg-body-tertiary">
-                            Name
-                        </CTableHeaderCell> 
-                        {/* <CTableHeaderCell className="bg-body-tertiary">
-                            Device 
-                        </CTableHeaderCell>                   */}
-                        <CTableHeaderCell className="bg-body-tertiary">
-                            Location
-                        </CTableHeaderCell>                      
-                        <CTableHeaderCell className="bg-body-tertiary">
-                            Date & Time
-                        </CTableHeaderCell>
-                        <CTableHeaderCell className="bg-body-tertiary">
-                            Status
-                        </CTableHeaderCell> 
-                        <CTableHeaderCell className="bg-body-tertiary">
-                            Action
-                        </CTableHeaderCell> 
-                    </CTableRow>
-                    </CTableHead>
-                    <CTableBody>
-                    {notifications.data.map((item, index) => (
-                        <CTableRow v-for="item in tableItems" key={index}>
-                        <CTableDataCell className="text-center">
-                            <CAvatar size="md" src={item.user.avatar ? item.user.avatar : DefaultAvatar} />
-                        </CTableDataCell>
-                        <CTableDataCell>
-                            <div>{item.name}</div>
-                            <div>
-                                <small className='font'>{item.user.email}</small>
-                                { item.user.phonenumber && (<small className='mx-1'>|</small>)}
-                                <small>{item.user.phonenumber}</small>
-                            </div>
-                        </CTableDataCell>
-                        {/* <CTableDataCell>
-                            <div>{item.deviceName + ':' + item.macAddress}</div>                       
-                        </CTableDataCell>                      */}
-                        <CTableDataCell>
-                            <div>{item.deviceLocation}</div>                       
-                        </CTableDataCell> 
-                        <CTableDataCell>
-                            <div>{item.created_at}</div>                       
-                        </CTableDataCell> 
-                        <CTableDataCell >
-                            {/* <div className='capitalize small status status-active'>{item.status}</div> */}
-                            <span className={`alert-status ${getStatus(item.status)}`}>{item.status}</span>                         
-                        </CTableDataCell> 
-                        <CTableDataCell>
-                            <div className='btn-gap'>
-                                <CButton color="info" variant="outline" size="sm"  onClick={(e) => handleOpenModal(true, item)}>View</CButton> 
-                                <CButton color="danger" variant="outline" size="sm"  onClick={(e) => handleOpenDeleteModal(true, item.id)}>Delete</CButton> 
-                            </div>                  
-                        </CTableDataCell>       
-                        </CTableRow>
-                        
-                        
+    <DefaultLayout>
+      <main className="notifications-page">
+        <header className="page-heading">
+          <div>
+            <h1>Notifications</h1>
+            <p>Monitor and manage fire alerts and incident notifications.</p>
+          </div>
+        </header>
+
+        <section className="notification-stat-grid" aria-label="Notification summary">
+          <article className="notification-stat-card">
+            <span className="notification-stat-icon notification-stat-icon-blue"><CIcon icon={cilBell} /></span>
+            <div><span>All notifications</span><strong>{stats?.all ?? 0}</strong></div>
+          </article>
+          <article className="notification-stat-card">
+            <span className="notification-stat-icon notification-stat-icon-red"><CIcon icon={cilFire} /></span>
+            <div><span>Active alerts</span><strong>{stats?.active ?? 0}</strong></div>
+          </article>
+          <article className="notification-stat-card">
+            <span className="notification-stat-icon notification-stat-icon-green"><CIcon icon={cilCheckCircle} /></span>
+            <div><span>Closed alerts</span><strong>{stats?.closed ?? 0}</strong></div>
+          </article>
+        </section>
+
+        <section className="notification-list-panel" aria-label="Notification records" aria-busy={isLoading}>
+          <form className="notification-toolbar" onSubmit={applyFilters}>
+            <label className="notification-search">
+              <CIcon icon={cilSearch} aria-hidden="true" />
+              <input
+                type="search"
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder="Search contact, location, device…"
+                aria-label="Search notifications"
+              />
+            </label>
+            <label className="notification-status-filter">
+              <span className="visually-hidden">Filter by status</span>
+              <select value={status} onChange={(event) => setStatus(event.target.value)}>
+                <option value="all">All statuses</option>
+                <option value="active">Active alerts</option>
+                <option value="closed">Closed alerts</option>
+              </select>
+            </label>
+            <button className="notification-filter-button" type="submit" disabled={isLoading}>
+              {isLoading ? 'Updating…' : 'Apply filters'}
+            </button>
+            {(search || status !== 'all') && (
+              <button className="notification-clear-button" type="button" onClick={clearFilters}>
+                Clear filters
+              </button>
+            )}
+          </form>
+
+          {isLoading && <p className="notification-loading" role="status">Updating notifications…</p>}
+
+          {records.length > 0 ? (
+            <>
+              <div className="notification-table-scroll">
+                <table className="notification-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Incident / Contact</th>
+                      <th scope="col">Location</th>
+                      <th scope="col">Date &amp; time</th>
+                      <th scope="col">Status</th>
+                      <th scope="col"><span className="visually-hidden">Actions</span></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {records.map((notification) => (
+                      <tr key={notification.id}>
+                        <td>{renderContact(notification)}</td>
+                        <td className="notification-location">
+                          {notification.deviceLocation || notification.device?.location || notification.location || 'Location unavailable'}
+                        </td>
+                        <td className="notification-date">{notification.created_at}</td>
+                        <td><StatusBadge status={notification.status} /></td>
+                        <td>{renderActions(notification)}</td>
+                      </tr>
                     ))}
-                    </CTableBody>
-                </CTable> 
+                  </tbody>
+                </table>
+              </div>
+              <div className="notification-mobile-list">
+                {records.map((notification) => (
+                  <article className="notification-mobile-card" key={notification.id}>
+                    <div className="notification-mobile-card-heading">
+                      {renderContact(notification)}
+                      <StatusBadge status={notification.status} />
+                    </div>
+                    <p className="notification-mobile-location">
+                      <CIcon icon={cilWarning} aria-hidden="true" />
+                      {notification.deviceLocation || notification.device?.location || notification.location || 'Location unavailable'}
+                    </p>
+                    <time className="notification-mobile-date">{notification.created_at}</time>
+                    {renderActions(notification)}
+                  </article>
+                ))}
+              </div>
+            </>
+          ) : (
+            <div className="notification-empty-state">
+              <span className="notification-empty-icon"><CIcon icon={cilBell} /></span>
+              <h2>No notifications found</h2>
+              <p>{search || status !== 'all' ? 'Try adjusting or clearing your filters.' : 'New fire alerts will appear here.'}</p>
+              {(search || status !== 'all') && (
+                <button className="notification-clear-button" type="button" onClick={clearFilters}>
+                  Clear filters
+                </button>
+              )}
+            </div>
+          )}
 
-                 { notifications.last_page > 1 && (
-                    <Pagination
-                        currentpage={notifications.current_page}
-                        nextpage={notifications.next_page_url}
-                        prevpage={notifications.prev_page_url}
-                        firstpage={notifications.first_page_url}
-                        lastpage={notifications.last_page_url}
-                        totalRecord={notifications.total}
-                        totalPage={notifications.last_page}
-                        onPageChange={onPageChange}
-                     />
-                 )}
+          {notifications?.last_page > 1 && (
+            <Pagination
+              currentpage={notifications.current_page}
+              nextpage={notifications.next_page_url}
+              prevpage={notifications.prev_page_url}
+              firstpage={notifications.first_page_url}
+              lastpage={notifications.last_page_url}
+              totalRecord={notifications.total}
+              totalPage={notifications.last_page}
+              perPage={notifications.per_page}
+              onPageChange={onPageChange}
+            />
+          )}
+        </section>
 
-                    <ConfirmDelete
-                            isOpen={isModalDeleteOpen}
-                            onClose={handlecloseDeleteModal}
-                            onConfirm={handleConfirm}
-                            message="Are you sure you want to delete this?"
-                        />  
-                
-            </CCard>
-            </CCol>
-        </CRow>             
-            <ViewAlert visible={isModalOpen} notification={alert} onClose={handleCloseModal} />
-        </div>
-     </DefaultLayout>
-  )
-}
+        <ConfirmDelete
+          isOpen={isModalDeleteOpen}
+          onClose={() => setIsModalDeleteOpen(false)}
+          onConfirm={handleConfirmDelete}
+          message="Are you sure you want to delete this notification?"
+          processing={processing}
+        />
+        {alert && (
+          <ViewAlert
+            visible={isModalOpen}
+            notification={alert}
+            onClose={() => setIsModalOpen(false)}
+          />
+        )}
+      </main>
+    </DefaultLayout>
+  );
+};
 
-export default Notification
+export default Notification;

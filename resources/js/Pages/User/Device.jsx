@@ -25,9 +25,10 @@ import {
   CModalTitle
 } from '@coreui/react'
 import Search from '@/Components/Search';
+import CIcon from '@coreui/icons-react';
+import { cilPencil, cilTrash } from '@coreui/icons';
 
-const Device = (response, filter) => {
-    const devices = response.devices  
+const Device = ({ devices, filter }) => {
     const { data, setData, post,  patch, delete: destroy, processing, reset } = useForm({
             id : '',
             macAddress: '',
@@ -135,7 +136,7 @@ const Device = (response, filter) => {
     };
    
     const onPageChange = (url) => {
-        router.get(url, {}, { preserveScroll: true, preserveState: true });
+        router.get(url, filter ? { search: filter } : {}, { preserveScroll: true, preserveState: true });
     }   
     
   return (
@@ -184,13 +185,13 @@ const Device = (response, filter) => {
                     </CTableRow>
                     </CTableHead>
                     <CTableBody>
-                    {devices.data.map((item, index) => (
-                        <CTableRow v-for="item in tableItems" key={index}>    
+                    {devices.data.length ? devices.data.map((item) => (
+                        <CTableRow key={item.id}>
                          <CTableDataCell>
-                            <div>{item.name}</div>
+                            <div className="table-primary-value">{item.name}</div>
                         </CTableDataCell>                               
                         <CTableDataCell>
-                            <div>{item.macAddress}</div>
+                            <div className="table-secondary-value">{item.macAddress}</div>
                         </CTableDataCell>                                           
                         <CTableDataCell>
                             <div>{item.ipAddress}</div>                       
@@ -205,13 +206,17 @@ const Device = (response, filter) => {
                             <div>{item.location}</div>                       
                         </CTableDataCell>                       
                         <CTableDataCell>
-                            <div className='btn-gap'>
-                            <CButton color="primary" variant="outline" size="sm" onClick={(e) => onOpenModal(true, item)}>Edit</CButton>  
-                            <CButton color="danger" variant="outline" size="sm" onClick={(e) => handleDelete(item)}>Delete</CButton>   
+                            <div className="table-actions">
+                            <CButton className="table-action-button" title="Edit device" aria-label={`Edit ${item.name}`} onClick={() => onOpenModal(true, item)}><CIcon icon={cilPencil} /></CButton>
+                            <CButton className="table-action-button table-action-delete" title="Delete device" aria-label={`Delete ${item.name}`} onClick={() => handleDelete(item)}><CIcon icon={cilTrash} /></CButton>
                             </div>                  
                         </CTableDataCell>                                 
                         </CTableRow>
-                    ))}
+                    )) : (
+                      <CTableRow>
+                        <CTableDataCell colSpan={7} className="table-empty-cell">No devices found.</CTableDataCell>
+                      </CTableRow>
+                    )}
                     </CTableBody>
                 </CTable> 
                 { devices.last_page > 1 && (
@@ -223,6 +228,7 @@ const Device = (response, filter) => {
                         lastpage={devices.last_page_url}
                         totalRecord={devices.total}
                         totalPage={devices.last_page}
+                        perPage={devices.per_page}
                         onPageChange={onPageChange}
                      />
 

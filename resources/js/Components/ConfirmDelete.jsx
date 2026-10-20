@@ -9,7 +9,7 @@ import {
     CModalTitle
 } from '@coreui/react'
 
-const ConfirmDelete = ({ isOpen, onClose, onConfirm, message }) => {
+const ConfirmDelete = ({ isOpen, onClose, onConfirm, message, processing = false }) => {
     if (!isOpen) return null; // Don't render if the modal is closed
 
 
@@ -24,10 +24,12 @@ const ConfirmDelete = ({ isOpen, onClose, onConfirm, message }) => {
                 </CModalHeader>
                 <CModalBody>{message}</CModalBody>
                 <CModalFooter>
-                <CButton color="secondary" onClick={onClose}>
+                <CButton color="secondary" onClick={onClose} disabled={processing}>
                     No
                 </CButton>
-                 <CButton color="danger" type='submit' onClick={onConfirm}>Yes</CButton>
+                 <CButton color="danger" type='submit' onClick={onConfirm} disabled={processing}>
+                    {processing ? 'Deleting…' : 'Yes'}
+                 </CButton>
                 </CModalFooter>
                 
           </CModal>   

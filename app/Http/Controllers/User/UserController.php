@@ -29,7 +29,7 @@ class UserController extends Controller
    }
 
  
-   public function update(UserUpdateRequest $request)
+   public function update(UserUpdateRequest $request): RedirectResponse
    {    
         $user = $request->user();
         $user->fill($request->validated());
@@ -42,7 +42,7 @@ class UserController extends Controller
 
         $user->save(); 
 
-        // return Redirect::route('user');
+        return Redirect::route('account');
     }
 
    /**
